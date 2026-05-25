@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check Your Concrete Territory — Scopilot</title>
+  <meta name="description" content="Enter your ZIP and instantly see if it's open for Scopilot lead routing. Claimed ZIPs show adjacent open ones — find your territory in 10 seconds.">
+  <link rel="canonical" href="https://scopilot.polsia.app/territory">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scopilot.polsia.app/territory">
+  <meta property="og:title" content="Is your ZIP available? — Scopilot Territory Checker">
+  <meta property="og:description" content="Check if your ZIP is open for Scopilot concrete leads. Takes 10 seconds. Founding members lock their territory for $1,500 lifetime.">
+  <meta property="og:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/56c230fd-9cfc-4c97-9b0a-933975c3d2db.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Scopilot">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Is your ZIP available? — Scopilot Territory Checker">
+  <meta name="twitter:description" content="See if your zip is open for qualified concrete leads. 10-second self-serve check.">
+  <meta name="twitter:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/56c230fd-9cfc-4c97-9b0a-933975c3d2db.jpg">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/css/theme.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0e0e16;
+      color: #e8e8f0;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      line-height: 1.1;
+    }
+
+    a { text-decoration: none; }
+
+    /* ── Topbar ── */
+    .t-topbar {
+      background: #0a0a12;
+      border-bottom: 1px solid rgba(200,150,12,0.15);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .t-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: #e8e8f0;
+      letter-spacing: -0.02em;
+    }
+    .t-logo span { color: #c8960c; }
+
+    .t-nav { display: flex; gap: 12px; align-items: center; }
+
+    .t-nav-link {
+      color: rgba(232,232,240,0.6);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .t-nav-link:hover { color: #e8e8f0; }
+
+    .t-nav-cta {
+      background: #c8960c;
+      color: #0e0e16;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 8px 18px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .t-nav-cta:hover { background: #e0a80e; }
+
+    /* ── Hero ── */
+    .t-hero {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 72px 24px 40px;
+      text-align: center;
+    }
+
+    .t-eyebrow {
+      display: inline-block;
+      background: rgba(200,150,12,0.12);
+      border: 1px solid rgba(200,150,12,0.3);
+      color: #c8960c;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+
+    .t-hero h1 {
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 800;
+      color: #f0f0f8;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .t-hero h1 .gold { color: #c8960c; }
+
+    .t-hero p {
+      font-size: 18px;
+      color: rgba(232,232,240,0.7);
+      max-width: 480px;
+      margin: 0 auto 36px;
+      line-height: 1.5;
+    }
+
+    /* ── ZIP check form ── */
+    .t-check-form {
+      display: flex;
+      gap: 10px;
+      max-width: 420px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .t-zip-input {
+      flex: 1;
+      min-width: 150px;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(200,150,12,0.3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: #f0f0f8;
+      letter-spacing: 0.08em;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .t-zip-input::placeholder { color: rgba(232,232,240,0.3); letter-spacing: 0.04em; font-weight: 400; }
+    .t-zip-input:focus {
+      border-color: #c8960c;
+      background: rgba(200,150,12,0.08);
+    }
+
+    .t-check-btn {
+      background: #c8960c;
+      color: #0e0e16;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 14px 26px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .t-check-btn:hover { background: #e0a80e; }
+    .t-check-btn:active { transform: scale(0.97); }
+    .t-check-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Results card ── */
+    .t-results {
+      max-width: 600px;
+      margin: 32px auto 0;
+      padding: 0 24px;
+      display: none;
+    }
+    .t-results.visible { display: block; }
+
+    .t-result-card {
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(200,150,12,0.2);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .t-result-header {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .t-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 6px 14px;
+      border-radius: 100px;
+    }
+    .t-status-badge.available {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #4ade80;
+    }
+    .t-status-badge.claimed {
+      background: rgba(234,179,8,0.12);
+      border: 1px solid rgba(234,179,8,0.3);
+      color: #facc15;
+    }
+
+    .t-result-zip {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #f0f0f8;
+    }
+
+    .t-result-body { padding: 20px 24px; }
+
+    /* Available state */
+    .t-available-cta {
+      background: linear-gradient(135deg, rgba(200,150,12,0.12) 0%, rgba(200,150,12,0.04) 100%);
+      border: 1px solid rgba(200,150,12,0.25);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .t-available-cta h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #c8960c;
+      margin-bottom: 8px;
+    }
+    .t-available-cta p {
+      font-size: 14px;
+      color: rgba(232,232,240,0.7);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .t-cta-btn {
+      display: inline-block;
+      background: #c8960c;
+      color: #0e0e16;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 12px 22px;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .t-cta-btn:hover { background: #e0a80e; }
+
+    /* Claimed state */
+    .t-claimed-holder {
+      font-size: 14px;
+      color: rgba(232,232,240,0.6);
+      margin-bottom: 16px;
+    }
+    .t-claimed-holder strong { color: #e8e8f0; }
+
+    /* Adjacent ZIPs */
+    .t-adj-section { margin-top: 16px; }
+    .t-adj-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(232,232,240,0.5);
+      margin-bottom: 10px;
+    }
+    .t-adj-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .t-adj-chip {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e8e8f0;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.04em;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .t-adj-chip:hover {
+      background: rgba(200,150,12,0.15);
+      border-color: rgba(200,150,12,0.4);
+      color: #c8960c;
+    }
+
+    /* Waitlist form */
+    .t-waitlist {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .t-waitlist-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(232,232,240,0.8);
+      margin-bottom: 10px;
+    }
+    .t-waitlist-form {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .t-email-input {
+      flex: 1;
+      min-width: 200px;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      color: #f0f0f8;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .t-email-input::placeholder { color: rgba(232,232,240,0.3); }
+    .t-email-input:focus { border-color: rgba(200,150,12,0.5); }
+
+    .t-waitlist-btn {
+      background: rgba(200,150,12,0.15);
+      border: 1.5px solid rgba(200,150,12,0.4);
+      color: #c8960c;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .t-waitlist-btn:hover { background: rgba(200,150,12,0.25); }
+    .t-waitlist-success {
+      font-size: 13px;
+      color: #4ade80;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* Loading spinner */
+    .t-spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(200,150,12,0.3);
+      border-top-color: #c8960c;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── How it works strip ── */
+    .t-howit {
+      max-width: 760px;
+      margin: 60px auto 0;
+      padding: 0 24px 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+
+    .t-step {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .t-step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(200,150,12,0.15);
+      border: 1px solid rgba(200,150,12,0.3);
+      color: #c8960c;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+    }
+    .t-step h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f0f0f8;
+      margin-bottom: 6px;
+    }
+    .t-step p {
+      font-size: 13px;
+      color: rgba(232,232,240,0.55);
+      line-height: 1.5;
+    }
+
+    /* ── Footer ── */
+    .t-footer {
+      background: #080810;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .t-footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .t-footer-links a {
+      color: rgba(232,232,240,0.45);
+      font-size: 13px;
+      transition: color 0.15s;
+    }
+    .t-footer-links a:hover { color: rgba(232,232,240,0.8); }
+    .t-footer-copy {
+      font-size: 12px;
+      color: rgba(232,232,240,0.25);
+    }
+
+    /* Error message */
+    .t-error {
+      font-size: 13px;
+      color: #f87171;
+      text-align: center;
+      margin-top: 10px;
+      min-height: 20px;
+    }
+
+    /* ── Mobile (≤600px) ── */
+    @media (max-width: 600px) {
+      .t-topbar { padding: 12px 16px; }
+      .t-nav-link { display: none; }                /* keep only logo + gold CTA */
+      .t-nav-cta { padding: 8px 14px; font-size: 13px; }
+
+      .t-hero { padding: 36px 18px 28px; }
+      .t-hero p { font-size: 16px; margin-bottom: 24px; }
+
+      .t-check-form { gap: 8px; }
+      .t-zip-input { font-size: 18px; padding: 12px 14px; }
+      .t-check-btn { width: 100%; padding: 14px 18px; }
+
+      .t-results { padding: 0 16px; margin-top: 24px; }
+      .t-result-header, .t-result-body { padding: 16px 18px; }
+      .t-available-cta { padding: 16px; }
+      .t-cta-btn { display: block; text-align: center; padding: 14px 16px; font-size: 14px; }
+      .t-waitlist-form { gap: 6px; }
+      .t-waitlist-btn { padding: 12px 16px; }
+
+      .t-howit { margin-top: 32px; padding: 0 16px 40px; gap: 16px; }
+      .t-step { padding: 16px; }
+      .t-footer { padding: 24px 16px; }
+      .t-footer-links { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <header class="t-topbar">
+    <a href="/" class="t-logo">Scopi<span>lot</span></a>
+    <nav class="t-nav">
+      <a href="/example" class="t-nav-link">Example Lead</a>
+      <a href="/pricing" class="t-nav-link">Pricing</a>
+      <a href="/founding" class="t-nav-cta">Get Founding Access</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="t-hero">
+    <div class="t-eyebrow">Territory Availability</div>
+    <h1>Is your <span class="gold">ZIP</span> available?</h1>
+    <p>Check if your zip code is open for Scopilot lead routing — and see what's available nearby.</p>
+
+    <form class="t-check-form" id="checkForm" onsubmit="return false;">
+      <input
+        class="t-zip-input"
+        id="zipInput"
+        type="text"
+        inputmode="numeric"
+        pattern="[0-9]{5}"
+        maxlength="5"
+        placeholder="42301"
+        autocomplete="postal-code"
+        aria-label="Enter ZIP code"
+      >
+      <button class="t-check-btn" id="checkBtn" type="submit" onclick="checkZip()">
+        Check availability
+      </button>
+    </form>
+    <div class="t-error" id="errorMsg"></div>
+    <div class="t-spinner" id="spinner"></div>
+  </section>
+
+  <!-- Results -->
+  <div class="t-results" id="resultsSection">
+    <div class="t-result-card" id="resultCard">
+
+      <div class="t-result-header">
+        <span class="t-status-badge" id="statusBadge"></span>
+        <span class="t-result-zip" id="resultZip"></span>
+      </div>
+
+      <div class="t-result-body" id="resultBody">
+        <!-- Populated by JS -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="t-howit">
+    <div class="t-step">
+      <div class="t-step-num">1</div>
+      <h4>Enter your ZIP</h4>
+      <p>Type in the 5-digit zip code you want to serve. Takes 10 seconds.</p>
+    </div>
+    <div class="t-step">
+      <div class="t-step-num">2</div>
+      <h4>See availability</h4>
+      <p>Open ZIPs show a green badge. Claimed ZIPs show adjacent open ones nearby.</p>
+    </div>
+    <div class="t-step">
+      <div class="t-step-num">3</div>
+      <h4>Claim your territory</h4>
+      <p>Founding members lock their zip code for $1,500 lifetime — no monthly fees ever.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="t-footer">
+    <div class="t-footer-links">
+      <a href="/">Home</a>
+      <a href="/example">Example Lead</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/founding">Founding Member</a>
+      <a href="/territory">Check Territory</a>
+      <a href="/terms.html">Terms</a>
+      <a href="/privacy.html">Privacy</a>
+    </div>
+    <div class="t-footer-copy">© 2026 Two Wolves Ventures LLC d/b/a Infinite Horizons Solutions</div>
+  </footer>
+
+  <script>
+    // Pre-fill from URL query param: /territory?zip=42301
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const zip = params.get('zip');
+      if (zip && /^\d{5}$/.test(zip)) {
+        document.getElementById('zipInput').value = zip;
+        checkZip();
+      }
+    })();
+
+    function setError(msg) {
+      document.getElementById('errorMsg').textContent = msg || '';
+    }
+
+    function showSpinner(on) {
+      document.getElementById('spinner').style.display = on ? 'block' : 'none';
+      document.getElementById('checkBtn').disabled = on;
+    }
+
+    async function checkZip() {
+      const zip = document.getElementById('zipInput').value.trim();
+      setError('');
+
+      if (!/^\d{5}$/.test(zip)) {
+        setError('Enter a valid 5-digit ZIP code.');
+        return;
+      }
+
+      showSpinner(true);
+      document.getElementById('resultsSection').classList.remove('visible');
+
+      try {
+        const resp = await fetch(`/api/territory/check?zip=${encodeURIComponent(zip)}`);
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          setError(data.error || 'Something went wrong. Try again.');
+          return;
+        }
+
+        renderResult(data);
+      } catch (err) {
+        setError('Network error — please try again.');
+      } finally {
+        showSpinner(false);
+      }
+    }
+
+    function renderResult(data) {
+      const { zip, status, claimed_by, adjacent_open_zips } = data;
+
+      // Badge
+      const badge = document.getElementById('statusBadge');
+      badge.className = 't-status-badge ' + status;
+      if (status === 'available') {
+        badge.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="5" fill="#4ade80"/></svg> Open';
+      } else {
+        badge.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="5" fill="#facc15"/></svg> Claimed';
+      }
+
+      document.getElementById('resultZip').textContent = 'ZIP ' + zip;
+
+      const body = document.getElementById('resultBody');
+
+      if (status === 'available') {
+        body.innerHTML = `
+          <div class="t-available-cta">
+            <h3>ZIP ${escHtml(zip)} is open</h3>
+            <p>This territory has no active owner. Founding members lock it in for $1,500 lifetime — qualified leads, no monthly fees, ever.</p>
+            <a href="/founding?zip=${encodeURIComponent(zip)}" class="t-cta-btn">
+              Claim ZIP ${escHtml(zip)} — $1,500 lifetime →
+            </a>
+          </div>
+          ${renderAdjacentSection(adjacent_open_zips, 'Nearby open ZIPs you can also add')}
+        `;
+      } else {
+        const holder = claimed_by ? claimed_by.business_name : 'Another contractor';
+        body.innerHTML = `
+          <div class="t-claimed-holder">
+            <strong>${escHtml(holder)}</strong> holds this territory.
+          </div>
+          ${renderAdjacentSection(adjacent_open_zips, 'Open ZIPs nearby — check one')}
+          <div class="t-waitlist">
+            <div class="t-waitlist-label">Get notified if ZIP ${escHtml(zip)} opens up</div>
+            <div class="t-waitlist-form">
+              <input
+                class="t-email-input"
+                id="waitlistEmail"
+                type="email"
+                placeholder="your@email.com"
+              >
+              <button class="t-waitlist-btn" onclick="submitWaitlist('${escHtml(zip)}')">
+                Notify me
+              </button>
+            </div>
+            <div class="t-waitlist-success" id="waitlistSuccess">
+              ✓ You're on the list — we'll email you if this ZIP opens.
+            </div>
+          </div>
+        `;
+      }
+
+      // Scroll to results
+      document.getElementById('resultsSection').classList.add('visible');
+      document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function renderAdjacentSection(zips, label) {
+      if (!zips || !zips.length) return '';
+      const chips = zips.map(z => `<button class="t-adj-chip" onclick="runCheck('${escHtml(z)}')">${escHtml(z)}</button>`).join('');
+      return `
+        <div class="t-adj-section">
+          <div class="t-adj-label">${escHtml(label)}</div>
+          <div class="t-adj-chips">${chips}</div>
+        </div>
+      `;
+    }
+
+    function runCheck(zip) {
+      document.getElementById('zipInput').value = zip;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      checkZip();
+    }
+
+    async function submitWaitlist(zip) {
+      const email = document.getElementById('waitlistEmail').value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+
+      try {
+        const resp = await fetch('/api/territory/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ zip, email }),
+        });
+        if (resp.ok) {
+          document.getElementById('waitlistSuccess').style.display = 'block';
+          document.getElementById('waitlistEmail').disabled = true;
+        } else {
+          const data = await resp.json();
+          alert(data.error || 'Failed to sign up. Try again.');
+        }
+      } catch {
+        alert('Network error — please try again.');
+      }
+    }
+
+    function escHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Allow Enter key to trigger check
+    document.getElementById('zipInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') checkZip();
+    });
+  </script>
+</body>
+</html>

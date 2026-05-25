@@ -1,0 +1,27 @@
+{
+  "name": "scopilot",
+  "version": "1.0.0",
+  "description": "Contractor lead-generation platform. Homeowners scope their own concrete/excavation/drainage projects; contractors receive qualified leads via email and a dashboard.",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "npm run migrate",
+    "migrate": "node migrate.js",
+    "smoke": "node tests/smoke-scope.js",
+    "seed:test-contractors": "node scripts/seed-test-contractors.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "connect-pg-simple": "^10.0.0",
+    "ejs": "^3.1.10",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "openai": "^4.77.0",
+    "pg": "^8.11.3"
+  }
+}

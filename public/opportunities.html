@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opportunity Board — Scopilot</title>
+  <meta name="description" content="Unclaimed and passed leads available for contractors to claim on Scopilot.">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    .dash-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+      background: var(--fg);
+      color: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .dash-topbar-left { display: flex; align-items: center; gap: 12px; }
+    .dash-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--bg);
+      text-decoration: none;
+    }
+    .dash-topbar-sep { color: rgba(255,255,255,0.2); font-size: 16px; }
+    .dash-topbar-page { font-size: 14px; color: rgba(200,200,220,0.7); font-weight: 500; }
+    .dash-topbar-right { display: flex; align-items: center; gap: 8px; }
+    .dash-topbar-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(200,200,220,0.7);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      transition: color 0.2s;
+    }
+    .dash-topbar-link:hover { color: var(--bg); }
+    .dash-topbar-link--accent { color: var(--accent); font-weight: 600; }
+
+    /* Hamburger button — hidden on desktop */
+    .dash-topbar-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--bg);
+      cursor: pointer;
+      padding: 8px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    /* Mobile drawer */
+    .dash-mobile-drawer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      top: 56px;
+      background: var(--fg);
+      z-index: 99;
+      padding: 24px;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .dash-mobile-drawer:not(.hidden) { display: flex; }
+    .dash-mobile-drawer-link {
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(200,200,220,0.8);
+      text-decoration: none;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: color 0.2s;
+    }
+    .dash-mobile-drawer-link:hover { color: var(--bg); }
+
+    /* Page layout */
+    .opp-page { max-width: 1080px; margin: 0 auto; padding: 32px 24px 64px; }
+    .opp-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .opp-header-left {}
+    .opp-page-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .opp-page-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--fg);
+      letter-spacing: -0.5px;
+    }
+    .opp-page-sub {
+      font-size: 14px;
+      color: var(--fg-muted);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* Filter chips */
+    .opp-filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .opp-filter-chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--fg-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .opp-filter-chip:hover { border-color: var(--accent); color: var(--fg); }
+    .opp-filter-chip.active {
+      background: var(--fg);
+      border-color: var(--fg);
+      color: var(--bg);
+    }
+    .opp-filter-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+    .opp-filter-chip--trade {
+      background: rgba(200,150,12,0.08);
+      border-color: rgba(200,150,12,0.25);
+      color: #7a5a00;
+    }
+    .opp-filter-chip--trade.active { background: var(--accent); border-color: var(--accent); color: var(--fg); }
+    .opp-filter-chip--trade:hover { border-color: var(--accent); color: var(--fg); }
+
+    /* Board grid */
+    .opp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    /* Lead card */
+    .opp-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .opp-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+    .opp-card-thumb {
+      height: 140px;
+      background: var(--bg-alt);
+      position: relative;
+      overflow: hidden;
+    }
+    .opp-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .opp-card-thumb-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      font-size: 32px;
+      color: rgba(90,90,110,0.4);
+    }
+    .opp-card-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      background: rgba(26,26,46,0.85);
+      color: #f5f5f0;
+      backdrop-filter: blur(4px);
+    }
+    .opp-card-badge--passed { background: rgba(200,150,12,0.9); color: #1a1a2e; }
+    .opp-card-badge--unclaimed { background: rgba(66,153,225,0.9); color: #fff; }
+
+    .opp-card-body { padding: 16px; }
+    .opp-card-zip {
+      font-family: 'Courier New', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--fg);
+      margin-bottom: 4px;
+    }
+    .opp-card-trade {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .opp-card-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .opp-card-stat { }
+    .opp-card-stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      margin-bottom: 2px;
+    }
+    .opp-card-stat-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--fg);
+    }
+    .opp-card-stat-value--money { color: var(--accent); }
+
+    .opp-card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--fg-muted);
+      margin-bottom: 14px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .opp-card-passcount {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .opp-card-passcount svg { opacity: 0.55; }
+
+    /* Blurred contact (revealed on claim) */
+    .opp-card-blurred {
+      font-size: 13px;
+      color: var(--fg-muted);
+      background: var(--bg-alt);
+      border-radius: 5px;
+      padding: 8px 10px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .opp-card-blurred svg { opacity: 0.4; flex-shrink: 0; }
+    .opp-card-blur-text {
+      filter: blur(5px);
+      user-select: none;
+      pointer-events: none;
+      font-size: 13px;
+      color: var(--fg);
+      font-weight: 600;
+    }
+
+    .opp-claim-btn {
+      width: 100%;
+      background: var(--fg);
+      color: var(--bg);
+      border: none;
+      border-radius: 5px;
+      padding: 11px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+      text-align: center;
+    }
+    .opp-claim-btn:hover { background: #2a2a44; }
+    .opp-claim-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .opp-claim-btn--success { background: #276749; }
+    .opp-claim-btn--error { background: #9b2c2c; }
+
+    /* Loading / empty states */
+    .opp-loading, .opp-empty {
+      text-align: center;
+      padding: 64px 32px;
+      color: var(--fg-muted);
+    }
+    .opp-loading-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .opp-empty-icon { font-size: 40px; margin-bottom: 14px; }
+    .opp-empty-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .opp-empty-sub { font-size: 14px; line-height: 1.6; }
+
+    /* Claimed overlay modal */
+    .opp-claimed-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,46,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .opp-claimed-modal.hidden { display: none; }
+    .opp-claimed-box {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 40px 48px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    }
+    .opp-claimed-icon { font-size: 40px; margin-bottom: 16px; }
+    .opp-claimed-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+    .opp-claimed-msg { font-size: 14px; color: var(--fg-muted); line-height: 1.6; margin-bottom: 24px; }
+    .opp-claimed-close {
+      background: var(--fg);
+      color: var(--bg);
+      border: none;
+      border-radius: 5px;
+      padding: 11px 28px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Lead reveal modal (after successful claim) */
+    .opp-reveal-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,46,0.75);
+      backdrop-filter: blur(4px);
+      z-index: 210;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .opp-reveal-modal.hidden { display: none; }
+    .opp-reveal-box {
+      background: var(--white);
+      border-radius: 10px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    }
+    .opp-reveal-header {
+      background: var(--fg);
+      padding: 20px 28px;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .opp-reveal-header-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 800; color: var(--bg); }
+    .opp-reveal-badge { background: var(--accent); color: var(--fg); font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 3px; }
+    .opp-reveal-body { padding: 24px 28px; }
+    .opp-reveal-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; gap: 12px; }
+    .opp-reveal-row:last-child { border-bottom: none; }
+    .opp-reveal-row-label { color: var(--fg-muted); flex-shrink: 0; }
+    .opp-reveal-row-value { font-weight: 600; color: var(--fg); text-align: right; }
+    .opp-reveal-row-value a { color: var(--accent); text-decoration: none; }
+    .opp-reveal-actions { padding: 0 28px 28px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .opp-reveal-cta {
+      flex: 1;
+      background: var(--accent);
+      color: var(--fg);
+      border: none;
+      border-radius: 5px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      font-family: 'DM Sans', sans-serif;
+      display: inline-block;
+    }
+    .opp-reveal-close {
+      flex: 1;
+      background: var(--bg-alt);
+      color: var(--fg);
+      border: none;
+      border-radius: 5px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .dash-topbar { padding: 0 16px; }
+      .dash-topbar-left .dash-topbar-sep,
+      .dash-topbar-left .dash-topbar-page { display: none; }
+      .dash-topbar-right { display: none; }
+      .dash-topbar-hamburger { display: flex; }
+    }
+    @media (max-width: 640px) {
+      .opp-grid { grid-template-columns: 1fr; }
+      .opp-page { padding: 20px 16px 48px; }
+      .opp-filter-chip { padding: 10px 16px; font-size: 13px; min-height: 40px; }
+      .opp-filter-sep { display: none; }
+      .opp-filters { gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+<!-- Topbar -->
+<nav class="dash-topbar">
+  <div class="dash-topbar-left">
+    <a href="/contractor" class="dash-logo">Scopilot</a>
+    <span class="dash-topbar-sep">/</span>
+    <span class="dash-topbar-page">Opportunity Board</span>
+  </div>
+  <div class="dash-topbar-right">
+    <a href="/contractor" class="dash-topbar-link">← Dashboard</a>
+  </div>
+  <button class="dash-topbar-hamburger" onclick="document.getElementById('oppMobileDrawer').classList.toggle('hidden')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+<!-- Mobile navigation drawer -->
+<div class="dash-mobile-drawer hidden" id="oppMobileDrawer">
+  <a href="/contractor" class="dash-mobile-drawer-link">← Dashboard</a>
+  <a href="/contractor/opportunities" class="dash-mobile-drawer-link" style="color:var(--accent);font-weight:600;">Opportunity Board</a>
+</div>
+
+<!-- Page -->
+<main class="opp-page">
+  <div class="opp-header">
+    <div class="opp-header-left">
+      <div class="opp-page-label">Opportunity Board</div>
+      <div class="opp-page-title">Available Leads</div>
+      <div class="opp-page-sub">Unclaimed and passed leads. First contractor to claim gets full homeowner contact.</div>
+    </div>
+  </div>
+
+  <!-- Filter chips -->
+  <div class="opp-filters" id="filterChips">
+    <button class="opp-filter-chip active" data-filter="all">All Leads</button>
+    <button class="opp-filter-chip" data-filter="nearby">My Nearby Zips</button>
+    <span class="opp-filter-sep"></span>
+    <button class="opp-filter-chip opp-filter-chip--trade" data-trade="">All Trades</button>
+    <button class="opp-filter-chip opp-filter-chip--trade" data-trade="concrete">Concrete</button>
+    <button class="opp-filter-chip opp-filter-chip--trade" data-trade="excavation">Excavation</button>
+    <button class="opp-filter-chip opp-filter-chip--trade" data-trade="drainage">Drainage</button>
+  </div>
+
+  <!-- Board grid -->
+  <div id="boardGrid"></div>
+</main>
+
+<!-- Race-condition modal: already claimed -->
+<div class="opp-claimed-modal hidden" id="alreadyClaimedModal">
+  <div class="opp-claimed-box">
+    <div class="opp-claimed-icon">😬</div>
+    <div class="opp-claimed-title">Just claimed by another contractor</div>
+    <div class="opp-claimed-msg">Someone beat you to it by milliseconds. Check back — new leads come through regularly.</div>
+    <button class="opp-claimed-close" onclick="closeAlreadyClaimedModal()">Got it</button>
+  </div>
+</div>
+
+<!-- Reveal modal: lead claimed successfully -->
+<div class="opp-reveal-modal hidden" id="revealModal">
+  <div class="opp-reveal-box">
+    <div class="opp-reveal-header">
+      <span class="opp-reveal-header-title">Lead Claimed — Contact Revealed</span>
+      <span class="opp-reveal-badge">Yours</span>
+    </div>
+    <div class="opp-reveal-body" id="revealBody"></div>
+    <div class="opp-reveal-actions" id="revealActions"></div>
+  </div>
+</div>
+
+<script src="/js/questions-config.js"></script>
+<script>
+  let currentFilter = 'all';
+  let currentTrade = '';
+
+
+  // ── Fetch board leads ───────────────────────────────────────────────────
+  async function loadBoard() {
+    const grid = document.getElementById('boardGrid');
+    grid.innerHTML = `<div class="opp-loading"><div class="opp-loading-spinner"></div><div>Loading opportunities…</div></div>`;
+
+    const params = new URLSearchParams();
+    if (currentFilter === 'nearby') params.set('filter', 'nearby');
+    if (currentTrade) params.set('trade', currentTrade);
+
+    try {
+      const resp = await fetch(`/api/opportunities?${params}`);
+      if (resp.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+      if (!resp.ok) {
+        grid.innerHTML = `<div class="opp-empty"><div class="opp-empty-icon">⚠️</div><div class="opp-empty-title">Failed to load</div><div class="opp-empty-sub">Server error — please refresh.</div></div>`;
+        return;
+      }
+      const { leads } = await resp.json();
+      renderBoard(leads || []);
+    } catch (e) {
+      grid.innerHTML = `<div class="opp-empty"><div class="opp-empty-icon">⚠️</div><div class="opp-empty-title">Failed to load</div><div class="opp-empty-sub">Network error — please refresh.</div></div>`;
+    }
+  }
+
+  function renderBoard(leads) {
+    const grid = document.getElementById('boardGrid');
+    if (!leads.length) {
+      grid.innerHTML = `<div class="opp-empty">
+        <div class="opp-empty-icon">🎯</div>
+        <div class="opp-empty-title">No leads on the board right now</div>
+        <div class="opp-empty-sub">Leads appear here when a homeowner submits in an unclaimed zip, or when a contractor passes.<br>Check back soon.</div>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = `<div class="opp-grid">${leads.map(renderCard).join('')}</div>`;
+  }
+
+  function buildThumbUrl(lead) {
+    if (!window.MAPBOX_TOKEN || !lead.latitude || !lead.longitude) return null;
+    const lat = parseFloat(lead.latitude);
+    const lng = parseFloat(lead.longitude);
+    const pin = `pin-s+c8960c(${lng},${lat})`;
+    return `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${pin}/${lng},${lat},17/400x140@2x?access_token=${window.MAPBOX_TOKEN}`;
+  }
+
+  function formatMoney(n) { return n ? '$' + Number(n).toLocaleString('en-US') : '—'; }
+  function escapeHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function timeAgo(dateStr) {
+    if (!dateStr) return '—';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return mins + 'm ago';
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    const days = Math.floor(hrs / 24);
+    return days + 'd ago';
+  }
+
+  function tradeLabel(type) {
+    if (!type) return '—';
+    const cfg = window.QUESTION_CONFIG && window.QUESTION_CONFIG[type];
+    return cfg ? cfg.label : type.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  }
+
+  function renderCard(lead) {
+    const thumb = buildThumbUrl(lead);
+    const isPassed = lead.lead_status === 'passed';
+    const badgeClass = isPassed ? 'opp-card-badge--passed' : 'opp-card-badge--unclaimed';
+    const badgeText = isPassed ? 'Passed' : 'Unclaimed';
+    const boardTime = lead.board_visible_at || lead.created_at;
+    const passCount = parseInt(lead.pass_count || 0);
+
+    return `
+    <div class="opp-card" id="card-${lead.id}">
+      <div class="opp-card-thumb">
+        ${thumb
+          ? `<img src="${escapeHtml(thumb)}" alt="Satellite view" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+          : ''
+        }
+        <div class="opp-card-thumb-placeholder" ${thumb ? 'style="display:none"' : ''}>🗺️</div>
+        <span class="opp-card-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="opp-card-body">
+        <div class="opp-card-zip">${escapeHtml(lead.zip_code || 'Unknown ZIP')}</div>
+        <div class="opp-card-trade">${escapeHtml(tradeLabel(lead.project_type))}</div>
+
+        <div class="opp-card-stats">
+          <div class="opp-card-stat">
+            <div class="opp-card-stat-label">Sq Footage</div>
+            <div class="opp-card-stat-value">${lead.sq_footage ? Number(lead.sq_footage).toLocaleString() + ' sq ft' : '—'}</div>
+          </div>
+          <div class="opp-card-stat">
+            <div class="opp-card-stat-label">Estimate</div>
+            <div class="opp-card-stat-value opp-card-stat-value--money">${formatMoney(lead.estimate_low)} – ${formatMoney(lead.estimate_high)}</div>
+          </div>
+        </div>
+
+        <div class="opp-card-meta">
+          <span>On board ${timeAgo(boardTime)}</span>
+          ${passCount > 0
+            ? `<span class="opp-card-passcount">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"/><path d="M5 10h11a4 4 0 010 8h-1"/></svg>
+                ${passCount} passed
+               </span>`
+            : '<span></span>'
+          }
+        </div>
+
+        <div class="opp-card-blurred">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Claim to reveal: </span>
+          <span class="opp-card-blur-text">Jane D. • janed@email.com</span>
+        </div>
+
+        <button class="opp-claim-btn" onclick="claimLead(${lead.id}, this)" id="claim-btn-${lead.id}">
+          Claim This Lead →
+        </button>
+      </div>
+    </div>`;
+  }
+
+  // ── Claim a lead ────────────────────────────────────────────────────────
+  async function claimLead(leadId, btn) {
+    btn.disabled = true;
+    btn.textContent = 'Claiming…';
+
+    try {
+      const resp = await fetch(`/api/opportunities/${leadId}/claim`, { method: 'POST', credentials: 'include' });
+      const data = await resp.json();
+
+      if (resp.ok && data.success) {
+        btn.textContent = '✓ Claimed!';
+        btn.classList.add('opp-claim-btn--success');
+        showRevealModal(data.lead);
+        // Remove card from board after a short delay
+        setTimeout(() => {
+          const card = document.getElementById(`card-${leadId}`);
+          if (card) card.remove();
+        }, 1200);
+      } else if (resp.status === 409) {
+        btn.textContent = 'Claim This Lead →';
+        btn.disabled = false;
+        document.getElementById('alreadyClaimedModal').classList.remove('hidden');
+      } else {
+        btn.textContent = 'Error — try again';
+        btn.classList.add('opp-claim-btn--error');
+        setTimeout(() => { btn.textContent = 'Claim This Lead →'; btn.className = 'opp-claim-btn'; btn.disabled = false; }, 2500);
+      }
+    } catch (e) {
+      btn.textContent = 'Network error';
+      btn.disabled = false;
+    }
+  }
+
+  function closeAlreadyClaimedModal() {
+    document.getElementById('alreadyClaimedModal').classList.add('hidden');
+    loadBoard(); // Refresh board
+  }
+
+  function showRevealModal(lead) {
+    const body = document.getElementById('revealBody');
+    const actions = document.getElementById('revealActions');
+
+    body.innerHTML = `
+      <div class="opp-reveal-row"><span class="opp-reveal-row-label">Name</span><strong class="opp-reveal-row-value">${escapeHtml(lead.homeowner_name || '—')}</strong></div>
+      <div class="opp-reveal-row"><span class="opp-reveal-row-label">Email</span><strong class="opp-reveal-row-value"><a href="mailto:${escapeHtml(lead.homeowner_email)}">${escapeHtml(lead.homeowner_email || '—')}</a></strong></div>
+      ${lead.homeowner_phone ? `<div class="opp-reveal-row"><span class="opp-reveal-row-label">Phone</span><strong class="opp-reveal-row-value"><a href="tel:${escapeHtml(lead.homeowner_phone)}">${escapeHtml(lead.homeowner_phone)}</a></strong></div>` : ''}
+      <div class="opp-reveal-row"><span class="opp-reveal-row-label">Address</span><strong class="opp-reveal-row-value">${escapeHtml(lead.address || '—')}</strong></div>
+      <div class="opp-reveal-row"><span class="opp-reveal-row-label">Trade</span><strong class="opp-reveal-row-value">${escapeHtml(tradeLabel(lead.project_type))}</strong></div>
+      <div class="opp-reveal-row"><span class="opp-reveal-row-label">Sq Footage</span><strong class="opp-reveal-row-value">${lead.sq_footage ? Number(lead.sq_footage).toLocaleString() + ' sq ft' : '—'}</strong></div>
+      <div class="opp-reveal-row"><span class="opp-reveal-row-label">Estimate</span><strong class="opp-reveal-row-value" style="color:var(--accent)">${formatMoney(lead.estimate_low)} – ${formatMoney(lead.estimate_high)}</strong></div>
+    `;
+
+    actions.innerHTML = `
+      ${lead.homeowner_email ? `<a href="mailto:${escapeHtml(lead.homeowner_email)}?subject=Your ${escapeHtml(tradeLabel(lead.project_type))} project at ${encodeURIComponent((lead.address||'').split(',')[0])}" class="opp-reveal-cta">Email Homeowner →</a>` : ''}
+      <button class="opp-reveal-close" onclick="closeRevealModal()">View in Dashboard</button>
+    `;
+
+    document.getElementById('revealModal').classList.remove('hidden');
+  }
+
+  function closeRevealModal() {
+    document.getElementById('revealModal').classList.add('hidden');
+    window.location.href = '/contractor';
+  }
+
+  // ── Filters ─────────────────────────────────────────────────────────────
+  document.getElementById('filterChips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.opp-filter-chip');
+    if (!chip) return;
+
+    if (chip.dataset.filter !== undefined) {
+      // Scope filter
+      document.querySelectorAll('[data-filter]').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentFilter = chip.dataset.filter;
+    } else if (chip.dataset.trade !== undefined) {
+      // Trade filter
+      document.querySelectorAll('[data-trade]').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentTrade = chip.dataset.trade;
+    }
+    loadBoard();
+  });
+
+  // ── Init — the /contractor/opportunities route gates anonymous visits, so
+  // reaching here means the session is valid. We just load the board.
+  (async function init() {
+    loadBoard();
+  })();
+</script>
+</body>
+</html>

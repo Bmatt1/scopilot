@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — Scopilot</title>
+  <meta name="description" content="Scopilot contractor pricing: Base $249/mo (3 ZIPs), +1 ZIP $349/mo, +2 ZIPs $449/mo, +3 ZIPs $599/mo. Annual plans save 2 months. Founding members pay $1,500 once, lifetime.">
+  <link rel="canonical" href="https://scopilot.polsia.app/pricing">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scopilot.polsia.app/pricing">
+  <meta property="og:title" content="Scopilot Pricing — Territory-based, not seat-based">
+  <meta property="og:description" content="Pay for ZIP coverage, not headcount. Base $249/mo for 3 ZIPs. Founding members lock in $1,500 lifetime — 50 spots.">
+  <meta property="og:site_name" content="Scopilot">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Scopilot Pricing — Territory-based, not seat-based">
+  <meta name="twitter:description" content="$249/mo base · 3 ZIPs included · Founding lifetime at $1,500. Pay for territory, not seats.">
+
+  <!-- JSON-LD Product/Offer Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Scopilot Contractor Platform",
+    "description": "Qualified contractor lead routing with ZIP territory exclusivity, satellite imagery, and SLA monitoring.",
+    "url": "https://scopilot.polsia.app/pricing",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Base — 3 ZIPs",
+        "description": "3 ZIP territories included. Full lead inbox, opportunity board, SLA tracking, homeowner ratings.",
+        "price": "249.00",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "249.00",
+          "priceCurrency": "USD",
+          "unitText": "MONTH"
+        },
+        "url": "https://scopilot.polsia.app/signup"
+      },
+      {
+        "@type": "Offer",
+        "name": "+1 ZIP — 4 ZIPs",
+        "description": "4 ZIP territories. Everything in Base plus one additional ZIP territory.",
+        "price": "349.00",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "349.00",
+          "priceCurrency": "USD",
+          "unitText": "MONTH"
+        },
+        "url": "https://scopilot.polsia.app/signup"
+      },
+      {
+        "@type": "Offer",
+        "name": "+2 ZIPs — 5 ZIPs",
+        "description": "5 ZIP territories. Everything in Base plus two additional ZIP territories.",
+        "price": "449.00",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "449.00",
+          "priceCurrency": "USD",
+          "unitText": "MONTH"
+        },
+        "url": "https://scopilot.polsia.app/signup"
+      },
+      {
+        "@type": "Offer",
+        "name": "+3 ZIPs — 6 ZIPs",
+        "description": "6 ZIP territories. Maximum territory footprint with all platform features included.",
+        "price": "599.00",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "599.00",
+          "priceCurrency": "USD",
+          "unitText": "MONTH"
+        },
+        "url": "https://scopilot.polsia.app/signup"
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/css/theme.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0e0e16;
+      color: #e8e8f0;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      line-height: 1.1;
+    }
+
+    a { text-decoration: none; }
+
+    /* ── Topbar ── */
+    .p-topbar {
+      background: #0a0a12;
+      border-bottom: 1px solid rgba(200,150,12,0.15);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .p-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .p-logo span { color: #c8960c; }
+
+    .p-nav { display: flex; align-items: center; gap: 4px; }
+
+    .p-nav-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(232,232,240,0.6);
+      padding: 7px 12px;
+      border-radius: 5px;
+      transition: color 0.15s;
+    }
+    .p-nav-link:hover { color: #e8e8f0; }
+    .p-nav-link.active { color: #c8960c; }
+
+    .p-nav-cta {
+      background: #c8960c;
+      color: #0e0e16;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 8px 18px;
+      border-radius: 6px;
+      margin-left: 8px;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .p-nav-cta:hover { background: #e0a80e; transform: translateY(-1px); }
+
+    /* ── Hero ── */
+    .p-hero {
+      padding: 80px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .p-hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 900px; height: 600px;
+      background: radial-gradient(ellipse at center, rgba(200,150,12,0.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .p-eyebrow {
+      display: inline-block;
+      background: rgba(200,150,12,0.12);
+      border: 1px solid rgba(200,150,12,0.3);
+      color: #c8960c;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 3px;
+      margin-bottom: 24px;
+    }
+
+    .p-hero h1 {
+      font-size: clamp(36px, 5.5vw, 64px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: #fff;
+      max-width: 760px;
+      margin: 0 auto 18px;
+      line-height: 1.05;
+    }
+    .p-hero h1 .gold { color: #c8960c; }
+
+    .p-hero-sub {
+      font-size: 18px;
+      color: rgba(150,150,180,0.8);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    /* ── Tier table ── */
+    .p-tiers-section {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .p-tier-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 48px;
+    }
+
+    .p-toggle-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(232,232,240,0.6);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .p-toggle-btn:first-child { border-radius: 6px 0 0 6px; }
+    .p-toggle-btn:last-child { border-radius: 0 6px 6px 0; }
+    .p-toggle-btn.active {
+      background: #c8960c;
+      border-color: #c8960c;
+      color: #0e0e16;
+    }
+
+    .p-annual-badge {
+      display: inline-block;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.25);
+      color: #4ade80;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .p-tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .p-tier-card {
+      background: #111119;
+      border: 1.5px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+    }
+    .p-tier-card:hover {
+      border-color: rgba(200,150,12,0.3);
+      transform: translateY(-3px);
+    }
+    .p-tier-card.featured {
+      border-color: rgba(200,150,12,0.5);
+      background: linear-gradient(180deg, rgba(200,150,12,0.06) 0%, #111119 40%);
+    }
+
+    .p-tier-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #c8960c;
+      color: #0e0e16;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 100px;
+    }
+
+    .p-tier-header {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .p-tier-name {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(200,150,12,0.8);
+      margin-bottom: 10px;
+    }
+
+    .p-tier-price {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 44px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .p-tier-price-unit {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(150,150,180,0.7);
+      margin-left: 2px;
+    }
+
+    .p-tier-annual {
+      font-size: 13px;
+      color: rgba(150,150,180,0.6);
+      margin-top: 6px;
+    }
+    .p-tier-annual .save { color: #4ade80; font-weight: 600; }
+
+    .p-tier-zips {
+      font-size: 14px;
+      color: rgba(232,232,240,0.8);
+      margin-top: 12px;
+      font-weight: 500;
+    }
+    .p-tier-zips strong {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #c8960c;
+    }
+
+    .p-tier-body {
+      padding: 20px 24px;
+      flex: 1;
+    }
+
+    .p-tier-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .p-tier-feat {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 13px;
+      color: rgba(232,232,240,0.7);
+      line-height: 1.4;
+    }
+
+    .p-tier-feat-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .p-tier-cta {
+      margin: 0 24px 24px;
+    }
+
+    .p-tier-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: rgba(200,150,12,0.12);
+      border: 1.5px solid rgba(200,150,12,0.3);
+      color: #c8960c;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 13px 20px;
+      border-radius: 7px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .p-tier-btn:hover {
+      background: rgba(200,150,12,0.22);
+      border-color: rgba(200,150,12,0.5);
+    }
+    .p-tier-card.featured .p-tier-btn {
+      background: #c8960c;
+      border-color: #c8960c;
+      color: #0e0e16;
+    }
+    .p-tier-card.featured .p-tier-btn:hover {
+      background: #e0a80e;
+    }
+
+    /* ── Founding spotlight band ── */
+    .p-founding-band {
+      background: linear-gradient(135deg, #0e0c06 0%, #1a1508 50%, #0e0c06 100%);
+      border-top: 1px solid rgba(200,150,12,0.25);
+      border-bottom: 1px solid rgba(200,150,12,0.25);
+      padding: 56px 24px;
+    }
+
+    .p-founding-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .p-founding-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #c8960c;
+      margin-bottom: 12px;
+    }
+
+    .p-founding-headline {
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #fff;
+      margin-bottom: 10px;
+      line-height: 1.1;
+    }
+    .p-founding-headline .gold { color: #c8960c; }
+
+    .p-founding-sub {
+      font-size: 15px;
+      color: rgba(150,150,180,0.8);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      max-width: 500px;
+    }
+
+    .p-founding-meta {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .p-founding-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .p-founding-meta-val {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #c8960c;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .p-founding-meta-label {
+      font-size: 12px;
+      color: rgba(150,150,180,0.6);
+    }
+
+    .p-founding-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #c8960c;
+      color: #0e0e16;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 15px 28px;
+      border-radius: 6px;
+      transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    }
+    .p-founding-cta-btn:hover {
+      background: #e0a80e;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(200,150,12,0.35);
+    }
+
+    .p-founding-spots {
+      background: rgba(200,150,12,0.08);
+      border: 2px solid rgba(200,150,12,0.3);
+      border-radius: 12px;
+      padding: 28px 36px;
+      text-align: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .p-spots-num {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 56px;
+      font-weight: 800;
+      color: #c8960c;
+      letter-spacing: -3px;
+      line-height: 1;
+      display: block;
+    }
+
+    .p-spots-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(200,150,12,0.7);
+      margin-top: 4px;
+      display: block;
+    }
+
+    .p-spots-total {
+      font-size: 11px;
+      color: rgba(150,150,180,0.5);
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* ── What's included section ── */
+    .p-included-section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .p-section-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #c8960c;
+      margin-bottom: 14px;
+    }
+
+    .p-section-headline {
+      font-size: clamp(28px, 3.5vw, 42px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .p-section-sub {
+      font-size: 16px;
+      color: rgba(150,150,180,0.75);
+      max-width: 580px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .p-included-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .p-included-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: border-color 0.15s;
+    }
+    .p-included-item:hover { border-color: rgba(200,150,12,0.2); }
+
+    .p-included-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(200,150,12,0.1);
+      border: 1px solid rgba(200,150,12,0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .p-included-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #e8e8f0;
+      margin-bottom: 4px;
+    }
+
+    .p-included-desc {
+      font-size: 13px;
+      color: rgba(150,150,180,0.65);
+      line-height: 1.5;
+    }
+
+    /* ── SLA gates explainer ── */
+    .p-sla-section {
+      background: #0a0a12;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 64px 24px;
+    }
+
+    .p-sla-inner {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .p-sla-box {
+      background: #111119;
+      border: 1px solid rgba(200,150,12,0.15);
+      border-radius: 12px;
+      padding: 32px 36px;
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .p-sla-gate {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .p-sla-gate-num {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      color: #c8960c;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .p-sla-gate-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e8e8f0;
+    }
+
+    .p-sla-gate-desc {
+      font-size: 14px;
+      color: rgba(150,150,180,0.7);
+      line-height: 1.55;
+    }
+
+    .p-sla-note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: rgba(150,150,180,0.6);
+      line-height: 1.6;
+    }
+
+    .p-sla-note a {
+      color: rgba(200,150,12,0.8);
+      border-bottom: 1px solid rgba(200,150,12,0.3);
+      transition: color 0.15s;
+    }
+    .p-sla-note a:hover { color: #c8960c; }
+
+    /* ── FAQ ── */
+    .p-faq-section {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .p-faq-list { margin-top: 40px; }
+
+    .p-faq-item {
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .p-faq-item:first-child {
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .p-faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 20px 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .p-faq-q-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #e8e8f0;
+      line-height: 1.4;
+    }
+
+    .p-faq-arrow {
+      font-size: 18px;
+      color: rgba(200,150,12,0.6);
+      flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+    .p-faq-item.open .p-faq-arrow { transform: rotate(180deg); }
+
+    .p-faq-answer {
+      font-size: 14px;
+      color: rgba(150,150,180,0.8);
+      line-height: 1.75;
+      padding-bottom: 20px;
+      display: none;
+    }
+    .p-faq-answer strong { color: #e8e8f0; }
+    .p-faq-item.open .p-faq-answer { display: block; }
+
+    .p-faq-answer a {
+      color: rgba(200,150,12,0.8);
+      border-bottom: 1px solid rgba(200,150,12,0.3);
+    }
+    .p-faq-answer a:hover { color: #c8960c; }
+
+    /* ── Footer CTA ── */
+    .p-footer-cta {
+      background: linear-gradient(180deg, #0a0a12 0%, #111119 100%);
+      border-top: 1px solid rgba(200,150,12,0.1);
+      padding: 80px 24px;
+      text-align: center;
+    }
+
+    .p-footer-cta h2 {
+      font-size: clamp(28px, 4vw, 50px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+    .p-footer-cta h2 .gold { color: #c8960c; }
+
+    .p-footer-cta p {
+      font-size: 16px;
+      color: rgba(150,150,180,0.75);
+      max-width: 460px;
+      margin: 0 auto 36px;
+      line-height: 1.65;
+    }
+
+    .p-footer-cta-btns {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .p-btn-primary {
+      display: inline-block;
+      background: #c8960c;
+      color: #0e0e16;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 15px 30px;
+      border-radius: 6px;
+      transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    }
+    .p-btn-primary:hover {
+      background: #e0a80e;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(200,150,12,0.35);
+    }
+
+    .p-btn-secondary {
+      display: inline-block;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      color: rgba(232,232,240,0.8);
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      padding: 15px 30px;
+      border-radius: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .p-btn-secondary:hover {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.2);
+      color: #e8e8f0;
+    }
+
+    /* ── Footer ── */
+    .p-footer {
+      background: #080810;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 32px 24px;
+    }
+
+    .p-footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .p-footer-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .p-footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .p-footer-links a {
+      font-size: 13px;
+      color: rgba(150,150,180,0.4);
+      transition: color 0.15s;
+    }
+    .p-footer-links a:hover { color: rgba(200,150,12,0.7); }
+
+    .p-footer-copy {
+      font-size: 12px;
+      color: rgba(150,150,180,0.25);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .p-tiers-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .p-hero { padding: 56px 20px 48px; }
+      .p-tiers-grid { grid-template-columns: 1fr; }
+      .p-founding-inner { grid-template-columns: 1fr; }
+      .p-founding-spots { display: none; }
+      .p-sla-box { grid-template-columns: 1fr; gap: 24px; }
+      .p-footer-inner { flex-direction: column; align-items: flex-start; }
+      .p-nav-link { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <header class="p-topbar">
+    <a href="/" class="p-logo">Scopi<span>lot</span></a>
+    <nav class="p-nav">
+      <a href="/example" class="p-nav-link">Example Lead</a>
+      <a href="/territory" class="p-nav-link">Check Territory</a>
+      <a href="/pricing" class="p-nav-link active">Pricing</a>
+      <a href="/founding" class="p-nav-cta">Founding Access →</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="p-hero">
+    <div class="p-eyebrow">Pricing</div>
+    <h1>Built around your <span class="gold">territory</span>,<br>not your headcount.</h1>
+    <p class="p-hero-sub">You pay for ZIP coverage — the geographic footprint where leads get routed to you. One contractor per ZIP. No per-seat fees. No lead charges.</p>
+  </section>
+
+  <!-- Tier table -->
+  <section class="p-tiers-section">
+
+    <!-- Monthly / Annual toggle -->
+    <div class="p-tier-toggle">
+      <button class="p-toggle-btn active" id="btnMonthly" onclick="setMode('monthly')">Monthly</button>
+      <button class="p-toggle-btn" id="btnAnnual" onclick="setMode('annual')">Annual <span class="p-annual-badge">2 months free</span></button>
+    </div>
+
+    <div class="p-tiers-grid">
+
+      <!-- Base -->
+      <div class="p-tier-card featured">
+        <div class="p-tier-badge">Most popular</div>
+        <div class="p-tier-header">
+          <div class="p-tier-name">Base</div>
+          <div>
+            <span class="p-tier-price" data-monthly="249" data-annual="207">$249</span>
+            <span class="p-tier-price-unit">/mo</span>
+          </div>
+          <div class="p-tier-annual" id="annual-note-0">Or $2,490/yr — 2 months free</div>
+          <div class="p-tier-zips"><strong>3</strong> ZIP territories included</div>
+        </div>
+        <div class="p-tier-body">
+          <ul class="p-tier-features">
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              3 exclusive ZIP territories
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Full lead inbox + email notifications
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Opportunity board access
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              SLA tracking dashboard
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Satellite imagery on every lead
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Homeowner rating system
+            </li>
+          </ul>
+        </div>
+        <div class="p-tier-cta">
+          <a href="/signup" class="p-tier-btn">Get started →</a>
+        </div>
+      </div>
+
+      <!-- +1 ZIP -->
+      <div class="p-tier-card">
+        <div class="p-tier-header">
+          <div class="p-tier-name">+1 ZIP</div>
+          <div>
+            <span class="p-tier-price" data-monthly="349" data-annual="290">$349</span>
+            <span class="p-tier-price-unit">/mo</span>
+          </div>
+          <div class="p-tier-annual" id="annual-note-1">Or $3,490/yr — 2 months free</div>
+          <div class="p-tier-zips"><strong>4</strong> ZIP territories included</div>
+        </div>
+        <div class="p-tier-body">
+          <ul class="p-tier-features">
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              4 exclusive ZIP territories
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Everything in Base
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Wider lead catchment area
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Ideal for suburban coverage
+            </li>
+          </ul>
+        </div>
+        <div class="p-tier-cta">
+          <a href="/signup" class="p-tier-btn">Get started →</a>
+        </div>
+      </div>
+
+      <!-- +2 ZIPs -->
+      <div class="p-tier-card">
+        <div class="p-tier-header">
+          <div class="p-tier-name">+2 ZIPs</div>
+          <div>
+            <span class="p-tier-price" data-monthly="449" data-annual="374">$449</span>
+            <span class="p-tier-price-unit">/mo</span>
+          </div>
+          <div class="p-tier-annual" id="annual-note-2">Or $4,490/yr — 2 months free</div>
+          <div class="p-tier-zips"><strong>5</strong> ZIP territories included</div>
+        </div>
+        <div class="p-tier-body">
+          <ul class="p-tier-features">
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              5 exclusive ZIP territories
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Everything in Base
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              City + adjacent area coverage
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              More volume, less competition
+            </li>
+          </ul>
+        </div>
+        <div class="p-tier-cta">
+          <a href="/signup" class="p-tier-btn">Get started →</a>
+        </div>
+      </div>
+
+      <!-- +3 ZIPs -->
+      <div class="p-tier-card">
+        <div class="p-tier-header">
+          <div class="p-tier-name">+3 ZIPs</div>
+          <div>
+            <span class="p-tier-price" data-monthly="599" data-annual="499">$599</span>
+            <span class="p-tier-price-unit">/mo</span>
+          </div>
+          <div class="p-tier-annual" id="annual-note-3">Or $5,990/yr — 2 months free</div>
+          <div class="p-tier-zips"><strong>6</strong> ZIP territories included</div>
+        </div>
+        <div class="p-tier-body">
+          <ul class="p-tier-features">
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              6 exclusive ZIP territories
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Everything in Base
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Maximum territory footprint
+            </li>
+            <li class="p-tier-feat">
+              <svg class="p-tier-feat-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(200,150,12,0.15)"/><path d="M5 8l2 2 4-4" stroke="#c8960c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Dominant regional presence
+            </li>
+          </ul>
+        </div>
+        <div class="p-tier-cta">
+          <a href="/signup" class="p-tier-btn">Get started →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Founding spotlight band -->
+  <section class="p-founding-band">
+    <div class="p-founding-inner">
+      <div>
+        <div class="p-founding-eyebrow">Founding Member</div>
+        <h2 class="p-founding-headline"><span class="gold">$1,500 once.</span><br>Lifetime. Forever.</h2>
+        <p class="p-founding-sub">50 contractors get lifetime access at a single one-time payment. No monthly fees. No subscription renewals. Every feature, every ZIP upgrade, every future release — included permanently.</p>
+        <div class="p-founding-meta">
+          <div class="p-founding-meta-item">
+            <span class="p-founding-meta-val" id="foundingSpotsDisplay">47</span>
+            <span class="p-founding-meta-label">spots remaining</span>
+          </div>
+          <div class="p-founding-meta-item">
+            <span class="p-founding-meta-val">50</span>
+            <span class="p-founding-meta-label">total spots ever</span>
+          </div>
+          <div class="p-founding-meta-item">
+            <span class="p-founding-meta-val">$0</span>
+            <span class="p-founding-meta-label">monthly after founding</span>
+          </div>
+        </div>
+        <a href="/founding" class="p-founding-cta-btn">Claim Founding Access →</a>
+      </div>
+      <div class="p-founding-spots">
+        <span class="p-spots-num" id="foundingSpotsLarge">47</span>
+        <span class="p-spots-label">spots left</span>
+        <span class="p-spots-total">out of 50 total</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- What's included in every plan -->
+  <section class="p-included-section">
+    <div class="p-section-eyebrow">Every plan</div>
+    <h2 class="p-section-headline">What every contractor gets</h2>
+    <p class="p-section-sub">No stripped-down tiers. Every plan ships with the full platform — the only thing that varies is how many ZIPs you own.</p>
+
+    <div class="p-included-grid">
+      <div class="p-included-item">
+        <div class="p-included-icon">🗺️</div>
+        <div>
+          <div class="p-included-name">Territory exclusivity</div>
+          <div class="p-included-desc">One contractor per ZIP. You own the leads in your codes — no competing bids from the platform.</div>
+        </div>
+      </div>
+      <div class="p-included-item">
+        <div class="p-included-icon">📋</div>
+        <div>
+          <div class="p-included-name">Opportunity board</div>
+          <div class="p-included-desc">Browse and claim leads from adjacent ZIPs that fall outside active territories.</div>
+        </div>
+      </div>
+      <div class="p-included-item">
+        <div class="p-included-icon">⭐</div>
+        <div>
+          <div class="p-included-name">Homeowner ratings</div>
+          <div class="p-included-desc">Verified post-project ratings from homeowners — builds your reputation on the platform.</div>
+        </div>
+      </div>
+      <div class="p-included-item">
+        <div class="p-included-icon">⏱️</div>
+        <div>
+          <div class="p-included-name">SLA monitoring</div>
+          <div class="p-included-desc">48-hour acknowledgment window tracked automatically. Dashboard shows your standing.</div>
+        </div>
+      </div>
+      <div class="p-included-item">
+        <div class="p-included-icon">🛰️</div>
+        <div>
+          <div class="p-included-name">Satellite imagery</div>
+          <div class="p-included-desc">Every lead includes a Mapbox satellite view with the homeowner's drawn project area.</div>
+        </div>
+      </div>
+      <div class="p-included-item">
+        <div class="p-included-icon">📍</div>
+        <div>
+          <div class="p-included-name">Mapbox territory map</div>
+          <div class="p-included-desc">Visual map of your claimed ZIPs in your contractor dashboard — see your footprint at a glance.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLA gates explainer -->
+  <section class="p-sla-section">
+    <div class="p-sla-inner">
+      <div class="p-section-eyebrow">Territory maintenance</div>
+      <h2 class="p-section-headline">How SLA gates work</h2>
+      <p class="p-section-sub">Territory is earned, not just purchased. Two performance gates keep the lead quality high for homeowners and contractors alike.</p>
+
+      <div class="p-sla-box">
+        <div class="p-sla-gate">
+          <div class="p-sla-gate-num">48h</div>
+          <div class="p-sla-gate-label">Acknowledgment window</div>
+          <div class="p-sla-gate-desc">Every lead in your territory must be acknowledged within 48 hours — claim it, pass it, or let it roll to the opportunity board. Consistent misses put your territory at risk.</div>
+        </div>
+        <div class="p-sla-gate">
+          <div class="p-sla-gate-num">75%</div>
+          <div class="p-sla-gate-label">Rolling homeowner rating</div>
+          <div class="p-sla-gate-desc">Your trailing rating from homeowners must stay at or above 75%. Ratings are collected automatically after project close — no manual submission required.</div>
+        </div>
+      </div>
+
+      <p class="p-sla-note">Territory status cycles through: active → at risk → suspended → released. A released ZIP reopens to other contractors immediately. Full SLA documentation coming to <a href="/territory">/territory</a>.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="p-faq-section">
+    <div class="p-section-eyebrow">Questions</div>
+    <h2 class="p-section-headline">Answers to the obvious ones</h2>
+
+    <div class="p-faq-list">
+
+      <div class="p-faq-item">
+        <button class="p-faq-question" onclick="toggleFaq(this)">
+          <span class="p-faq-q-text">What's a ZIP territory?</span>
+          <span class="p-faq-arrow">▾</span>
+        </button>
+        <div class="p-faq-answer">
+          A ZIP territory is exclusive routing rights for a single US ZIP code. When a homeowner submits a project scoping form with an address in your ZIP, the lead routes directly to you — no one else in your territory sees it. <strong>One contractor owns each ZIP at a time.</strong> You can hold multiple ZIPs based on your plan.
+        </div>
+      </div>
+
+      <div class="p-faq-item">
+        <button class="p-faq-question" onclick="toggleFaq(this)">
+          <span class="p-faq-q-text">Can I cancel anytime?</span>
+          <span class="p-faq-arrow">▾</span>
+        </button>
+        <div class="p-faq-answer">
+          Yes. Monthly plans cancel month-to-month with no penalty. Annual plans cancel at the end of the billing year. When you cancel, your ZIP territories release and become available to other contractors. <strong>No cancellation fees, no lock-in.</strong>
+        </div>
+      </div>
+
+      <div class="p-faq-item">
+        <button class="p-faq-question" onclick="toggleFaq(this)">
+          <span class="p-faq-q-text">What happens if I miss the SLA?</span>
+          <span class="p-faq-arrow">▾</span>
+        </button>
+        <div class="p-faq-answer">
+          Missing the 48-hour acknowledgment window or dropping below a 75% homeowner rating moves your territory to <strong>at risk</strong> status. You get a notification and a window to correct it. Sustained poor performance escalates to suspended, then released — at which point the ZIP opens for another contractor. The goal isn't to punish — it's to keep homeowners from waiting on dead leads.
+        </div>
+      </div>
+
+      <div class="p-faq-item">
+        <button class="p-faq-question" onclick="toggleFaq(this)">
+          <span class="p-faq-q-text">How is founding different from the Base plan?</span>
+          <span class="p-faq-arrow">▾</span>
+        </button>
+        <div class="p-faq-answer">
+          Founding members pay <strong>$1,500 once</strong> and never pay again — no monthly fee, no annual renewal, no price increases ever. Base plan is $249/month or $2,490/year, which is $2,490 every single year going forward. If you're in this industry for the next 10 years, the math on founding is obvious. Founding also gets every feature released during development at no extra charge, plus a permanent founding badge on your account.
+        </div>
+      </div>
+
+      <div class="p-faq-item">
+        <button class="p-faq-question" onclick="toggleFaq(this)">
+          <span class="p-faq-q-text">Do you cover my area?</span>
+          <span class="p-faq-arrow">▾</span>
+        </button>
+        <div class="p-faq-answer">
+          Scopilot works in any US ZIP code — Mapbox satellite imagery covers the entire country. Check if your specific ZIP is already claimed or open at <a href="/territory">/territory</a>. Available ZIPs are claimable immediately. Claimed ZIPs show adjacent open ones you can take instead.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer CTA -->
+  <section class="p-footer-cta">
+    <h2>Ready to own your <span class="gold">territory</span>?</h2>
+    <p>Check if your ZIP is available, then sign up or claim the founding price before May 29.</p>
+    <div class="p-footer-cta-btns">
+      <a href="/signup" class="p-btn-primary">Start with Base →</a>
+      <a href="/founding" class="p-btn-secondary">See Founding Access</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="p-footer">
+    <div class="p-footer-inner">
+      <div class="p-footer-logo">Scopilot</div>
+      <div class="p-footer-links">
+        <a href="/">Home</a>
+        <a href="/example">Example Lead</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/founding">Founding Member</a>
+        <a href="/territory">Check Territory</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/privacy.html">Privacy</a>
+      </div>
+      <div class="p-footer-copy">© 2026 Two Wolves Ventures LLC d/b/a Infinite Horizons Solutions</div>
+    </div>
+  </footer>
+
+  <script>
+    let currentMode = 'monthly';
+
+    function setMode(mode) {
+      currentMode = mode;
+      const isAnnual = mode === 'annual';
+
+      document.getElementById('btnMonthly').classList.toggle('active', !isAnnual);
+      document.getElementById('btnAnnual').classList.toggle('active', isAnnual);
+
+      // Update prices
+      document.querySelectorAll('.p-tier-price').forEach(el => {
+        const price = isAnnual ? el.dataset.annual : el.dataset.monthly;
+        el.textContent = '$' + price;
+      });
+
+      // Update annual notes visibility
+      const annualNotes = document.querySelectorAll('[id^="annual-note-"]');
+      annualNotes.forEach(el => {
+        el.style.opacity = isAnnual ? '1' : '0.5';
+        el.style.color = isAnnual ? '#4ade80' : '';
+      });
+
+      // Update price unit label
+      document.querySelectorAll('.p-tier-price-unit').forEach(el => {
+        el.textContent = isAnnual ? '/mo billed annually' : '/mo';
+      });
+    }
+
+    // FAQ accordion
+    function toggleFaq(btn) {
+      const item = btn.closest('.p-faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.p-faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    // Live spots counter from founding API
+    function fetchFoundingSpots() {
+      fetch('/api/founding/spots_remaining')
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (!data || typeof data.remaining !== 'number') return;
+          const els = [
+            document.getElementById('foundingSpotsDisplay'),
+            document.getElementById('foundingSpotsLarge'),
+          ];
+          els.forEach(el => { if (el) el.textContent = data.remaining; });
+        })
+        .catch(() => {});
+    }
+
+    fetchFoundingSpots();
+    setInterval(fetchFoundingSpots, 60_000);
+  </script>
+
+  <script src="/js/track.js"></script>
+  <script>
+    Scopilot.track('pricing_page_view', { path: '/pricing' });
+  </script>
+
+  <!-- Polsia Analytics --><script>(function(){var slug="scopilot";if(!slug)return;var vid=localStorage.getItem('polsia_vid');if(!vid){vid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return (c==='x'?r:(r&0x3|0x8)).toString(16);});localStorage.setItem('polsia_vid',vid);}new Image().src='https://polsia.com/api/beacon/pixel?s='+encodeURIComponent(slug)+'&v='+encodeURIComponent(vid);})();</script>
+</body>
+</html>

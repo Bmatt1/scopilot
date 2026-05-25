@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rate Your Contractor — Scopilot</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1a1a2e;
+      color: #f5f5f0;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #12122a;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 48px 40px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+    .logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #c8960c;
+      margin-bottom: 32px;
+      letter-spacing: -0.5px;
+    }
+    .title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #f5f5f0;
+      margin-bottom: 12px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #9a9aaa;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .star-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 12px 10px;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      transition: all 0.15s;
+      min-width: 64px;
+    }
+    .star-btn:hover {
+      border-color: #c8960c;
+      background: rgba(200, 150, 12, 0.1);
+      transform: translateY(-2px);
+    }
+    .star-btn.selected {
+      border-color: #c8960c;
+      background: rgba(200, 150, 12, 0.15);
+    }
+    .star-emoji { font-size: 28px; line-height: 1; }
+    .star-num { font-size: 16px; font-weight: 800; color: #c8960c; }
+    .star-label { font-size: 10px; color: #9a9aaa; text-transform: uppercase; letter-spacing: 0.05em; }
+    .submit-btn {
+      width: 100%;
+      background: #c8960c;
+      color: #1a1a2e;
+      border: none;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      display: none;
+    }
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    /* Success state */
+    .success-state { display: none; }
+    .success-icon { font-size: 56px; margin-bottom: 16px; }
+    .success-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: #68d391;
+      margin-bottom: 12px;
+    }
+    .success-msg { font-size: 14px; color: #9a9aaa; line-height: 1.6; }
+    /* Error state */
+    .error-msg {
+      color: #e57373;
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+    /* Loading state */
+    .loading-state { display: none; text-align: center; padding: 32px 0; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(200,150,12,0.2);
+      border-top-color: #c8960c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 400px) {
+      .card { padding: 32px 20px; }
+      .stars { gap: 6px; }
+      .star-btn { min-width: 52px; padding: 10px 6px; }
+      .star-emoji { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="mainCard">
+    <div class="logo">Scopilot</div>
+
+    <!-- Loading state -->
+    <div class="loading-state" id="loadingState">
+      <div class="spinner"></div>
+      <p style="color:#9a9aaa;font-size:14px;">Loading…</p>
+    </div>
+
+    <!-- Rating form (default view) -->
+    <div id="ratingForm">
+      <div class="title">How did it go?</div>
+      <div class="subtitle" id="subtitle">Rate your experience with the contractor on your project.</div>
+
+      <div class="stars" id="starsContainer">
+        <!-- Rendered by JS -->
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitRating()">Submit Rating</button>
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <!-- Success state -->
+    <div class="success-state" id="successState">
+      <div class="success-icon" id="successIcon">🎉</div>
+      <div class="success-title" id="successTitle">Thank you!</div>
+      <p class="success-msg">Your feedback helps homeowners find great contractors.</p>
+    </div>
+
+    <!-- Already rated state -->
+    <div class="success-state" id="alreadyRatedState">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Already rated</div>
+      <p class="success-msg">You've already submitted a rating for this project. Thanks!</p>
+    </div>
+  </div>
+
+  <script>
+    const STAR_CONFIG = [
+      { emoji: '😠', label: 'Terrible' },
+      { emoji: '😞', label: 'Poor'     },
+      { emoji: '😐', label: 'OK'       },
+      { emoji: '😊', label: 'Good'     },
+      { emoji: '🤩', label: 'Excellent'},
+    ];
+
+    // Extract token from /rate/<token>
+    const pathParts = window.location.pathname.split('/');
+    const token = pathParts[pathParts.length - 1];
+
+    // Check if a rating was passed via ?r= query param (one-click from email)
+    const params = new URLSearchParams(window.location.search);
+    const preselectedRating = parseInt(params.get('r'), 10);
+
+    let selectedRating = null;
+
+    function buildStars() {
+      const container = document.getElementById('starsContainer');
+      STAR_CONFIG.forEach((cfg, i) => {
+        const star = i + 1;
+        const btn = document.createElement('div');
+        btn.className = 'star-btn' + (selectedRating === star ? ' selected' : '');
+        btn.onclick = () => selectStar(star);
+        btn.innerHTML = `
+          <span class="star-emoji">${cfg.emoji}</span>
+          <span class="star-num">${star} ★</span>
+          <span class="star-label">${cfg.label}</span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function selectStar(star) {
+      selectedRating = star;
+      document.querySelectorAll('.star-btn').forEach((btn, i) => {
+        btn.classList.toggle('selected', i + 1 === star);
+      });
+      document.getElementById('submitBtn').style.display = 'block';
+    }
+
+    async function submitRating() {
+      if (!selectedRating) return;
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      try {
+        const resp = await fetch(`/api/ratings/${token}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rating: selectedRating }),
+        });
+        const data = await resp.json();
+
+        if (data.already_rated) {
+          document.getElementById('ratingForm').style.display = 'none';
+          document.getElementById('alreadyRatedState').style.display = 'block';
+          return;
+        }
+
+        if (resp.ok && data.success) {
+          const cfg = STAR_CONFIG[selectedRating - 1];
+          document.getElementById('successIcon').textContent = cfg.emoji;
+          if (selectedRating >= 4) {
+            document.getElementById('successTitle').textContent = 'Thanks so much!';
+          } else {
+            document.getElementById('successTitle').textContent = 'Thanks for the feedback';
+          }
+          document.getElementById('ratingForm').style.display = 'none';
+          document.getElementById('successState').style.display = 'block';
+        } else {
+          showError(data.error || 'Something went wrong. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'Submit Rating';
+        }
+      } catch (err) {
+        showError('Network error — please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Submit Rating';
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    // Init
+    buildStars();
+
+    // If a rating was pre-selected via URL (?r=), auto-select and submit
+    if (preselectedRating >= 1 && preselectedRating <= 5) {
+      selectStar(preselectedRating);
+      // Small delay so UI renders before auto-submit
+      setTimeout(() => submitRating(), 300);
+    }
+  </script>
+</body>
+</html>

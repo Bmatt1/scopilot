@@ -1,0 +1,19 @@
+[[crons]]
+name = "sla-check"
+schedule = "0 2 * * *"
+command = "node jobs/sla-check.js"
+
+[[crons]]
+name = "rating-email"
+schedule = "0 9 * * *"
+command = "node jobs/rating-email.js"
+
+[[crons]]
+name = "cleanup-auth-logs"
+schedule = "0 3 * * *"
+command = "node jobs/cleanup-auth-logs.js"
+
+[[crons]]
+name = "founding-nurture"
+schedule = "0 * * * *"
+command = "node jobs/founding-nurture.js"

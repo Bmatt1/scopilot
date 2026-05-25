@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example Lead — Scopilot | See What Every Qualified Lead Looks Like</title>
+  <meta name="description" content="See exactly what a Scopilot lead looks like — satellite map, project photos, sq footage, trade Q&A, and homeowner contact. This is a live demo of a real lead format.">
+  <link rel="canonical" href="https://scopilot.polsia.app/example">
+
+  <!-- Open Graph — optimized for email/iMessage/Twitter paste -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scopilot.polsia.app/example">
+  <meta property="og:title" content="This is what a Scopilot lead looks like">
+  <meta property="og:description" content="Satellite map, drawn project area, sq footage, photos, trade Q&A — before you ever pick up the phone. Founding members lock in $1,500 lifetime.">
+  <meta property="og:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/56c230fd-9cfc-4c97-9b0a-933975c3d2db.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Scopilot">
+
+  <!-- Twitter Card (summary_large_image for max visibility when pasted) -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="This is what a Scopilot lead looks like">
+  <meta name="twitter:description" content="Satellite map, photos, sq footage, trade Q&A. See the full lead format — founding price $1,500 lifetime.">
+  <meta name="twitter:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/56c230fd-9cfc-4c97-9b0a-933975c3d2db.jpg">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+
+  <style>
+    /* ── Base overrides for dark theme ── */
+    body {
+      background: #0e0e16;
+      color: #e8e8f0;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── EXAMPLE watermark banner ── */
+    .example-banner {
+      background: #c8960c;
+      color: #0e0e16;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+    .example-banner a {
+      color: #0e0e16;
+      text-decoration: underline;
+      font-weight: 800;
+    }
+
+    /* ── Topbar ── */
+    .ex-topbar {
+      background: #0a0a12;
+      border-bottom: 1px solid rgba(200,150,12,0.15);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .ex-topbar-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: #fff;
+      letter-spacing: -0.5px;
+      text-decoration: none;
+    }
+    .ex-topbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ex-topbar-link {
+      font-size: 13px;
+      color: rgba(200,200,220,0.65);
+      text-decoration: none;
+      padding: 7px 12px;
+      border-radius: 5px;
+      transition: color 0.2s;
+    }
+    .ex-topbar-link:hover { color: #e8e8f0; }
+    .ex-topbar-cta {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0e0e16;
+      background: #c8960c;
+      padding: 9px 18px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .ex-topbar-cta:hover { opacity: 0.85; }
+
+    /* ── Lead header strip ── */
+    .lead-header-strip {
+      background: #111119;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 20px 24px;
+    }
+    .lead-header-inner {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .lead-header-row1 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .lead-type-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #c8960c;
+      background: rgba(200,150,12,0.12);
+      border: 1px solid rgba(200,150,12,0.3);
+      padding: 4px 10px;
+      border-radius: 3px;
+    }
+    .lead-homeowner-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .lead-header-row2 {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .lead-meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: rgba(200,200,220,0.65);
+    }
+    .lead-meta-pill svg { opacity: 0.5; }
+    .lead-sla-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #f6ad55;
+      background: rgba(246,173,85,0.12);
+      border: 1px solid rgba(246,173,85,0.25);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .lead-sla-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #f6ad55;
+      animation: pulse-amber 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse-amber {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* ── Main layout ── */
+    .lead-body {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    /* ── Section common ── */
+    .lead-section {
+      background: #141420;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    .lead-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #c8960c;
+      margin-bottom: 16px;
+    }
+
+    /* ── Map section ── */
+    .lead-map-wrap {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 260px;
+      background: #1a1a26;
+    }
+    #exampleMap {
+      width: 100%;
+      height: 100%;
+    }
+    .lead-sqft-badge {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(14,14,22,0.88);
+      border: 1px solid rgba(200,150,12,0.4);
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #c8960c;
+      backdrop-filter: blur(4px);
+    }
+    .lead-sqft-badge span {
+      font-size: 12px;
+      color: rgba(200,150,12,0.7);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      margin-left: 2px;
+    }
+
+    /* ── Photos ── */
+    .lead-photos-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    @media (min-width: 480px) {
+      .lead-photos-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .lead-photo {
+      aspect-ratio: 4/3;
+      border-radius: 6px;
+      object-fit: cover;
+      width: 100%;
+      display: block;
+      background: #1a1a26;
+    }
+
+    /* ── Project brief Q&A ── */
+    .brief-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 14px;
+    }
+    .brief-row:last-child { border-bottom: none; }
+    .brief-label {
+      color: rgba(180,180,210,0.6);
+      flex-shrink: 0;
+      min-width: 130px;
+    }
+    .brief-value {
+      color: #e8e8f0;
+      font-weight: 600;
+      text-align: right;
+    }
+    .brief-value.gold { color: #c8960c; }
+
+    /* ── Contact card with masked overlay ── */
+    .contact-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-rows-blurred {
+      filter: blur(5px);
+      user-select: none;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .contact-lock-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(10,10,18,0.7);
+      backdrop-filter: blur(2px);
+    }
+    .contact-lock-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+    .contact-lock-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e8e8f0;
+      text-align: center;
+    }
+    .contact-lock-sub {
+      font-size: 12px;
+      color: rgba(180,180,210,0.6);
+      text-align: center;
+    }
+
+    /* ── Estimate ── */
+    .lead-estimate-big {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: #c8960c;
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+    .lead-estimate-note {
+      font-size: 13px;
+      color: rgba(180,180,210,0.5);
+    }
+
+    /* ── Bottom CTA section ── */
+    .ex-cta-section {
+      background: linear-gradient(135deg, #0a0a12, #141428);
+      border: 1px solid rgba(200,150,12,0.3);
+      border-radius: 12px;
+      padding: 32px 28px;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .ex-cta-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #c8960c;
+      margin-bottom: 12px;
+    }
+    .ex-cta-headline {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+    .ex-cta-sub {
+      font-size: 15px;
+      color: rgba(180,180,210,0.7);
+      margin-bottom: 24px;
+      line-height: 1.6;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-gold-lg {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #c8960c;
+      color: #0e0e16;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 16px 36px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: all 0.2s;
+      letter-spacing: -0.2px;
+    }
+    .btn-gold-lg:hover {
+      background: #daa80f;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(200,150,12,0.35);
+    }
+    .ex-cta-note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: rgba(150,150,180,0.5);
+    }
+
+    /* ── Footer ── */
+    .ex-footer {
+      background: #0a0a12;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 28px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .ex-footer-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: rgba(255,255,255,0.45);
+    }
+    .ex-footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .ex-footer-link {
+      font-size: 13px;
+      color: rgba(150,150,180,0.4);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .ex-footer-link:hover { color: rgba(200,150,12,0.7); }
+    .ex-footer-note {
+      font-size: 12px;
+      color: rgba(150,150,180,0.3);
+    }
+
+    /* ── Mobile polish ── */
+    @media (max-width: 600px) {
+      .ex-topbar { padding: 12px 16px; }
+      .lead-body { padding: 18px 16px 48px; }
+      .lead-header-strip { padding: 16px; }
+      .lead-section { padding: 16px; }
+      .ex-cta-section { padding: 24px 16px; }
+      .ex-footer { flex-direction: column; align-items: flex-start; }
+      .lead-map-wrap { height: 200px; }
+      .brief-label { min-width: 110px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- EXAMPLE WATERMARK — sticky at top -->
+  <div class="example-banner">
+    ⚠️ Example Lead — Not a Real Submission &nbsp;·&nbsp;
+    <a href="/founding">Claim Founding Access →</a>
+  </div>
+
+  <!-- Topbar -->
+  <nav class="ex-topbar">
+    <a href="/" class="ex-topbar-logo">Scopilot</a>
+    <div class="ex-topbar-nav">
+      <a href="/#features" class="ex-topbar-link">Features</a>
+      <a href="/pricing" class="ex-topbar-link">Pricing</a>
+      <a href="/founding" class="ex-topbar-cta">Founding Member →</a>
+    </div>
+  </nav>
+
+  <!-- Lead header strip -->
+  <div class="lead-header-strip">
+    <div class="lead-header-inner">
+      <div class="lead-header-row1">
+        <span class="lead-type-badge">Concrete</span>
+        <span class="lead-homeowner-name">Jennifer M.</span>
+        <span class="lead-sla-badge">
+          <span class="lead-sla-dot"></span>
+          46h 12m to acknowledge
+        </span>
+      </div>
+      <div class="lead-header-row2">
+        <span class="lead-meta-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="currentColor"/></svg>
+          1842 Frederica St, Owensboro, KY 42301
+        </span>
+        <span class="lead-meta-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Submitted 2 hours ago
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead body -->
+  <div class="lead-body">
+
+    <!-- Satellite + area map -->
+    <div class="lead-section">
+      <div class="lead-section-title">Project Area · Satellite View</div>
+      <div class="lead-map-wrap">
+        <div id="exampleMap"></div>
+        <div class="lead-sqft-badge">~840 <span>sq ft</span></div>
+      </div>
+    </div>
+
+    <!-- Photos -->
+    <div class="lead-section">
+      <div class="lead-section-title">Site Photos (4)</div>
+      <div class="lead-photos-grid">
+        <img src="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/56c230fd-9cfc-4c97-9b0a-933975c3d2db.jpg"
+             alt="Cracked driveway near apron" class="lead-photo">
+        <img src="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/629cd2bd-1d5b-4430-8387-ea63961600b7.jpg"
+             alt="Driveway surface damage detail" class="lead-photo">
+        <img src="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/446d9581-396a-48c4-a930-d9e833ffd746.jpg"
+             alt="Full driveway establishing shot" class="lead-photo">
+        <img src="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/ed085d16-badc-4819-8862-dbc0a1269ea9.jpg"
+             alt="Driveway side angle view" class="lead-photo">
+      </div>
+    </div>
+
+    <!-- Project brief -->
+    <div class="lead-section">
+      <div class="lead-section-title">Project Brief</div>
+      <div class="brief-row">
+        <span class="brief-label">Project type</span>
+        <span class="brief-value">Concrete Driveway Replacement</span>
+      </div>
+      <div class="brief-row">
+        <span class="brief-label">Measured area</span>
+        <span class="brief-value">~840 sq ft (drawn on map)</span>
+      </div>
+      <div class="brief-row">
+        <span class="brief-label">Current condition</span>
+        <span class="brief-value">Cracked, lifting at the apron</span>
+      </div>
+      <div class="brief-row">
+        <span class="brief-label">Desired finish</span>
+        <span class="brief-value">Broom finish, no stamp</span>
+      </div>
+      <div class="brief-row">
+        <span class="brief-label">Tear-out needed</span>
+        <span class="brief-value">Yes — existing asphalt</span>
+      </div>
+      <div class="brief-row">
+        <span class="brief-label">Reinforcement</span>
+        <span class="brief-value">Standard rebar (contractor's recommendation)</span>
+      </div>
+      <div class="brief-row">
+        <span class="brief-label">Timeline</span>
+        <span class="brief-value">Next 30 days</span>
+      </div>
+      <div class="brief-row">
+        <span class="brief-label">Budget range</span>
+        <span class="brief-value">$6,000–$12,000</span>
+      </div>
+      <div class="brief-row">
+        <span class="brief-label">Access notes</span>
+        <span class="brief-value">Truck access from north side, no overhead lines</span>
+      </div>
+    </div>
+
+    <!-- Ballpark estimate -->
+    <div class="lead-section">
+      <div class="lead-section-title">Ballpark Estimate (AI-Generated)</div>
+      <div class="lead-estimate-big">$7,560 – $11,340</div>
+      <div class="lead-estimate-note">Based on area, tear-out, rebar, and regional labor rates. Use as a reference — your bid is yours.</div>
+    </div>
+
+    <!-- Contact card — masked until claimed -->
+    <div class="lead-section contact-card">
+      <div class="lead-section-title">Homeowner Contact</div>
+      <div class="contact-rows-blurred">
+        <div class="brief-row">
+          <span class="brief-label">Name</span>
+          <span class="brief-value">Jennifer Morrison</span>
+        </div>
+        <div class="brief-row">
+          <span class="brief-label">Phone</span>
+          <span class="brief-value">(270) 555-0142</span>
+        </div>
+        <div class="brief-row">
+          <span class="brief-label">Email</span>
+          <span class="brief-value">j.morrison@example.com</span>
+        </div>
+      </div>
+      <div class="contact-lock-overlay">
+        <div class="contact-lock-icon">🔒</div>
+        <div class="contact-lock-text">Claim this lead to unlock contact info</div>
+        <div class="contact-lock-sub">Founding members get all contact details immediately</div>
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="ex-cta-section">
+      <div class="ex-cta-eyebrow">Every Scopilot lead looks exactly like this</div>
+      <h2 class="ex-cta-headline">
+        Satellite map. Photos. Full project brief.<br>Before you ever pick up the phone.
+      </h2>
+      <p class="ex-cta-sub">
+        Founding members lock in $1,500 lifetime — then leads like this land in your inbox forever, at no extra cost.
+      </p>
+      <a href="/founding" class="btn-gold-lg">Claim Founding Access →</a>
+      <div class="ex-cta-note">30-day money-back guarantee · Only 50 spots · Offer expires May 29, 2026</div>
+    </div>
+
+  </div><!-- /lead-body -->
+
+  <!-- Footer -->
+  <footer class="ex-footer">
+    <div class="ex-footer-logo">Scopilot</div>
+    <div class="ex-footer-links">
+      <a href="/" class="ex-footer-link">Home</a>
+      <a href="/founding" class="ex-footer-link">Founding Member</a>
+      <a href="/terms.html" class="ex-footer-link">Terms</a>
+      <a href="/privacy.html" class="ex-footer-link">Privacy</a>
+    </div>
+    <div class="ex-footer-note">© 2026 Two Wolves Ventures LLC d/b/a Infinite Horizons Solutions</div>
+  </footer>
+
+  <!-- Mapbox satellite embed with driveway polygon overlay -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+  <script>
+    // Token injected server-side via injectToken()
+    const MB = window.MAPBOX_TOKEN || '';
+
+    function initMap() {
+      if (!MB) {
+        document.getElementById('exampleMap').innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#1a1a26;border-radius:8px;">' +
+          '<span style="font-size:14px;color:rgba(200,200,220,0.5);">Map preview (requires MAPBOX_TOKEN)</span></div>';
+        return;
+      }
+
+      mapboxgl.accessToken = MB;
+      const map = new mapboxgl.Map({
+        container: 'exampleMap',
+        style: 'mapbox://styles/mapbox/satellite-streets-v12',
+        // 1842 Frederica St, Owensboro KY — realistic coords
+        center: [-87.0949, 37.7713],
+        zoom: 18.5,
+        interactive: false,
+        attributionControl: false
+      });
+
+      map.on('load', () => {
+        // Driveway polygon — realistic driveway footprint ~840 sqft
+        map.addSource('driveway', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[
+                [-87.09506, 37.77141],
+                [-87.09498, 37.77141],
+                [-87.09497, 37.77124],
+                [-87.09505, 37.77124],
+                [-87.09506, 37.77141]
+              ]]
+            }
+          }
+        });
+
+        map.addLayer({
+          id: 'driveway-fill',
+          type: 'fill',
+          source: 'driveway',
+          paint: {
+            'fill-color': '#c8960c',
+            'fill-opacity': 0.35
+          }
+        });
+
+        map.addLayer({
+          id: 'driveway-outline',
+          type: 'line',
+          source: 'driveway',
+          paint: {
+            'line-color': '#e8c040',
+            'line-width': 2.5,
+            'line-opacity': 0.9
+          }
+        });
+      });
+    }
+
+    initMap();
+  </script>
+
+</body>
+</html>

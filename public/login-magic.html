@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Me a Login Link — Scopilot</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    body { background: var(--bg-alt); }
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+    .auth-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .auth-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--fg);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      text-decoration: none;
+      display: block;
+    }
+    .auth-tagline {
+      font-size: 14px;
+      color: var(--fg-muted);
+      margin-bottom: 32px;
+    }
+    .auth-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--fg);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+    }
+    .auth-sub {
+      font-size: 14px;
+      color: var(--fg-muted);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+    .auth-form { display: flex; flex-direction: column; gap: 4px; }
+    .auth-field { display: flex; flex-direction: column; gap: 6px; }
+    .auth-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fg);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .auth-input {
+      padding: 12px 14px;
+      font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      color: var(--fg);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .auth-input:focus { border-color: var(--accent); }
+    .auth-error {
+      background: #fff0f0;
+      border: 1px solid #f5a0a0;
+      color: #c0392b;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .auth-success {
+      background: #f0fff4;
+      border: 1px solid #68d391;
+      color: #276749;
+      padding: 16px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-top: 16px;
+      display: none;
+    }
+    .auth-btn {
+      padding: 14px;
+      background: var(--accent);
+      color: var(--fg);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+    .auth-btn:hover { opacity: 0.85; }
+    .auth-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+    .auth-footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+    .auth-hint {
+      font-size: 12px;
+      color: var(--fg-muted);
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+    .auth-nav {
+      background: var(--fg);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .auth-nav-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--bg);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    @media (max-width: 600px) {
+      .auth-nav { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="auth-nav">
+    <a href="/" class="auth-nav-logo">Scopilot</a>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <a href="/" class="auth-logo">Scopilot</a>
+      <div class="auth-tagline">Contractor lead generation — Owensboro &amp; Western KY</div>
+
+      <div class="auth-title">Email me a login link</div>
+      <div class="auth-sub">Enter your email and we'll send you a one-time link that logs you in instantly. No password needed. Link expires in 15 minutes.</div>
+
+      <div id="authError" class="auth-error"></div>
+
+      <form class="auth-form" id="magicForm" novalidate>
+        <div class="auth-field">
+          <label class="auth-label" for="email">Email address</label>
+          <input class="auth-input" type="email" id="email" name="email"
+            placeholder="john@hendersonconcrete.com"
+            required autocomplete="email">
+        </div>
+
+        <button class="auth-btn" type="submit" id="submitBtn">Send Login Link →</button>
+      </form>
+
+      <div id="successMsg" class="auth-success">
+        <strong>Check your inbox.</strong><br>
+        If an account exists for that email, a login link is on its way. It expires in 15 minutes and can only be used once.<br><br>
+        Didn't get it? Check your spam folder, or <a href="/login/magic" style="color:#276749;font-weight:600;">try again</a>.
+      </div>
+
+      <p class="auth-hint">For security: this link is single-use and expires in 15 minutes. Max 3 requests per hour per email.</p>
+
+      <div class="auth-footer">
+        Remember your password? <a href="/login">Sign in here</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('magicForm');
+    const errorEl = document.getElementById('authError');
+    const successEl = document.getElementById('successMsg');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Show error from URL (e.g. ?error=link_invalid_or_expired from failed token)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlError = urlParams.get('error');
+    if (urlError === 'link_invalid_or_expired') {
+      errorEl.textContent = 'That login link has expired or already been used. Request a new one below.';
+      errorEl.style.display = 'block';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        errorEl.textContent = 'Please enter your email address.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      try {
+        const resp = await fetch('/api/auth/magic-link', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        // Always show success regardless of response — security: never leak account existence
+        form.style.display = 'none';
+        successEl.style.display = 'block';
+      } catch (err) {
+        errorEl.textContent = 'Network error. Please try again.';
+        errorEl.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Login Link →';
+      }
+    });
+  </script>
+</body>
+</html>

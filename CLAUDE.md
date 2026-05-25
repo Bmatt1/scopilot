@@ -1,0 +1,61 @@
+# CLAUDE.md
+
+## What this app does
+Scopilot is a contractor lead-generation platform. Homeowners scope their own concrete, excavation, or drainage project in 5 minutes — entering an address, drawing the project area, answering guided questions, and uploading photos. Contractors receive qualified leads with full project details via email and a dashboard.
+
+## Stack
+Node.js + Express, EJS templates, PostgreSQL (Neon), hosted on Render.
+
+## Directory map
+- `server.js` — Express entry point: middleware, route mounts, app.listen
+- `routes/` — One Router per endpoint group, mounted at /api/<name>
+- `db/` — All database query functions (no raw SQL elsewhere); only db/index.js creates Pool
+- `migrations/` — Timestamped JS migration files for all DDL
+- `views/` — EJS templates; layout.ejs + partials/ for landing page
+- `public/` — Static assets: CSS, client-side JS, uploaded images
+- `lib/` — Shared utilities (landing-context.js)
+- `jobs/` — Standalone job scripts (for polsia.toml crons)
+
+## Database
+- `users` — End-user accounts with subscription fields (synced by Polsia)
+- `_migrations` — Migration run tracking
+- `leads` — Homeowner project scoping submissions (address, sq footage, project_type, trade_inputs JSONB, legacy Q&A fields, estimate, contractor_id FK, zip_code, routed_to_contractor_id FK, lead_status enum routed|passed|claimed_from_board|expired, passed_at, passed_by_contractor_id, board_visible_at, claimed_from_board_at, claimed_from_board_by, first_response_at, homeowner_rating 1–5, rating_token, rating_email_sent_at)
+- `lead_photos` — Photo URLs attached to a lead
+- `lead_pass_reasons` — Analytics: why contractors pass leads (lead_id, contractor_id, reason text)
+- `contractors` — Contractor accounts (business_name, owner_name, email, password_hash, trade_type, service_area, unique_slug, legacy_free boolean — operator-gifted permanent free account, updated_at, nurture_sent_at TIMESTAMPTZ — stamped after founding-offer nurture email sent)
+- `email_log` — Outbound email audit trail for job-sent emails (recipient, template, sent_at, postmark_message_id, error, metadata JSONB)
+- `page_views` — Server-side page view log (path, referrer, user_agent, session_hash, created_at)
+- `lead_events` — Lead lifecycle events (lead_id, contractor_id, event_type, metadata JSONB, created_at)
+- `founding_config` — Key/value store for founding member config; key=founding_count tracks spots claimed
+- `events` — Unified conversion event log (event_type, contractor_id nullable, session_id, properties JSONB, ip, user_agent, referrer, created_at)
+- `territory_claims` — Contractor zip-code territory claims (contractor_id FK, zip_code, status enum active|at_risk|suspended|released, monthly_price_cents, is_included_in_plan, stripe_subscription_id)
+- `contractor_magic_links` — Short-lived passwordless login tokens (contractor_id FK, token, expires_at 15min, used_at; rate-limited 3/hr)
+- `territory_checks` — Public ZIP availability query log (zip, ip_hash, user_agent, claimed_at_check, created_at) — market analytics
+- `territory_waitlist` — Email opt-ins to be notified if a claimed ZIP opens (zip, email unique pair, ip_hash, notified_at)
+- `session` — Express session store (connect-pg-simple); sid PK, sess JSON, expire timestamp; replaces MemoryStore
+- `auth_logs` — Persisted request/response logs from lib/request-logger.js (timestamp, method, path, status_code, duration_ms, session_id, ip, user_agent, request_body JSONB, response_summary JSONB, error_stack TEXT); auto-cleaned after 30 days; surfaced at /admin/logs
+- `analytics_events` — Unified event log (event_type, page_url, referrer, utm_source/medium/campaign, user_agent, session_id, contractor_id FK, metadata JSONB, created_at); indexes on event_type and created_at; feeds GET /api/admin/metrics
+- `auth_debug_log` — DEPRECATED. Was used to capture details when login failed; no longer written to after the 2026-05-25 auth rewrite. Safe to drop later.
+
+## External integrations
+- Neon PostgreSQL — DATABASE_URL env var
+- Email (Polsia email proxy) — POLSIA_EMAIL_PROXY_URL (or POLSIA_EMAIL_URL legacy) + POLSIA_API_KEY env vars; CONTRACTOR_EMAIL controls notification recipient
+- Mapbox — MAPBOX_TOKEN env var for satellite/street map embed and address autocomplete
+- Stripe (Polsia payment proxy) — POLSIA_API_URL + POLSIA_API_KEY; founding member $1,500 one-time checkout via /api/founding/checkout
+
+## Auth model (as of 2026-05-25)
+- Contractors log in with email+password, a 15-minute one-click "magic link" emailed to them, or by resetting their password.
+- Login state lives in a server-side session row (`session` table) keyed by a `connect.sid` cookie. The cookie is `HttpOnly`, `SameSite=Lax`, `Secure` in production.
+- `SESSION_SECRET` env var is required — server refuses to start without it.
+- The session ID is regenerated every time auth state changes (login, signup, magic link, password reset). This stops "session fixation" attacks where someone plants a cookie and waits for you to log in.
+- There is NO localStorage fallback, NO bearer-token endpoint, NO debug overlay. If you find yourself adding those back, the SameSite cookie config is the real problem.
+- `/contractor` and `/contractor/opportunities` are gated server-side — anonymous visits redirect to `/login` before the page even loads.
+
+## Recent changes
+- 2026-05-25: **Mobile responsiveness pass.** Fixed iOS auto-zoom on login/signup/reset forms (font-size 15px → 16px on all auth inputs). Added a full mobile breakpoint to territory.html (had none — topbar links hide under 600px, hero padding shrinks, email input gets 16px). On the contractor dashboard at ≤768px: lead list now appears above the sidebar (was below it after a long scroll), filter buttons reflow as a chip row, dash-main padding drops to 16px, leads grid collapses to 1 column under 600px, the "pass lead" modal centers properly instead of overflowing on small phones, lead-detail close button bumped to 44×44px. Touch targets bumped on filter chips, sidebar copy/release buttons, opportunity-board filter chips.
+- 2026-05-25: **Auth rewrite — root-cause fix for "lose login when going from sign-in to dashboard."** Cookie was set to SameSite=None without Secure, which browsers silently drop — that was the real bug. Switched to SameSite=Lax, secure-in-prod, added `app.set('trust proxy', 1)` for Render. Removed all the workarounds that had been built on top of the broken cookie: deleted `/api/auth/me-by-sid` (localStorage bearer-token fallback), deleted `db/sessions.js`, deleted `/api/auth/debug-log` and the debug overlay, removed `__SESSION_ID` injection from login/magic-link/reset/signup. Login now does a normal 303 redirect to `/contractor` instead of serving the dashboard HTML inline. All auth flows now call `req.session.regenerate()` before binding the contractor (blocks session-fixation). Also fixed two broken literals: `typeof password !== 'REDACTED'` in reset-password (was making every reset fail) and `SESSION_SECRET || 'REDACTED'` fallback (now fails-fast if missing). `requireAuth` consolidated into `lib/require-auth.js` (was duplicated in 4 route files). `pgSession` reuses the main pool instead of opening a second one.
+- 2026-05-25: Contractor dashboard 3-bug fix (task #1919035) — sidebar overflow fixed (overflow:hidden, min-width:0, truncating scoping URL); leads API auth fixed (requireContractor returns 401 JSON not redirect, all fetches use credentials:include + fallback auth on 401); Opportunity Board auth fixed (loadBoard sends credentials:include, claim sends credentials:include). **Note: the "fallback auth on 401" path was removed by the 2026-05-25 auth rewrite above.**
+- 2026-05-25: Contractor dashboard header cleanup (task #1884205) — removed public nav items (Features, About, Founding Member) from contractor.html header; added mobile-responsive hamburger menu + slide-down drawer on both contractor.html and opportunities.html
+- 2026-05-24: Fallback auth via localStorage session ID (task #1870237) — **superseded and removed by the 2026-05-25 auth rewrite.** The cookie bug it worked around has been fixed at the root.
+- 2026-05-24: Capture /me 401 instead of redirecting (task #1869721) — **removed by the 2026-05-25 auth rewrite.** Endpoint, table, and overlay are gone.
+- 2026-05-24: Admin territory map not rendering (task #1835296) — added server-side geocoding via Mapbox Geocoding API in routes/admin.js; `geocodeZipCentroids()` fetches real lat/lng for each claimed ZIP before rendering.

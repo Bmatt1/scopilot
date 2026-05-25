@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scopilot — Internal Docs</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a2e; line-height: 1.6; padding: 40px 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { color: #5c5c6e; font-size: 16px; margin-bottom: 40px; }
+    .nav { display: flex; gap: 16px; margin-bottom: 40px; flex-wrap: wrap; }
+    .nav a { background: #1a1a2e; color: #f5f5f0; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; }
+    .nav a:hover { background: #c8960c; color: #1a1a2e; }
+    h2 { font-size: 20px; font-weight: 700; margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 2px solid #1a1a2e; }
+    h3 { font-size: 15px; font-weight: 700; margin: 24px 0 8px; color: #5c5c6e; text-transform: uppercase; letter-spacing: 0.06em; }
+    p { margin: 12px 0; }
+    code { background: #1a1a2e; color: #c8960c; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+    pre { background: #1a1a2e; color: #f5f5f0; padding: 20px; border-radius: 4px; overflow-x: auto; margin: 16px 0; font-size: 13px; line-height: 1.5; }
+    pre code { background: none; color: inherit; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 14px; }
+    th { background: #1a1a2e; color: #f5f5f0; padding: 10px 14px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+    td { padding: 10px 14px; border-bottom: 1px solid #d4d4cc; }
+    tr:nth-child(even) td { background: #f5f5f0; }
+    tr:nth-child(odd) td { background: #ffffff; }
+    .method { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px; font-weight: 700; }
+    .method-get { background: #1a5c1a; color: #fff; }
+    .method-post { background: #1a3a6e; color: #fff; }
+    .method-patch { background: #6e5a1a; color: #fff; }
+    .endpoint { font-size: 14px; margin: 20px 0 4px; }
+    .endpoint-desc { color: #5c5c6e; font-size: 13px; margin-bottom: 12px; }
+    hr { border: none; border-top: 1px solid #d4d4cc; margin: 32px 0; }
+    .note { background: #fffbf0; border-left: 3px solid #c8960c; padding: 12px 16px; margin: 12px 0; font-size: 14px; border-radius: 0 3px 3px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Scopilot — Internal Docs</h1>
+    <p class="subtitle">Developer reference for Scopilot architecture, API, and data flows.</p>
+
+    <nav class="nav">
+      <a href="#api">API Routes</a>
+      <a href="#schema">Database Schema</a>
+      <a href="#flows">User Flows</a>
+      <a href="./api.md">Raw API docs →</a>
+      <a href="./schema.md">Raw schema →</a>
+      <a href="./flows.md">Raw flows →</a>
+    </nav>
+
+    <section id="api">
+      <h2>API Routes</h2>
+
+      <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <code>/health</code>
+      </div>
+      <p class="endpoint-desc">Health check. Returns <code>{ "status": "healthy" }</code>. Used by Render deploy health checks.</p>
+
+      <div class="endpoint">
+        <span class="method method-post">POST</span>
+        <code>/api/scope/submit</code>
+      </div>
+      <p class="endpoint-desc">Create a new lead from a homeowner project scope submission.</p>
+      <p>All fields optional except <code>address</code>, <code>homeowner_name</code>, <code>homeowner_email</code>.</p>
+      <h3>Request body</h3>
+<pre><code>{
+  "address": "123 Main St, Owensboro KY 42301",
+  "latitude": 37.7719,
+  "longitude": -87.1117,
+  "project_area_geojson": { "type": "Polygon", "coordinates": [...] },
+  "sq_footage": 850,
+  "project_type": "concrete",
+  "trade_inputs": { "tear_out": "yes", "thickness": "4in" },
+  "notes": "Cracks in existing driveway",
+  "homeowner_name": "Jane Doe",
+  "homeowner_email": "jane@example.com",
+  "homeowner_phone": "270-555-0142",
+  "photo_urls": ["https://pub-...r2.dev/photo1.jpg"]
+}</code></pre>
+      <p class="note">Legacy clients (pre-vertical-Q&A) can pass <code>tear_out</code>, <code>reinforcement</code>, <code>finish_type</code>, <code>has_drainage</code> as top-level fields. The server merges them into <code>trade_inputs</code> automatically.</p>
+      <h3>Response 200</h3>
+<pre><code>{ "success": true, "lead_id": 42, "estimate_low": 5100, "estimate_high": 8500 }</code></pre>
+
+      <hr>
+
+      <div class="endpoint">
+        <span class="method method-post">POST</span>
+        <code>/api/scope/upload</code>
+      </div>
+      <p class="endpoint-desc">Upload a photo. Returns a public R2 URL.</p>
+<pre><code>{ "data_url": "data:image/jpeg;base64,/9j/4AAQSkZJR...", "filename": "driveway.jpg" }</code></pre>
+      <p class="note">Without <code>POLSIA_R2_BASE_URL</code> set, returns the data URL directly — dev fallback only.</p>
+<pre><code>{ "url": "https://pub-...r2.dev/lead-photo-1716400000000.jpg" }</code></pre>
+
+      <hr>
+
+      <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <code>/api/leads</code>
+      </div>
+      <p class="endpoint-desc">List all leads, newest first. Used by contractor dashboard.</p>
+      <h3>Query params</h3>
+      <table>
+        <tr><th>Param</th><th>Default</th><th>Description</th></tr>
+        <tr><td>status</td><td>—</td><td>Filter: new, contacted, quoted, won, lost</td></tr>
+        <tr><td>limit</td><td>50</td><td>Max leads to return</td></tr>
+        <tr><td>offset</td><td>0</td><td>Pagination offset</td></tr>
+      </table>
+<pre><code>{ "leads": [{ "id": 42, "address": "...", "photos": [...], ... }] }</code></pre>
+
+      <hr>
+
+      <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <code>/api/leads/:id</code>
+      </div>
+      <p class="endpoint-desc">Single lead with full detail including photos.</p>
+
+      <hr>
+
+      <div class="endpoint">
+        <span class="method method-patch">PATCH</span>
+        <code>/api/leads/:id/status</code>
+      </div>
+      <p class="endpoint-desc">Update lead status. Valid: new, contacted, quoted, won, lost.</p>
+<pre><code>{ "status": "contacted" }</code></pre>
+
+    </section>
+
+    <section id="schema">
+      <h2>Database Schema</h2>
+
+      <h3>leads</h3>
+      <p>Homeowner project scoping submissions. Core of the product.</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td>id</td><td>SERIAL PK</td><td></td></tr>
+        <tr><td>address</td><td>TEXT</td><td>Full street address</td></tr>
+        <tr><td>latitude, longitude</td><td>NUMERIC(10,7)</td><td>From Mapbox autocomplete or GPS pin</td></tr>
+        <tr><td>project_area_geojson</td><td>JSONB</td><td>GeoJSON Polygon drawn on map — overlaid in email satellite view</td></tr>
+        <tr><td>sq_footage</td><td>NUMERIC(10,2)</td><td>Calculated by Turf.js client-side when polygon is drawn</td></tr>
+        <tr><td>project_type</td><td>VARCHAR(50)</td><td>concrete, excavation, drainage, retaining_wall, demolition, land_clearing, gravel_delivery, fence</td></tr>
+        <tr><td>trade_inputs</td><td>JSONB</td><td>Per-vertical Q&A answers as <code>{ field_id: value }</code>. New verticals need no schema change.</td></tr>
+        <tr><td>tear_out, reinforcement, finish_type, has_drainage</td><td>Various</td><td>Legacy concrete/drainage fields — kept for backwards compat with older clients</td></tr>
+        <tr><td>notes</td><td>TEXT</td><td>Free-text from homeowner</td></tr>
+        <tr><td>homeowner_name, homeowner_email, homeowner_phone</td><td>VARCHAR</td><td></td></tr>
+        <tr><td>estimate_low, estimate_high</td><td>INTEGER</td><td>Server-calculated USD range. Client preview is estimated; server always recalculates.</td></tr>
+        <tr><td>status</td><td>VARCHAR(50)</td><td>new → contacted → quoted → won / lost</td></tr>
+        <tr><td>contractor_email</td><td>VARCHAR(255)</td><td>Email the notification was sent to</td></tr>
+        <tr><td>created_at</td><td>TIMESTAMPTZ</td><td></td></tr>
+      </table>
+
+      <h3>lead_photos</h3>
+      <p>Photo URLs attached to a lead. Photos are stored externally (R2); this table holds URLs only.</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td>id</td><td>SERIAL PK</td><td></td></tr>
+        <tr><td>lead_id</td><td>INTEGER FK</td><td>→ leads(id) ON DELETE CASCADE</td></tr>
+        <tr><td>photo_url</td><td>TEXT</td><td>R2-hosted public URL</td></tr>
+        <tr><td>created_at</td><td>TIMESTAMPTZ</td><td></td></tr>
+      </table>
+
+      <h3>users</h3>
+      <p>End-user accounts. Used by Polsia for subscription sync. Auth is not yet implemented for homeowners.</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td>id</td><td>SERIAL PK</td><td></td></tr>
+        <tr><td>email</td><td>VARCHAR(255)</td><td>Case-insensitive unique index</td></tr>
+        <tr><td>stripe_subscription_id</td><td>VARCHAR(255)</td><td>Set by Polsia when customer subscribes</td></tr>
+        <tr><td>subscription_status</td><td>VARCHAR(50)</td><td>active / canceled / past_due</td></tr>
+        <tr><td>subscription_plan, subscription_expires_at</td><td>VARCHAR / TIMESTAMPTZ</td><td></td></tr>
+      </table>
+
+      <h3>contractors</h3>
+      <p>Contractor accounts (the people who log in). One row per business.</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td>id</td><td>SERIAL PK</td><td></td></tr>
+        <tr><td>business_name, owner_name</td><td>VARCHAR</td><td></td></tr>
+        <tr><td>email</td><td>VARCHAR(255)</td><td>Unique. Used for login.</td></tr>
+        <tr><td>password_hash</td><td>VARCHAR(255)</td><td>bcrypt, cost 12</td></tr>
+        <tr><td>trade_type</td><td>VARCHAR(50)</td><td>What kind of work they do</td></tr>
+        <tr><td>service_area</td><td>TEXT</td><td>Free-form area description</td></tr>
+        <tr><td>unique_slug</td><td>VARCHAR</td><td>Used in <code>/scope.html?c=&lt;slug&gt;</code> so homeowners attribute correctly</td></tr>
+        <tr><td>legacy_free</td><td>BOOLEAN</td><td>Operator-gifted permanent free account</td></tr>
+      </table>
+
+      <h3>territory_claims</h3>
+      <p>Which ZIP codes each contractor has claimed. Leads in a claimed ZIP route to its contractor.</p>
+      <table>
+        <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+        <tr><td>contractor_id</td><td>FK</td><td>→ contractors(id)</td></tr>
+        <tr><td>zip_code</td><td>VARCHAR(10)</td><td></td></tr>
+        <tr><td>status</td><td>ENUM</td><td>active / at_risk / suspended / released</td></tr>
+        <tr><td>is_included_in_plan</td><td>BOOLEAN</td><td>True = free (1st ZIP). False = paid via Stripe.</td></tr>
+      </table>
+
+      <h3>contractor_magic_links</h3>
+      <p>Short-lived passwordless login tokens. 15-minute expiry, rate-limited to 3 per hour per contractor.</p>
+
+      <h3>session</h3>
+      <p>Active login sessions. Managed by <code>connect-pg-simple</code> — you generally don't write to it directly. Each row holds the contractor ID a cookie maps to, plus an expiry.</p>
+
+      <h3>_migrations</h3>
+      <p>Tracks which migration files have been applied. Created and managed by <code>migrate.js</code>.</p>
+
+      <h3>auth_debug_log</h3>
+      <p><em>Deprecated.</em> Was used to debug the old cookie-not-persisting bug. No longer written to. Safe to drop later.</p>
+
+      <p class="note"><strong>Adding a new vertical:</strong> No migration needed. <code>trade_inputs</code> is JSONB — add the vertical to <code>public/js/questions-config.js</code> and it works immediately.</p>
+
+      <p class="note"><strong>All schema changes go in <code>migrations/</code></strong> as timestamped JS files. Never in runtime code.</p>
+    </section>
+
+    <section id="flows">
+      <h2>User Flows</h2>
+
+      <h3>Homeowner Flow</h3>
+      <p><strong>/scope.html</strong></p>
+      <ol style="margin: 12px 0 12px 24px; line-height: 1.8;">
+        <li>Pick project type (8 verticals)</li>
+        <li>Set location — address autocomplete or GPS pin drop. Result: lat/lng + address.</li>
+        <li>Draw project area polygon on satellite map. Turf.js calculates sq_footage in real-time.</li>
+        <li>Answer vertical-specific questions (from <code>questions-config.js</code>). Stored in <code>trade_inputs</code>.</li>
+        <li>Upload up to 3 photos (via <code>/api/scope/upload</code>, proxied to R2).</li>
+        <li>Enter contact info. Client-side ballpark estimate shown as a range.</li>
+        <li>Submit — <code>POST /api/scope/submit</code>. Server recalculates estimate (never trusts client), saves lead, fires email notification (fire-and-forget), returns confirmation.</li>
+      </ol>
+
+      <p class="note"><strong>Why GPS-first + polygon:</strong> Rural properties often don't have a clean street address. Drawing the area is faster and more accurate than asking the homeowner to measure. The polygon is overlaid on the satellite view in the contractor email so the contractor can see the exact site.</p>
+
+      <h3>Contractor Flow</h3>
+      <p><strong>/login</strong> → <strong>/contractor</strong></p>
+      <ol style="margin: 12px 0 12px 24px; line-height: 1.8;">
+        <li>Contractor signs up at <code>/signup</code> or logs in at <code>/login</code> — by password, by one-click magic link, or after a password reset.</li>
+        <li>Dashboard shows only that contractor's leads (filtered by status). Sidebar shows their scoping link, their claimed ZIPs, and a performance card.</li>
+        <li>Click a lead card for full detail: satellite map, contact info, project specs (from <code>trade_inputs</code> + <code>questions-config.js</code>), photos, notes.</li>
+        <li>Update status via <code>PATCH /api/contractors/me/leads/:id/status</code>, or "pass" a lead to the opportunity board via <code>POST /api/leads/:id/pass</code>.</li>
+        <li>New leads arrive by email with full details + satellite map + polygon overlay + photos.</li>
+      </ol>
+
+      <p class="note"><strong>Auth model:</strong> Cookie-based sessions stored in Postgres (<code>connect-pg-simple</code>). Cookie is <code>HttpOnly</code>, <code>SameSite=Lax</code>, <code>Secure</code> in production. <code>SESSION_SECRET</code> env var required. The session ID is regenerated on every login event to block session-fixation attacks. There is no localStorage fallback — that workaround was removed; if cookies stop working, fix the cookie config, not the symptom.</p>
+
+      <h3>Auth API (high level)</h3>
+      <table>
+        <tr><th>Endpoint</th><th>What it does</th></tr>
+        <tr><td><code>POST /api/auth/signup</code></td><td>Create a contractor account, log in.</td></tr>
+        <tr><td><code>POST /api/auth/login</code></td><td>Email + password. Redirects to <code>/contractor</code>.</td></tr>
+        <tr><td><code>POST /api/auth/logout</code></td><td>End the session.</td></tr>
+        <tr><td><code>GET /api/auth/me</code></td><td>Returns the logged-in contractor's profile.</td></tr>
+        <tr><td><code>POST /api/auth/magic-link</code></td><td>Email a one-click login link. 15 minutes, 3 requests per hour per email.</td></tr>
+        <tr><td><code>GET /auth/magic?token=…</code></td><td>The link clicked from the email. Logs the contractor in and redirects.</td></tr>
+        <tr><td><code>POST /api/auth/forgot-password</code></td><td>Email a 1-hour password reset link.</td></tr>
+        <tr><td><code>POST /api/auth/reset-password</code></td><td>Set a new password and log in.</td></tr>
+      </table>
+    </section>
+
+  </div>
+</body>
+</html>

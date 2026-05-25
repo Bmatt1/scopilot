@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Scopilot Contractor</title>
+  <meta name="description" content="Sign in to your Scopilot contractor dashboard. Manage your qualified leads, view project scopes, and track new concrete, excavation, and drainage opportunities.">
+  <link rel="canonical" href="https://scopilot.polsia.app/login.html">
+  <link rel="sitemap" type="application/xml" title="Scopilot Sitemap" href="/sitemap.xml">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scopilot.polsia.app/login.html">
+  <meta property="og:title" content="Sign In — Scopilot Contractor">
+  <meta property="og:description" content="Sign in to your Scopilot contractor dashboard. Manage your qualified leads and view project scopes.">
+  <meta property="og:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/1ef83cd9-4f83-4494-914d-eea012230a10.jpg">
+  <meta property="og:site_name" content="Scopilot">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Sign In — Scopilot Contractor">
+  <meta name="twitter:description" content="Access your Scopilot contractor dashboard to manage your qualified leads.">
+  <meta name="twitter:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/1ef83cd9-4f83-4494-914d-eea012230a10.jpg">
+
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    body { background: var(--bg-alt); }
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+    .auth-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .auth-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--fg);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      text-decoration: none;
+      display: block;
+    }
+    .auth-tagline {
+      font-size: 14px;
+      color: var(--fg-muted);
+      margin-bottom: 32px;
+    }
+    .auth-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--fg);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+    }
+    .auth-sub {
+      font-size: 14px;
+      color: var(--fg-muted);
+      margin-bottom: 28px;
+    }
+    .auth-form { display: flex; flex-direction: column; gap: 4px; }
+    .auth-field { display: flex; flex-direction: column; gap: 6px; }
+    .auth-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fg);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .auth-input {
+      padding: 12px 14px;
+      font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      color: var(--fg);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .auth-input:focus { border-color: var(--accent); }
+    .auth-error {
+      background: #fff0f0;
+      border: 1px solid #f5a0a0;
+      color: #c0392b;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .auth-btn {
+      padding: 14px;
+      background: var(--accent);
+      color: var(--fg);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+    .auth-btn:hover { opacity: 0.85; }
+    .auth-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+    .auth-footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+    /* Auth page nav */
+    .auth-nav {
+      background: var(--fg);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .auth-nav-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--bg);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .auth-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .auth-nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(200,200,220,0.75);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 5px;
+      transition: color 0.2s;
+    }
+    .auth-nav-link:hover { color: var(--bg); }
+    .auth-nav-link--accent { color: var(--accent); font-weight: 600; }
+    .auth-nav-link--accent:hover { color: #e0b020; }
+    .auth-nav-estimate {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fg);
+      background: var(--accent);
+      padding: 8px 16px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      margin-left: 8px;
+    }
+    .auth-nav-estimate:hover { opacity: 0.85; }
+    @media (max-width: 600px) {
+      .auth-nav { padding: 0 20px; }
+      .auth-nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Auth page nav -->
+  <nav class="auth-nav">
+    <a href="/" class="auth-nav-logo">Scopilot</a>
+    <div class="auth-nav-links">
+      <a href="/#features" class="auth-nav-link">Features</a>
+      <a href="/#manifesto" class="auth-nav-link">About</a>
+      <a href="/founding" class="auth-nav-link auth-nav-link--accent">For Contractors</a>
+      <a href="/scope.html" class="auth-nav-estimate">Get a Free Estimate</a>
+    </div>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">Scopilot</div>
+      <div class="auth-tagline">Contractor lead generation — Owensboro &amp; Western KY</div>
+
+      <div class="auth-title">Sign in</div>
+      <div class="auth-sub">Access your leads dashboard.</div>
+
+      <div id="authError" class="auth-error"></div>
+
+      <form class="auth-form" id="loginForm" action="/api/auth/login" method="POST" novalidate>
+        <div class="auth-field">
+          <label class="auth-label" for="email">Email</label>
+          <input class="auth-input" type="email" id="email" name="email" placeholder="john@hendersonconcrete.com" required autocomplete="email">
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="password">Password</label>
+          <input class="auth-input" type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button class="auth-btn" type="submit" id="submitBtn">Sign In →</button>
+      </form>
+
+      <div style="margin-top:16px;text-align:center;">
+        <a href="/forgot-password" id="forgotLink" style="font-size:13px;color:var(--fg-muted);text-decoration:none;">Forgot password?</a>
+      </div>
+
+      <!-- Forgot password mini-form (replaces the link above when clicked) -->
+      <div id="forgotForm" style="display:none;margin-top:16px;border:1.5px solid var(--border);border-radius:6px;padding:16px;">
+        <div style="font-size:13px;color:var(--fg-muted);margin-bottom:12px;">Enter your email and we'll send a reset link.</div>
+        <input class="auth-input" type="email" id="forgotEmail" placeholder="your@email.com" style="margin-bottom:10px;" autocomplete="email">
+        <button class="auth-btn" type="button" id="forgotSubmitBtn" style="margin-top:0;font-size:14px;padding:10px;">Send Reset Link</button>
+        <div id="forgotError" class="auth-error" style="margin-top:8px;"></div>
+        <div id="forgotSuccess" style="display:none;background:#f0fff0;border:1px solid #4caf50;color:#2e7d32;padding:10px 14px;border-radius:6px;font-size:13px;margin-top:8px;">
+          Check your email — a reset link has been sent.
+        </div>
+        <div style="margin-top:8px;text-align:center;">
+          <a href="#" id="forgotBackLink" style="font-size:12px;color:var(--fg-muted);">← Back to sign in</a>
+        </div>
+      </div>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="/signup">Create one</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/track.js"></script>
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorEl = document.getElementById('authError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Show error from URL — e.g. ?error=link_invalid_or_expired when magic link fails
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlError = urlParams.get('error');
+    const autoOpenForgot = urlParams.get('forgot') === '1';
+    if (autoOpenForgot) {
+      form.style.display = 'none';
+      forgotLink.style.display = 'none';
+      forgotForm.style.display = 'block';
+    }
+    if (urlError === 'link_invalid_or_expired') {
+      errorEl.textContent = 'That login link has expired or already been used. Request a new one or sign in with your password.';
+      errorEl.style.display = 'block';
+    }
+    if (urlError === 'reset_invalid') {
+      errorEl.textContent = 'That password reset link has expired or is invalid. Please request a new one.';
+      errorEl.style.display = 'block';
+    }
+    if (urlError === 'reset_success') {
+      errorEl.textContent = 'Password updated! Sign in with your new password.';
+      errorEl.style.display = 'block';
+    }
+    if (urlError === 'invalid') {
+      errorEl.textContent = 'Invalid email or password. Please try again.';
+      errorEl.style.display = 'block';
+    }
+    if (urlError === 'login_failed') {
+      errorEl.textContent = 'Something went wrong. Please try again.';
+      errorEl.style.display = 'block';
+    }
+
+    form.addEventListener('submit', (e) => {
+      const emailVal = document.getElementById('email').value.trim();
+      const passwordVal = document.getElementById('password').value;
+
+      if (!emailVal || !passwordVal) {
+        e.preventDefault();
+        errorEl.textContent = 'Please enter your email and password.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      // Traditional form POST — Express will parse urlencoded body and
+      // /api/auth/login will serve HTML dashboard directly with the session cookie.
+      // No fetch/JSON needed, no client-side redirect race condition.
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in…';
+      errorEl.style.display = 'none';
+      // Let the form submit naturally — it will POST to /api/auth/login
+    });
+
+    // Forgot password mini-form
+    const forgotLink = document.getElementById('forgotLink');
+    const forgotForm = document.getElementById('forgotForm');
+    const forgotEmailInput = document.getElementById('forgotEmail');
+    const forgotSubmitBtn = document.getElementById('forgotSubmitBtn');
+    const forgotError = document.getElementById('forgotError');
+    const forgotSuccess = document.getElementById('forgotSuccess');
+    const forgotBackLink = document.getElementById('forgotBackLink');
+
+    forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      form.style.display = 'none';
+      forgotLink.style.display = 'none';
+      forgotForm.style.display = 'block';
+      forgotEmailInput.focus();
+    });
+
+    forgotBackLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      forgotForm.style.display = 'none';
+      forgotLink.style.display = 'inline';
+      form.style.display = 'flex';
+      forgotError.style.display = 'none';
+      forgotSuccess.style.display = 'none';
+    });
+
+    forgotSubmitBtn.addEventListener('click', async () => {
+      forgotError.style.display = 'none';
+      forgotSuccess.style.display = 'none';
+      const email = forgotEmailInput.value.trim();
+      if (!email) {
+        forgotError.textContent = 'Please enter your email address.';
+        forgotError.style.display = 'block';
+        return;
+      }
+      forgotSubmitBtn.disabled = true;
+      forgotSubmitBtn.textContent = 'Sending…';
+      try {
+        const resp = await fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        // Always show success — even if account doesn't exist (security)
+        forgotSuccess.style.display = 'block';
+        forgotEmailInput.value = '';
+      } catch (err) {
+        forgotError.textContent = 'Network error. Please try again.';
+        forgotError.style.display = 'block';
+        forgotSubmitBtn.disabled = false;
+        forgotSubmitBtn.textContent = 'Send Reset Link';
+      }
+    });
+  </script>
+
+  <style>
+    .login-footer {
+      background: #0a0a12;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 28px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .login-footer-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: rgba(255,255,255,0.5);
+    }
+    .login-footer-links {
+      display: flex;
+      gap: 20px;
+    }
+    .login-footer-link {
+      font-size: 13px;
+      color: rgba(150,150,180,0.4);
+      transition: color 0.2s;
+    }
+    .login-footer-link:hover { color: rgba(200,150,12,0.7); text-decoration: none; }
+    .login-footer-copy {
+      font-size: 12px;
+      color: rgba(150,150,180,0.3);
+    }
+    @media (max-width: 600px) {
+      .login-footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+
+  <footer class="login-footer">
+    <div class="login-footer-logo">Scopilot</div>
+    <div class="login-footer-links">
+      <a href="/#manifesto" class="login-footer-link">About</a>
+      <a href="/#features" class="login-footer-link">Features</a>
+      <a href="/founding" class="login-footer-link">Founding Member</a>
+      <a href="/terms.html" class="login-footer-link">Terms</a>
+      <a href="/privacy.html" class="login-footer-link">Privacy</a>
+    </div>
+    <div class="login-footer-copy">© 2026 <a href="https://connectinfinitely.org" target="_blank" style="color:inherit;text-decoration:none;">Two Wolves Ventures LLC d/b/a Infinite Horizons Solutions</a></div>
+  </footer>
+
+</body>
+</html>

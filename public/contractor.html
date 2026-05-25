@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contractor Lead Dashboard — Scopilot | Concrete & Excavation Leads Owensboro KY</title>
+  <meta name="description" content="View and manage your Scopilot leads. See incoming project scopes with photos, measurements, project details, and ballpark estimates for concrete, excavation, and drainage jobs in Owensboro and Western Kentucky.">
+  <link rel="canonical" href="https://scopilot.polsia.app/contractor">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scopilot.polsia.app/contractor">
+  <meta property="og:title" content="Contractor Lead Dashboard — Scopilot">
+  <meta property="og:description" content="Manage qualified concrete, excavation, and drainage leads. Photos, measurements, and project details — no wasted site visits.">
+  <meta property="og:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/1ef83cd9-4f83-4494-914d-eea012230a10.jpg">
+  <meta property="og:site_name" content="Scopilot">
+  <link rel="sitemap" type="application/xml" title="Scopilot Sitemap" href="/sitemap.xml">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Contractor Lead Dashboard — Scopilot">
+  <meta name="twitter:description" content="View and manage your project leads with full scope details.">
+  <meta name="twitter:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/1ef83cd9-4f83-4494-914d-eea012230a10.jpg">
+
+  <!-- Geo -->
+  <meta name="geo.region" content="US-KY">
+  <meta name="geo.placename" content="Owensboro">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    /* Scoping link card in sidebar */
+    .scoping-card {
+      background: var(--fg);
+      color: var(--bg);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    .scoping-card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .scoping-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--bg);
+      font-family: 'Bricolage Grotesque', sans-serif;
+    }
+    .scoping-url-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 5px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .scoping-url-input {
+      flex: 1;
+      min-width: 0;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.9);
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      outline: none;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .scoping-copy-btn {
+      background: var(--accent);
+      color: var(--fg);
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .scoping-copy-btn:hover { opacity: 0.85; }
+    .scoping-copy-btn.copied {
+      background: #68d391;
+      color: #1a472a;
+    }
+    .scoping-share-hint {
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.5;
+    }
+    /* ── Dashboard topbar ─────────────────────────────── */
+    .dash-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+      background: var(--fg);
+      color: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .dash-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .dash-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--bg);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .dash-topbar-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: 16px;
+    }
+    .dash-topbar-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(200,200,220,0.7);
+      text-decoration: none;
+      padding: 7px 12px;
+      border-radius: 5px;
+      transition: color 0.2s;
+    }
+    .dash-topbar-link:hover { color: var(--bg); }
+    .dash-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dash-topbar-welcome {
+      font-size: 13px;
+      color: rgba(200,200,220,0.75);
+      font-weight: 500;
+      padding: 7px 12px;
+    }
+    .dash-topbar-logout {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(200,200,220,0.75);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px 14px;
+      font-family: 'DM Sans', sans-serif;
+      transition: color 0.2s;
+      border-radius: 5px;
+    }
+    .dash-topbar-logout:hover { color: var(--bg); background: rgba(255,255,255,0.08); }
+
+    /* Hamburger button — hidden on desktop */
+    .dash-topbar-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--bg);
+      cursor: pointer;
+      padding: 8px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* Mobile drawer */
+    .dash-mobile-drawer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      top: 56px;
+      background: var(--fg);
+      z-index: 99;
+      padding: 24px;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .dash-mobile-drawer:not(.hidden) { display: flex; }
+    .dash-mobile-drawer-link {
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(200,200,220,0.8);
+      text-decoration: none;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: color 0.2s;
+    }
+    .dash-mobile-drawer-link:hover { color: var(--bg); }
+    .dash-mobile-drawer-btn {
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(200,200,220,0.8);
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 14px 0;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: color 0.2s;
+    }
+    .dash-mobile-drawer-btn:hover { color: var(--bg); }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .dash-topbar { padding: 0 16px; }
+      .dash-topbar-nav-links { display: none; }
+      .dash-topbar-right { display: none; }
+      .dash-topbar-hamburger { display: flex; }
+
+      /* Thumb-friendly tap targets in the now-full-width sidebar */
+      .scoping-copy-btn { padding: 10px 16px; font-size: 13px; min-height: 40px; }
+      .scoping-url-input { font-size: 14px; }
+      .territory-release-btn { padding: 8px 12px; font-size: 12px; min-height: 36px; }
+      .territory-zip-input { font-size: 16px; padding: 10px 12px; }
+      .territory-claim-btn { padding: 10px 16px; min-height: 40px; }
+    }
+    /* Founding CTA in sidebar */
+    .contractor-founding-card {
+      display: block;
+      text-decoration: none;
+      border-radius: 8px;
+      position: relative;
+      animation: foundingGlow 2.4s ease-in-out infinite;
+      margin-bottom: 16px;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    .contractor-founding-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.5) 50%, transparent 60%);
+      background-size: 200% 100%;
+      animation: foundingShimmer 3s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .contractor-founding-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      padding: 2px;
+      background: linear-gradient(135deg, #8a6400, #c8960c 40%, #e8c040 60%, #c8960c 80%, #8a6400);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .contractor-founding-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #1e1e38 0%, #141428 100%);
+      border-radius: 7px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .contractor-founding-badge {
+      background: linear-gradient(135deg, #c8960c, #e8c040);
+      border-radius: 14px;
+      padding: 4px 10px;
+      flex-shrink: 0;
+    }
+    .contractor-founding-badge span {
+      font-size: 10px;
+      font-weight: 700;
+      color: #1a1a2e;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .contractor-founding-text {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .contractor-founding-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e8c040;
+      font-family: 'Bricolage Grotesque', sans-serif;
+    }
+    .contractor-founding-spots {
+      font-size: 11px;
+      color: rgba(200,150,12,0.8);
+      font-weight: 500;
+    }
+    .contractor-founding-arrow {
+      color: #c8960c;
+      flex-shrink: 0;
+    }
+
+    /* ── Territory section ─────────────────────────────── */
+    .territory-card {
+      background: var(--fg);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    .territory-card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .territory-zip-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .territory-zip-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 5px;
+      padding: 8px 10px;
+    }
+    .territory-zip-code {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f5f5f0;
+      flex: 1;
+      font-family: 'Courier New', monospace;
+    }
+    .territory-zip-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+    .territory-zip-badge--free {
+      background: rgba(104, 211, 145, 0.2);
+      color: #68d391;
+    }
+    .territory-zip-badge--paid {
+      background: rgba(200, 150, 12, 0.2);
+      color: #c8960c;
+    }
+    .territory-zip-badge--active {
+      background: rgba(66,153,225,0.2);
+      color: #63b3ed;
+    }
+    .territory-release-btn {
+      background: rgba(245,101,101,0.15);
+      color: #fc8181;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .territory-release-btn:hover { background: rgba(245,101,101,0.28); }
+    .territory-claim-form {
+      display: flex;
+      gap: 6px;
+    }
+    .territory-zip-input {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 5px;
+      padding: 8px 10px;
+      color: #f5f5f0;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .territory-zip-input:focus { border-color: var(--accent); }
+    .territory-zip-input.error { border-color: #fc8181; }
+    .territory-claim-btn {
+      background: var(--accent);
+      color: var(--fg);
+      border: none;
+      border-radius: 5px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .territory-claim-btn:hover { opacity: 0.85; }
+    .territory-claim-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .territory-hint {
+      font-size: 11px;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .territory-hint--ok { color: #68d391; }
+    .territory-hint--err { color: #fc8181; }
+    .territory-hint--info { color: rgba(255,255,255,0.45); }
+    .territory-empty {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .territory-cap-info {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 10px;
+    }
+    /* SLA status badge on each zip row */
+    .territory-sla-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+    /* Performance card */
+    .perf-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .perf-metric {
+      background: rgba(255,255,255,0.04);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+    .perf-metric-val {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 3px;
+    }
+    .perf-metric-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 2px;
+    }
+    .perf-metric-goal {
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+    }
+  </style>
+</head>
+<body>
+  <nav class="dash-topbar">
+    <div class="dash-topbar-left">
+      <a href="/contractor" class="dash-logo">Scopilot</a>
+      <div class="dash-topbar-nav-links">
+        <a href="/contractor/opportunities" class="dash-topbar-link">Opportunity Board</a>
+      </div>
+    </div>
+    <div class="dash-topbar-right">
+      <span class="dash-topbar-welcome" id="navWelcome"></span>
+      <button class="dash-topbar-logout" onclick="logout()">Sign out</button>
+    </div>
+    <button class="dash-topbar-hamburger" id="dashHamburger" onclick="toggleMobileNav()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </nav>
+  <!-- Mobile navigation drawer -->
+  <div class="dash-mobile-drawer hidden" id="dashMobileDrawer">
+    <a href="/contractor/opportunities" class="dash-mobile-drawer-link">Opportunity Board</a>
+    <span class="dash-mobile-drawer-link" id="mobileNavWelcome" style="color:var(--accent);font-weight:600;cursor:default;"></span>
+    <button class="dash-mobile-drawer-btn" onclick="logout()">Sign out</button>
+  </div>
+
+  <div class="dash-wrapper">
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <!-- Founding member CTA (shown when authenticated) -->
+      <a href="/founding" class="contractor-founding-card" id="contractorFoundingCard" style="display:none;">
+        <div class="contractor-founding-inner">
+          <div class="contractor-founding-badge">
+            <span>Founding Member</span>
+          </div>
+          <div class="contractor-founding-text">
+            <span class="contractor-founding-price">$1,500 lifetime</span>
+            <span class="contractor-founding-spots" id="contractor-spots-text">Loading...</span>
+          </div>
+          <div class="contractor-founding-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </a>
+
+      <!-- Scoping link card (shown when authenticated) -->
+      <div class="scoping-card" id="scopingCard" style="display:none;">
+        <div class="scoping-card-label">Your Scoping Link</div>
+        <div class="scoping-card-title" id="scopingCardBusiness"></div>
+        <div class="scoping-url-box">
+          <input class="scoping-url-input" type="text" id="scopingUrl" readonly>
+          <button class="scoping-copy-btn" id="scopingCopyBtn" onclick="copyScopingLink()">Copy</button>
+        </div>
+        <div class="scoping-share-hint">Share this link with homeowners — they'll see your business name when they scope their project.</div>
+      </div>
+
+      <!-- Territory section (shown when authenticated) -->
+      <div class="territory-card" id="territoryCard" style="display:none;">
+        <div class="territory-card-label">My Territory</div>
+        <div class="territory-cap-info" id="territoryCapInfo"></div>
+        <div class="territory-zip-list" id="territoryZipList">
+          <div class="territory-empty">Loading…</div>
+        </div>
+        <div class="territory-claim-form" id="territoryClaimForm" style="display:none;">
+          <input type="text" class="territory-zip-input" id="territoryZipInput" maxlength="5" placeholder="ZIP code" inputmode="numeric" pattern="\d{5}" autocomplete="postal-code">
+          <button class="territory-claim-btn" id="territoryClaimBtn" onclick="checkAndClaim()">Claim</button>
+        </div>
+        <div class="territory-hint territory-hint--info" id="territoryHint"></div>
+      </div>
+
+      <!-- Performance card (shown when contractor has territory) -->
+      <div class="perf-card" id="perfCard" style="display:none;">
+        <div class="territory-card-label">Your Performance</div>
+        <div id="perfContent">
+          <div class="territory-empty">Loading…</div>
+        </div>
+      </div>
+
+      <div class="dash-sidebar-label">Filter Leads</div>
+      <div class="dash-filter-group">
+        <button class="dash-filter-btn active" data-status="">All Leads</button>
+        <button class="dash-filter-btn" data-status="new">New</button>
+        <button class="dash-filter-btn" data-status="contacted">Contacted</button>
+        <button class="dash-filter-btn" data-status="quoted">Quoted</button>
+        <button class="dash-filter-btn" data-status="won">Won</button>
+        <button class="dash-filter-btn" data-status="lost">Lost</button>
+      </div>
+      <div class="dash-sidebar-stats" id="sidebarStats"></div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="dash-main">
+      <div class="dash-header">
+        <h1 class="dash-title">Incoming Leads</h1>
+        <span class="dash-count" id="leadCount">—</span>
+      </div>
+
+      <div id="leadsContainer" class="dash-leads-grid">
+        <div class="dash-loading">Loading leads…</div>
+      </div>
+    </main>
+
+    <!-- Lead detail panel -->
+    <div class="dash-detail-overlay hidden" id="detailOverlay" onclick="closeDetail(event)">
+      <div class="dash-detail-panel" id="detailPanel">
+        <button class="dash-detail-close" onclick="closeDetailPanel()">✕</button>
+        <div id="detailContent"></div>
+      </div>
+    </div>
+
+    <!-- Pass lead modal -->
+    <div class="dash-detail-overlay hidden" id="passModal" onclick="if(event.target===this)closePassModal()" style="z-index:220; justify-content:center; align-items:center;">
+      <div class="dash-detail-panel" style="width:420px; max-width:calc(100% - 32px); height:auto; max-height:calc(100vh - 32px); padding:24px;">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;">Pass this lead?</div>
+        <div style="font-size:14px;color:var(--fg-muted);margin-bottom:20px;line-height:1.5;">It'll move to the Opportunity Board so another contractor can claim it. You won't see it on your dashboard anymore.</div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--fg-muted);display:block;margin-bottom:6px;">Reason <span style="font-weight:400;text-transform:none;">(optional)</span></label>
+          <select id="passReasonSelect" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:5px;padding:9px 10px;font-size:14px;color:var(--fg);font-family:'DM Sans',sans-serif;outline:none;">
+            <option value="">— Select a reason —</option>
+            <option value="out_of_capacity">Out of capacity</option>
+            <option value="wrong_trade">Wrong trade</option>
+            <option value="out_of_range">Out of range</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div id="passReasonOtherWrap" style="display:none;margin-bottom:16px;">
+          <textarea id="passReasonOther" rows="2" placeholder="Tell us more…" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:5px;padding:9px 10px;font-size:14px;color:var(--fg);font-family:'DM Sans',sans-serif;resize:none;outline:none;"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="closePassModal()" style="flex:1;background:var(--bg-alt);border:none;border-radius:5px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Cancel</button>
+          <button id="passConfirmBtn" onclick="confirmPass()" style="flex:2;background:#c05050;color:#fff;border:none;border-radius:5px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Pass This Lead</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+  <!-- Trade question labels for rendering Q&A in detail panel -->
+  <script src="/js/questions-config.js"></script>
+  <script>
+    // Token injected server-side
+    const MAPBOX_TOKEN = window.MAPBOX_TOKEN || '';
+
+    const state = { contractor: null };
+    let allLeads = [];
+    let currentFilter = '';
+
+    // ── Boot the dashboard with contractor data ──
+    function bootDashboard(data) {
+      state.contractor = data.contractor;
+
+      document.getElementById('navWelcome').textContent = data.contractor.business_name;
+      document.getElementById('mobileNavWelcome').textContent = data.contractor.business_name;
+
+      const scopingUrl = `${window.location.origin}/scope.html?c=${data.contractor.unique_slug}`;
+      document.getElementById('scopingUrl').value = scopingUrl;
+      document.getElementById('scopingCardBusiness').textContent = data.contractor.business_name;
+      document.getElementById('scopingCard').style.display = 'block';
+
+      if (!data.contractor.founding_member) {
+        document.getElementById('contractorFoundingCard').style.display = 'block';
+        fetch('/api/founding/spots_remaining')
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            document.getElementById('contractor-spots-text').textContent = 'Only ' + d.remaining + ' of 50 spots left';
+          })
+          .catch(function() {});
+      }
+
+      loadLeads();
+      loadTerritory();
+    }
+
+    // ── Auth check on boot ──
+    // The server already blocks anonymous visits to /contractor (anyone without
+    // a login session was redirected to /login before this page loaded), so by
+    // the time this script runs we should be authenticated. We still call
+    // /api/auth/me once to grab the contractor record. If that somehow fails
+    // (session expired between page load and now, etc.), we bounce to /login.
+    (async function init() {
+      try {
+        const resp = await fetch('/api/auth/me');
+        if (!resp.ok) {
+          window.location.href = '/login';
+          return;
+        }
+        bootDashboard(await resp.json());
+      } catch (e) {
+        window.location.href = '/login';
+      }
+    })();
+
+
+    // ── Mobile nav toggle ──────────────────────────────────────────────
+    function toggleMobileNav() {
+      const drawer = document.getElementById('dashMobileDrawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    function logout() {
+      fetch('/api/auth/logout', { method: 'POST' }).finally(() => {
+        window.location.href = '/login';
+      });
+    }
+
+    function copyScopingLink() {
+      const input = document.getElementById('scopingUrl');
+      input.select();
+      navigator.clipboard.writeText(input.value).then(() => {
+        const btn = document.getElementById('scopingCopyBtn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    async function loadLeads(status = '') {
+      const el = document.getElementById('leadsContainer');
+      try {
+        const url = '/api/contractors/me/leads' + (status ? `?status=${status}` : '');
+        const resp = await fetch(url);
+        if (resp.status === 401) {
+          el.innerHTML = '<div class="dash-empty"><div class="dash-empty-icon">🔒</div><h3>Session expired</h3><p>Please <a href="/login" style="color:var(--accent);font-weight:600;">log in again</a> to view your leads.</p></div>';
+          return;
+        }
+        if (!resp.ok) {
+          el.innerHTML = '<div class="dash-empty">Unable to load leads. Please try again. <button onclick="loadLeads(\u0027' + status + '\u0027)" style="background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;padding:0 4px;text-decoration:underline;font-size:inherit;">Retry</button></div>';
+          return;
+        }
+        const data = await resp.json();
+        allLeads = data.leads || [];
+        renderLeads(allLeads);
+        renderStats(allLeads);
+      } catch (e) {
+        el.innerHTML = '<div class="dash-empty">Unable to load leads. Please try again. <button onclick="loadLeads(\u0027' + status + '\u0027)" style="background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;padding:0 4px;text-decoration:underline;font-size:inherit;">Retry</button></div>';
+      }
+    }
+
+    // Build up to 3 summary chips from trade_inputs for the card view.
+    // Falls back to legacy fields for leads submitted before trade_inputs existed.
+    function buildLeadChips(lead) {
+      const ti = (typeof lead.trade_inputs === 'object' && lead.trade_inputs) ? lead.trade_inputs : {};
+      const cfg = QUESTION_CONFIG[lead.project_type];
+      const chips = [];
+
+      if (cfg && cfg.questions && Object.keys(ti).length > 0) {
+        cfg.questions.forEach(q => {
+          if (chips.length >= 3) return;
+          const raw = ti[q.id];
+          if (!raw) return;
+          const opt = q.options.find(o => o.value === raw);
+          const label = opt ? opt.label : String(raw).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          chips.push(`<span class="dash-lead-chip">${escapeHtml(label)}</span>`);
+        });
+      } else {
+        if (lead.tear_out) chips.push('<span class="dash-lead-chip">Tear-out</span>');
+        if (lead.reinforcement && lead.reinforcement !== 'none') chips.push(`<span class="dash-lead-chip">${escapeHtml(lead.reinforcement)}</span>`);
+        if (lead.has_drainage) chips.push('<span class="dash-lead-chip">Drainage</span>');
+      }
+      return chips.join('');
+    }
+
+    function renderLeads(leads) {
+      const el = document.getElementById('leadsContainer');
+      document.getElementById('leadCount').textContent = leads.length + ' lead' + (leads.length !== 1 ? 's' : '');
+
+      if (leads.length === 0) {
+        el.innerHTML = `
+          <div class="dash-empty">
+            <div class="dash-empty-icon">📋</div>
+            <h3>No Leads Available</h3>
+            <p>New leads will appear here when homeowners in your territory submit a project. Make sure you've claimed your ZIP codes in the sidebar to start receiving leads.</p>
+          </div>`;
+        return;
+      }
+
+      el.innerHTML = leads.map(lead => `
+        <div class="dash-lead-card" onclick="openDetail(${lead.id})">
+          <div class="dash-lead-header">
+            <div class="dash-lead-address">${escapeHtml(lead.address.split(',').slice(0,2).join(','))}</div>
+            <span class="dash-status-badge status-${lead.status}">${lead.status}</span>
+          </div>
+          <div class="dash-lead-meta">
+            <span class="dash-lead-name">${escapeHtml(lead.homeowner_name || 'Anonymous')}</span>
+            <span class="dash-lead-type">${(QUESTION_CONFIG[lead.project_type] || {}).label || lead.project_type}</span>
+          </div>
+          <div class="dash-lead-row">
+            ${lead.sq_footage ? `<span class="dash-lead-chip">~${Number(lead.sq_footage).toLocaleString()} sq ft</span>` : ''}
+            ${buildLeadChips(lead)}
+          </div>
+          <div class="dash-lead-footer">
+            <div class="dash-lead-estimate">${lead.estimate_low ? formatMoney(lead.estimate_low) + ' – ' + formatMoney(lead.estimate_high) : '—'}</div>
+            <div class="dash-lead-date">${timeAgo(lead.created_at)}</div>
+          </div>
+          ${lead.photos && lead.photos.length ? `<div class="dash-lead-photos">${lead.photos.map(u => `<img src="${u}" alt="project photo" class="dash-lead-thumb">`).join('')}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderStats(leads) {
+      const counts = { new: 0, contacted: 0, quoted: 0, won: 0, lost: 0 };
+      leads.forEach(l => { if (counts[l.status] !== undefined) counts[l.status]++; });
+      const total = leads.length;
+      const totalEst = leads.reduce((sum, l) => sum + ((l.estimate_low || 0) + (l.estimate_high || 0)) / 2, 0);
+      document.getElementById('sidebarStats').innerHTML = `
+        <div class="dash-stat"><span class="dash-stat-num">${total}</span><span class="dash-stat-label">Total leads</span></div>
+        <div class="dash-stat"><span class="dash-stat-num">${counts.new}</span><span class="dash-stat-label">New</span></div>
+        <div class="dash-stat"><span class="dash-stat-num">${counts.quoted}</span><span class="dash-stat-label">Quoted</span></div>
+        <div class="dash-stat"><span class="dash-stat-num">${totalEst > 0 ? formatMoney(Math.round(totalEst)) : '—'}</span><span class="dash-stat-label">Avg pipeline value</span></div>
+      `;
+    }
+
+    async function openDetail(id) {
+      try {
+        const resp = await fetch(`/api/contractors/me/leads/${id}`, { credentials: 'include' });
+        if (resp.status === 403 || resp.status === 401) { window.location.href = '/login'; return; }
+        const data = await resp.json();
+        const lead = data.lead;
+        if (!lead) return;
+        renderDetail(lead);
+        document.getElementById('detailOverlay').classList.remove('hidden');
+        // Init map after panel opens
+        if (lead.latitude && lead.longitude) {
+          setTimeout(() => initLeadMap(lead), 100);
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    function initLeadMap(lead) {
+      if (!MAPBOX_TOKEN) {
+        const mapEl = document.getElementById('leadMapContainer');
+        if (mapEl) {
+          mapEl.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:160px;background:#f5f5f0;border-radius:6px;text-align:center;padding:16px;">
+            <div style="font-size:24px;margin-bottom:8px;">🗺️</div>
+            <div style="font-size:13px;color:#666;">Set <code>MAPBOX_TOKEN</code> to show location map.</div>
+          </div>`;
+        }
+        return;
+      }
+      const mapEl = document.getElementById('leadMap');
+      if (!mapEl) return;
+
+      mapboxgl.accessToken = MAPBOX_TOKEN;
+      const map = new mapboxgl.Map({
+        container: 'leadMap',
+        style: 'mapbox://styles/mapbox/satellite-streets-v12',
+        center: [lead.longitude, lead.latitude],
+        zoom: 17,
+        interactive: false
+      });
+
+      map.on('load', () => {
+        new mapboxgl.Marker({ color: '#c8960c' })
+          .setLngLat([lead.longitude, lead.latitude])
+          .addTo(map);
+      });
+    }
+
+    // Build a human-readable Q&A block from trade_inputs + QUESTION_CONFIG labels
+    function renderTradeQA(lead) {
+      const typeCfg = QUESTION_CONFIG[lead.project_type];
+      const typeLabel = typeCfg ? typeCfg.label : (lead.project_type || 'Unknown');
+      const ti = (typeof lead.trade_inputs === 'object' && lead.trade_inputs) ? lead.trade_inputs : {};
+
+      let rows = `<div class="detail-row"><span>Type</span><strong>${escapeHtml(typeLabel)}</strong></div>`;
+      rows += lead.sq_footage ? `<div class="detail-row"><span>Area</span><strong>~${Number(lead.sq_footage).toLocaleString()} sq ft</strong></div>` : '';
+
+      if (typeCfg && typeCfg.questions && Object.keys(ti).length > 0) {
+        // Render each answered question with human label
+        typeCfg.questions.forEach(q => {
+          const raw = ti[q.id];
+          if (!raw) return;
+          const opt = q.options.find(o => o.value === raw);
+          const display = opt ? opt.label : String(raw).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          rows += `<div class="detail-row"><span>${escapeHtml(q.label)}</span><strong>${escapeHtml(display)}</strong></div>`;
+        });
+      } else {
+        // Fallback: legacy fields for old leads
+        if (lead.tear_out !== undefined) rows += `<div class="detail-row"><span>Tear-out</span><strong>${lead.tear_out ? 'Yes' : 'No'}</strong></div>`;
+        if (lead.reinforcement) rows += `<div class="detail-row"><span>Reinforcement</span><strong style="text-transform:capitalize">${escapeHtml(lead.reinforcement || 'None')}</strong></div>`;
+        if (lead.finish_type) rows += `<div class="detail-row"><span>Finish</span><strong style="text-transform:capitalize">${escapeHtml(lead.finish_type || 'Broom')}</strong></div>`;
+        if (lead.has_drainage !== undefined) rows += `<div class="detail-row"><span>Drainage</span><strong>${lead.has_drainage ? 'Yes' : 'No'}</strong></div>`;
+      }
+      return rows;
+    }
+
+    function renderDetail(lead) {
+      const photos = lead.photos || [];
+      const hasCoords = lead.latitude && lead.longitude;
+      document.getElementById('detailContent').innerHTML = `
+        <div class="detail-address">${escapeHtml(lead.address)}</div>
+        <div class="detail-status-row">
+          <span class="dash-status-badge status-${lead.status}">${lead.status}</span>
+          <select class="detail-status-select" onchange="updateStatus(${lead.id}, this.value)">
+            ${['new','contacted','quoted','won','lost'].map(s => `<option value="${s}" ${s===lead.status?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+
+        ${hasCoords ? `<div class="detail-section">
+          <div class="detail-section-title">Location</div>
+          <div id="leadMapContainer" class="detail-map-container">
+            <div id="leadMap" class="detail-map"></div>
+          </div>
+        </div>` : ''}
+
+        <div class="detail-section">
+          <div class="detail-section-title">Homeowner</div>
+          <div class="detail-row"><span>Name</span><strong>${escapeHtml(lead.homeowner_name || '—')}</strong></div>
+          <div class="detail-row"><span>Email</span><a href="mailto:${lead.homeowner_email}" class="detail-link">${escapeHtml(lead.homeowner_email || '—')}</a></div>
+          ${lead.homeowner_phone ? `<div class="detail-row"><span>Phone</span><a href="tel:${lead.homeowner_phone}" class="detail-link">${escapeHtml(lead.homeowner_phone)}</a></div>` : ''}
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">Project Details</div>
+          ${renderTradeQA(lead)}
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">Ballpark Estimate</div>
+          <div class="detail-estimate">${lead.estimate_low ? formatMoney(lead.estimate_low) + ' – ' + formatMoney(lead.estimate_high) : 'Insufficient data'}</div>
+        </div>
+
+        ${lead.notes ? `<div class="detail-section"><div class="detail-section-title">Homeowner Notes</div><div class="detail-notes">${escapeHtml(lead.notes)}</div></div>` : ''}
+
+        ${photos.length ? `<div class="detail-section">
+          <div class="detail-section-title">Photos (${photos.length})</div>
+          <div class="detail-photos">${photos.map(u => `<a href="${u}" target="_blank"><img src="${u}" alt="project" class="detail-photo"></a>`).join('')}</div>
+        </div>` : ''}
+
+        <div class="detail-section">
+          <div class="detail-section-title">Submitted</div>
+          <div class="detail-row"><span>Date</span><strong>${new Date(lead.created_at).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'})}</strong></div>
+        </div>
+
+        <div class="detail-actions">
+          <a href="mailto:${lead.homeowner_email}?subject=Your Concrete Project at ${encodeURIComponent(lead.address.split(',')[0])}" class="scope-btn-primary" style="text-decoration:none;font-size:14px;">Email Homeowner</a>
+          ${lead.homeowner_phone ? `<a href="tel:${lead.homeowner_phone}" class="scope-btn-secondary" style="text-decoration:none;font-size:14px;">Call</a>` : ''}
+        </div>
+
+        ${(lead.routed_to_contractor_id && state.contractor && lead.routed_to_contractor_id === state.contractor.id && (!lead.lead_status || lead.lead_status === 'routed')) ? `
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+          <button onclick="openPassModal(${lead.id})" style="width:100%;background:transparent;border:1.5px solid #e0a0a0;color:#c05050;border-radius:5px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;" onmouseover="this.style.background='rgba(255,80,80,0.07)'" onmouseout="this.style.background='transparent'">
+            Not the right fit? Pass this lead →
+          </button>
+        </div>` : ''}
+
+      `;
+    }
+
+    async function updateStatus(id, status) {
+      try {
+        await fetch(`/api/contractors/me/leads/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status }),
+          credentials: 'include'
+        });
+        await loadLeads(currentFilter);
+        const lead = allLeads.find(l => l.id === id);
+        if (lead) { lead.status = status; renderDetail(lead); }
+      } catch (e) { console.error('status update failed:', e); }
+    }
+
+    function closeDetail(event) {
+      if (event.target === document.getElementById('detailOverlay')) closeDetailPanel();
+    }
+    function closeDetailPanel() {
+      document.getElementById('detailOverlay').classList.add('hidden');
+    }
+
+    document.querySelectorAll('.dash-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.dash-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.status;
+        loadLeads(currentFilter);
+      });
+    });
+
+    function formatMoney(n) { return '$' + Number(n).toLocaleString('en-US'); }
+    function escapeHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function timeAgo(dateStr) {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 60) return mins + 'm ago';
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      const days = Math.floor(hrs / 24);
+      return days + 'd ago';
+    }
+
+    // ── Territory management ────────────────────────────────────────────────
+    let territoryData = null; // cached API response
+
+    async function loadTerritory() {
+      try {
+        const resp = await fetch('/api/territory/my-claims', { credentials: 'include' });
+        if (!resp.ok) return;
+        territoryData = await resp.json();
+        renderTerritory(territoryData);
+        document.getElementById('territoryCard').style.display = 'block';
+        // Load SLA performance card whenever territory is shown
+        loadSlaStats();
+      } catch (e) { console.error('territory load error:', e); }
+    }
+
+    // SLA status → badge color
+    const SLA_STATUS_STYLE = {
+      active:    { bg: '#1a472a', color: '#68d391', label: 'Active'    },
+      at_risk:   { bg: '#4a2a00', color: '#f6ad55', label: 'At Risk'   },
+      suspended: { bg: '#4a0a0a', color: '#fc8181', label: 'Suspended' },
+    };
+
+    function renderTerritory(data) {
+      const { claims, count, max, free_included } = data;
+      const activeClaims = claims.filter(c => c.status !== 'released');
+
+      // Cap info
+      document.getElementById('territoryCapInfo').textContent =
+        `${count} of ${max} zip codes claimed — ${free_included} included free`;
+
+      // Zip list with SLA status badges
+      const listEl = document.getElementById('territoryZipList');
+      if (activeClaims.length === 0) {
+        listEl.innerHTML = '<div class="territory-empty">No zip codes claimed yet. Claim your first one free.</div>';
+      } else {
+        listEl.innerHTML = activeClaims.map(c => {
+          const planBadgeClass = c.is_included_in_plan ? 'territory-zip-badge--free' : 'territory-zip-badge--paid';
+          const planBadgeText = c.is_included_in_plan ? 'Included' : '$79/mo';
+          // SLA status badge with color
+          const slaStyle = SLA_STATUS_STYLE[c.status] || SLA_STATUS_STYLE.active;
+          const slaBadge = `<span class="territory-sla-badge" style="background:${slaStyle.bg};color:${slaStyle.color};">${slaStyle.label}</span>`;
+          return `
+            <div class="territory-zip-item">
+              <span class="territory-zip-code">${escapeHtml(c.zip_code)}</span>
+              <span class="territory-zip-badge ${planBadgeClass}">${planBadgeText}</span>
+              ${slaBadge}
+              <button class="territory-release-btn" onclick="releaseClaim(${c.id}, '${escapeHtml(c.zip_code)}')">Release</button>
+            </div>`;
+        }).join('');
+      }
+
+      // Show claim form only if under cap
+      const formEl = document.getElementById('territoryClaimForm');
+      formEl.style.display = count < max ? 'flex' : 'none';
+
+      // Update hint
+      const hintEl = document.getElementById('territoryHint');
+      if (count >= max) {
+        hintEl.textContent = `Maximum of ${max} zip codes reached.`;
+        hintEl.className = 'territory-hint territory-hint--err';
+      } else if (count >= free_included) {
+        hintEl.textContent = `Additional zips are $79/mo each.`;
+        hintEl.className = 'territory-hint territory-hint--info';
+      } else {
+        hintEl.textContent = 'Your first zip code is included free.';
+        hintEl.className = 'territory-hint territory-hint--info';
+      }
+    }
+
+    async function loadSlaStats() {
+      try {
+        const resp = await fetch('/api/territory/sla-stats', { credentials: 'include' });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        renderPerfCard(data);
+        document.getElementById('perfCard').style.display = 'block';
+      } catch (e) { console.error('sla stats error:', e); }
+    }
+
+    function renderPerfCard(data) {
+      const el = document.getElementById('perfContent');
+      if (!data.has_data) {
+        el.innerHTML = `<div class="territory-empty" style="font-size:12px;">${data.message || 'No leads yet.'}</div>`;
+        return;
+      }
+
+      const respHours = data.rolling_avg_response_hours;
+      const ratingPct = data.rolling_rating_pct;
+      const slaHours  = data.sla_response_hours || 48;
+      const slaRating = data.sla_rating_min || 75;
+      const streak    = data.breach_streak || 0;
+
+      // Response time row
+      const respOk = respHours === null || respHours <= slaHours;
+      const respColor = respOk ? '#68d391' : '#f6ad55';
+      const respVal = respHours !== null ? `${respHours}h avg` : '—';
+      const respGoal = `goal: <${slaHours}h`;
+
+      // Rating row
+      const ratingOk = ratingPct === null || ratingPct >= slaRating;
+      const ratingColor = ratingOk ? '#68d391' : '#f6ad55';
+      const ratingVal = ratingPct !== null ? `${ratingPct}% ★4+` : '—';
+      const ratingGoal = `goal: ≥${slaRating}%`;
+
+      // At-risk status indicator
+      const atRiskBanner = data.at_risk_reason
+        ? `<div style="background:#4a2a00;border:1px solid #c05000;border-radius:5px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:#f6ad55;line-height:1.5;">
+            ⚠️ <strong>At risk</strong> — ${streak >= 3 ? 'Respond faster or rating will drop further.' : 'One more breach window triggers suspension.'} Check leads below.
+           </div>`
+        : '';
+
+      el.innerHTML = `
+        ${atRiskBanner}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div class="perf-metric">
+            <div class="perf-metric-val" style="color:${respColor};">${respVal}</div>
+            <div class="perf-metric-label">Response time</div>
+            <div class="perf-metric-goal">${respGoal}</div>
+          </div>
+          <div class="perf-metric">
+            <div class="perf-metric-val" style="color:${ratingColor};">${ratingVal}</div>
+            <div class="perf-metric-label">Homeowner rating</div>
+            <div class="perf-metric-goal">${ratingGoal}</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;">Rolling ${data.leads_evaluated} lead window</div>
+      `;
+    }
+
+    async function checkAndClaim() {
+      const input = document.getElementById('territoryZipInput');
+      const btn = document.getElementById('territoryClaimBtn');
+      const hintEl = document.getElementById('territoryHint');
+      const zip = input.value.trim();
+
+      if (!/^\d{5}$/.test(zip)) {
+        input.classList.add('error');
+        hintEl.textContent = 'Enter a valid 5-digit ZIP code.';
+        hintEl.className = 'territory-hint territory-hint--err';
+        return;
+      }
+      input.classList.remove('error');
+      btn.disabled = true;
+      btn.textContent = 'Checking…';
+      hintEl.textContent = '';
+
+      try {
+        // Check availability first
+        const avResp = await fetch(`/api/territory/availability?zip=${zip}`);
+        const avData = await avResp.json();
+        if (!avData.available) {
+          hintEl.textContent = 'Owned by another contractor.';
+          hintEl.className = 'territory-hint territory-hint--err';
+          btn.disabled = false;
+          btn.textContent = 'Claim';
+          return;
+        }
+
+        // Attempt claim
+        const claimResp = await fetch('/api/territory/claim', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ zip_code: zip }),
+          credentials: 'include'
+        });
+        const claimData = await claimResp.json();
+
+        if (claimResp.status === 402 && claimData.code === 'PAYMENT_REQUIRED') {
+          // Redirect to Stripe for paid claim — store zip in sessionStorage so we can finish on return
+          sessionStorage.setItem('pending_zip_claim', zip);
+          hintEl.textContent = 'Redirecting to checkout for $79/mo…';
+          hintEl.className = 'territory-hint territory-hint--info';
+          setTimeout(() => { window.location.href = claimData.stripe_url; }, 800);
+          return;
+        }
+
+        if (claimResp.ok && claimData.success) {
+          hintEl.textContent = `✓ ZIP ${zip} claimed!`;
+          hintEl.className = 'territory-hint territory-hint--ok';
+          input.value = '';
+          await loadTerritory(); // Refresh
+        } else {
+          hintEl.textContent = claimData.error || 'Failed to claim zip.';
+          hintEl.className = 'territory-hint territory-hint--err';
+        }
+      } catch (e) {
+        hintEl.textContent = 'Network error — please try again.';
+        hintEl.className = 'territory-hint territory-hint--err';
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Claim';
+    }
+
+    async function releaseClaim(claimId, zipCode) {
+      if (!confirm(`Release ZIP ${zipCode}? This returns it to the open pool immediately.`)) return;
+      try {
+        const resp = await fetch(`/api/territory/claim/${claimId}`, { method: 'DELETE', credentials: 'include' });
+        const data = await resp.json();
+        if (resp.ok && data.success) {
+          await loadTerritory();
+        } else {
+          alert(data.error || 'Failed to release zip code.');
+        }
+      } catch (e) {
+        alert('Network error — please try again.');
+      }
+    }
+
+    // After Stripe redirect back, finish the paid claim if session_id is present
+    (function handlePostStripeReturn() {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get('session_id');
+      const pendingZip = sessionStorage.getItem('pending_zip_claim');
+      if (sessionId && pendingZip) {
+        sessionStorage.removeItem('pending_zip_claim');
+        fetch('/api/territory/claim', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ zip_code: pendingZip, session_id: sessionId }),
+          credentials: 'include'
+        }).then(async r => {
+          const d = await r.json();
+          if (r.ok && d.success) {
+            // Clean URL, reload territory
+            window.history.replaceState({}, '', '/contractor');
+            loadTerritory();
+          } else {
+            alert(d.error || 'Could not activate zip code after payment. Contact support.');
+          }
+        }).catch(() => {
+          alert('Could not finalize zip code claim. Contact support@polsia.com');
+        });
+      }
+    })();
+
+    // ── Pass lead modal ──────────────────────────────────────────────────
+    let passLeadId = null;
+
+    function openPassModal(leadId) {
+      passLeadId = leadId;
+      document.getElementById('passReasonSelect').value = '';
+      document.getElementById('passReasonOther').value = '';
+      document.getElementById('passReasonOtherWrap').style.display = 'none';
+      document.getElementById('passConfirmBtn').disabled = false;
+      document.getElementById('passConfirmBtn').textContent = 'Pass This Lead';
+      document.getElementById('passModal').classList.remove('hidden');
+    }
+
+    function closePassModal() {
+      document.getElementById('passModal').classList.add('hidden');
+      passLeadId = null;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const sel = document.getElementById('passReasonSelect');
+      if (sel) {
+        sel.addEventListener('change', () => {
+          document.getElementById('passReasonOtherWrap').style.display = sel.value === 'other' ? 'block' : 'none';
+        });
+      }
+    });
+
+    async function confirmPass() {
+      if (!passLeadId) return;
+      const sel = document.getElementById('passReasonSelect');
+      let reason = sel.value;
+      if (reason === 'other') {
+        const txt = document.getElementById('passReasonOther').value.trim();
+        reason = txt ? 'other: ' + txt : 'other';
+      }
+
+      const btn = document.getElementById('passConfirmBtn');
+      btn.disabled = true;
+      btn.textContent = 'Passing…';
+
+      try {
+        const resp = await fetch(`/api/leads/${passLeadId}/pass`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: reason || null }),
+          credentials: 'include'
+        });
+        const data = await resp.json();
+
+        if (resp.ok && data.success) {
+          closePassModal();
+          closeDetailPanel();
+          // Remove the lead card from the grid
+          allLeads = allLeads.filter(l => l.id !== passLeadId);
+          loadLeads(currentFilter);
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Pass This Lead';
+          alert(data.error || 'Could not pass lead. Please try again.');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Pass This Lead';
+        alert('Network error — please try again.');
+      }
+    }
+
+    // Live zip availability hint while typing
+    let zipCheckTimer = null;
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('territoryZipInput');
+      if (!input) return;
+      input.addEventListener('input', () => {
+        clearTimeout(zipCheckTimer);
+        const zip = input.value.trim();
+        const hintEl = document.getElementById('territoryHint');
+        if (zip.length === 5 && /^\d{5}$/.test(zip)) {
+          input.classList.remove('error');
+          hintEl.textContent = 'Checking…';
+          hintEl.className = 'territory-hint territory-hint--info';
+          zipCheckTimer = setTimeout(async () => {
+            try {
+              const r = await fetch(`/api/territory/availability?zip=${zip}`);
+              const d = await r.json();
+              hintEl.textContent = d.available ? `✓ ZIP ${zip} is available` : 'Owned by another contractor.';
+              hintEl.className = d.available ? 'territory-hint territory-hint--ok' : 'territory-hint territory-hint--err';
+            } catch (_) {}
+          }, 400);
+        }
+      });
+    });
+  </script>
+
+  <style>
+    .contractor-footer {
+      background: #0a0a12;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 28px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .contractor-footer-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: rgba(255,255,255,0.5);
+    }
+    .contractor-footer-links {
+      display: flex;
+      gap: 20px;
+    }
+    .contractor-footer-link {
+      font-size: 13px;
+      color: rgba(150,150,180,0.4);
+      transition: color 0.2s;
+    }
+    .contractor-footer-link:hover { color: rgba(200,150,12,0.7); text-decoration: none; }
+    .contractor-footer-copy {
+      font-size: 12px;
+      color: rgba(150,150,180,0.3);
+    }
+    @media (max-width: 600px) {
+      .contractor-footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+
+  <footer class="contractor-footer">
+    <div class="contractor-footer-logo">Scopilot</div>
+    <div class="contractor-footer-links">
+      <a href="/#manifesto" class="contractor-footer-link">About</a>
+      <a href="/#features" class="contractor-footer-link">Features</a>
+      <a href="/founding" class="contractor-footer-link">Founding Member</a>
+      <a href="/terms.html" class="contractor-footer-link">Terms</a>
+      <a href="/privacy.html" class="contractor-footer-link">Privacy</a>
+    </div>
+    <div class="contractor-footer-copy">© 2026 <a href="https://connectinfinitely.org" target="_blank" style="color:inherit;text-decoration:none;">Two Wolves Ventures LLC d/b/a Infinite Horizons Solutions</a></div>
+  </footer>
+
+</body>
+</html>

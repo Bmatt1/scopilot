@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contractor Sign Up — Scopilot</title>
+  <meta name="description" content="Create your Scopilot contractor account. Get qualified leads with photos, measurements, and project details for concrete, excavation, and drainage work. Stop driving to dead leads.">
+  <link rel="canonical" href="https://scopilot.polsia.app/signup.html">
+  <link rel="sitemap" type="application/xml" title="Scopilot Sitemap" href="/sitemap.xml">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scopilot.polsia.app/signup.html">
+  <meta property="og:title" content="Contractor Sign Up — Scopilot">
+  <meta property="og:description" content="Create your Scopilot contractor account. Get qualified leads with photos, measurements, and project details for concrete, excavation, and drainage work.">
+  <meta property="og:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/1ef83cd9-4f83-4494-914d-eea012230a10.jpg">
+  <meta property="og:site_name" content="Scopilot">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Contractor Sign Up — Scopilot">
+  <meta name="twitter:description" content="Get qualified concrete, excavation, and drainage leads. Create your free contractor account.">
+  <meta name="twitter:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/1ef83cd9-4f83-4494-914d-eea012230a10.jpg">
+
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    body { background: var(--bg-alt); }
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+    .auth-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 480px;
+    }
+    .auth-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--fg);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      text-decoration: none;
+      display: block;
+    }
+    .auth-tagline {
+      font-size: 14px;
+      color: var(--fg-muted);
+      margin-bottom: 32px;
+    }
+    .auth-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--fg);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+    }
+    .auth-sub {
+      font-size: 14px;
+      color: var(--fg-muted);
+      margin-bottom: 28px;
+    }
+    .auth-form { display: flex; flex-direction: column; gap: 4px; }
+    .auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .auth-field { display: flex; flex-direction: column; gap: 6px; }
+    .auth-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fg);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .auth-input {
+      padding: 12px 14px;
+      font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      color: var(--fg);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .auth-input:focus { border-color: var(--accent); }
+    .auth-error {
+      background: #fff0f0;
+      border: 1px solid #f5a0a0;
+      color: #c0392b;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .auth-btn {
+      padding: 14px;
+      background: var(--accent);
+      color: var(--fg);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+    .auth-btn:hover { opacity: 0.85; }
+    .auth-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+    .auth-footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+    .auth-success {
+      background: #f0fff4;
+      border: 1px solid #68d391;
+      color: #276749;
+      padding: 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    /* Auth page nav */
+    .auth-nav {
+      background: var(--fg);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .auth-nav-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--bg);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .auth-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .auth-nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(200,200,220,0.75);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 5px;
+      transition: color 0.2s;
+    }
+    .auth-nav-link:hover { color: var(--bg); }
+    .auth-nav-link--accent { color: var(--accent); font-weight: 600; }
+    .auth-nav-link--accent:hover { color: #e0b020; }
+    .auth-nav-estimate {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fg);
+      background: var(--accent);
+      padding: 8px 16px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      margin-left: 8px;
+    }
+    .auth-nav-estimate:hover { opacity: 0.85; }
+    @media (max-width: 600px) {
+      .auth-nav { padding: 0 20px; }
+      .auth-nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Auth page nav -->
+  <nav class="auth-nav">
+    <a href="/" class="auth-nav-logo">Scopilot</a>
+    <div class="auth-nav-links">
+      <a href="/#features" class="auth-nav-link">Features</a>
+      <a href="/#manifesto" class="auth-nav-link">About</a>
+      <a href="/founding" class="auth-nav-link auth-nav-link--accent">For Contractors</a>
+      <a href="/scope.html" class="auth-nav-estimate">Get a Free Estimate</a>
+    </div>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">Scopilot</div>
+      <div class="auth-tagline">Contractor lead generation — Owensboro &amp; Western KY</div>
+
+      <!-- Founding member offer banner -->
+      <a href="/founding" style="display:flex;align-items:center;gap:10px;background:rgba(200,150,12,0.08);border:1px solid rgba(200,150,12,0.3);border-radius:7px;padding:12px 16px;margin-bottom:24px;text-decoration:none;">
+        <span style="font-size:20px;">🏅</span>
+        <span style="font-size:13px;line-height:1.5;">
+          <strong style="display:block;color:#7a5500;font-weight:700;">Founding Member — $1,500 lifetime</strong>
+          <span style="color:#9a7a30;">50 spots. 7 days. After that: $249/mo. <u>See the offer →</u></span>
+        </span>
+      </a>
+
+      <div class="auth-title">Create your account</div>
+      <div class="auth-sub">Get a unique link to share with homeowners in your area.</div>
+
+      <div id="authError" class="auth-error"></div>
+      <div id="authSuccess" class="auth-success"></div>
+
+      <form class="auth-form" id="signupForm" novalidate>
+        <div class="auth-field">
+          <label class="auth-label" for="business_name">Business Name *</label>
+          <input class="auth-input" type="text" id="business_name" name="business_name" placeholder="Henderson Concrete Co" required>
+        </div>
+
+        <div class="auth-row">
+          <div class="auth-field">
+            <label class="auth-label" for="owner_name">Owner Name *</label>
+            <input class="auth-input" type="text" id="owner_name" name="owner_name" placeholder="John Smith" required>
+          </div>
+          <div class="auth-field">
+            <label class="auth-label" for="phone">Phone</label>
+            <input class="auth-input" type="tel" id="phone" name="phone" placeholder="(270) 555-0100">
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="email">Email *</label>
+          <input class="auth-input" type="email" id="email" name="email" placeholder="john@hendersonconcrete.com" required>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="password">Password *</label>
+          <input class="auth-input" type="password" id="password" name="password" placeholder="At least 8 characters" minlength="8" required>
+        </div>
+
+        <div class="auth-row">
+          <div class="auth-field">
+            <label class="auth-label" for="trade_type">Trade *</label>
+            <select class="auth-input" id="trade_type" name="trade_type" required>
+              <option value="">Select trade…</option>
+              <option value="concrete">Concrete</option>
+              <option value="excavation">Excavation</option>
+              <option value="drainage">Drainage</option>
+              <option value="grading">Grading</option>
+              <option value="demolition">Demolition</option>
+            </select>
+          </div>
+          <div class="auth-field">
+            <label class="auth-label" for="service_area">Service Area</label>
+            <input class="auth-input" type="text" id="service_area" name="service_area" placeholder="Owensboro, KY">
+          </div>
+        </div>
+
+        <button class="auth-btn" type="submit" id="submitBtn">Create Account →</button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? <a href="/login">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/track.js"></script>
+  <script>
+    // Fire signup_started on page load
+    Scopilot.track('contractor_signup_started', { path: location.pathname });
+
+    const form = document.getElementById('signupForm');
+    const errorEl = document.getElementById('authError');
+    const successEl = document.getElementById('authSuccess');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account…';
+
+      const data = {
+        business_name: document.getElementById('business_name').value.trim(),
+        owner_name: document.getElementById('owner_name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        phone: document.getElementById('phone').value.trim(),
+        trade_type: document.getElementById('trade_type').value,
+        service_area: document.getElementById('service_area').value.trim()
+      };
+
+      if (!data.business_name || !data.owner_name || !data.email || !data.password || !data.trade_type) {
+        errorEl.textContent = 'Please fill in all required fields.';
+        errorEl.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account →';
+        return;
+      }
+
+      if (data.password.length < 8) {
+        errorEl.textContent = 'Password must be at least 8 characters.';
+        errorEl.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account →';
+        return;
+      }
+
+      try {
+        const resp = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const json = await resp.json();
+
+        if (!resp.ok) {
+          errorEl.textContent = json.error || 'Signup failed. Please try again.';
+          errorEl.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account →';
+          return;
+        }
+
+        window.location.href = '/contractor';
+      } catch (err) {
+        errorEl.textContent = 'Network error. Please try again.';
+        errorEl.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account →';
+      }
+    });
+  </script>
+
+  <style>
+    .signup-footer {
+      background: #0a0a12;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 28px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .signup-footer-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: rgba(255,255,255,0.5);
+    }
+    .signup-footer-links {
+      display: flex;
+      gap: 20px;
+    }
+    .signup-footer-link {
+      font-size: 13px;
+      color: rgba(150,150,180,0.4);
+      transition: color 0.2s;
+    }
+    .signup-footer-link:hover { color: rgba(200,150,12,0.7); text-decoration: none; }
+    .signup-footer-copy {
+      font-size: 12px;
+      color: rgba(150,150,180,0.3);
+    }
+    @media (max-width: 600px) {
+      .signup-footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+
+  <footer class="signup-footer">
+    <div class="signup-footer-logo">Scopilot</div>
+    <div class="signup-footer-links">
+      <a href="/#manifesto" class="signup-footer-link">About</a>
+      <a href="/#features" class="signup-footer-link">Features</a>
+      <a href="/founding" class="signup-footer-link">Founding Member</a>
+      <a href="/terms.html" class="signup-footer-link">Terms</a>
+      <a href="/privacy.html" class="signup-footer-link">Privacy</a>
+    </div>
+    <div class="signup-footer-copy">© 2026 <a href="https://connectinfinitely.org" target="_blank" style="color:inherit;text-decoration:none;">Two Wolves Ventures LLC d/b/a Infinite Horizons Solutions</a></div>
+  </footer>
+
+</body>
+</html>

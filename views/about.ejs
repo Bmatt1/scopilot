@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Scopilot Works — Lead Intelligence for Concrete & Excavation Contractors</title>
+  <meta name="description" content="Scopilot helps homeowners scope concrete, excavation, and drainage projects in 5 minutes. Contractors receive qualified leads with photos, measurements, and project details. Serving Owensboro, Henderson, and Western Kentucky.">
+  <link rel="canonical" href="https://scopilot.polsia.app/about">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scopilot.polsia.app/about">
+  <meta property="og:title" content="How Scopilot Works — Scopilot">
+  <meta property="og:description" content="Homeowners scope concrete and excavation projects in 5 minutes. Contractors get qualified leads with full details.">
+  <meta property="og:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/1ef83cd9-4f83-4494-914d-eea012230a10.jpg">
+  <meta property="og:site_name" content="Scopilot">
+  <link rel="sitemap" type="application/xml" title="Scopilot Sitemap" href="/sitemap.xml">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="How Scopilot Works">
+  <meta name="twitter:description" content="Lead intelligence for concrete and excavation contractors.">
+  <meta name="twitter:image" content="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/generated-images/company_137902/1ef83cd9-4f83-4494-914d-eea012230a10.jpg">
+
+  <!-- Geo -->
+  <meta name="geo.region" content="US-KY">
+  <meta name="geo.placename" content="Owensboro">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/css/theme.css">
+
+  <style>
+    body { margin: 0; background: #f9f7f2; font-family: 'DM Sans', sans-serif; }
+    .about-hero {
+      background: #1a1a2e;
+      color: white;
+      padding: 80px 24px 64px;
+      text-align: center;
+    }
+    .about-hero .label {
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #c8960c;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    .about-hero h1 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      margin: 0 0 20px;
+      line-height: 1.1;
+    }
+    .about-hero p {
+      font-size: 18px;
+      color: rgba(255,255,255,0.75);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+    .about-hero .cta-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .about-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 64px 24px;
+      border-bottom: 1px solid #e0d9c8;
+    }
+    .about-section:last-child { border-bottom: none; }
+    .about-section .label {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #c8960c;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .about-section h2 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin: 0 0 20px;
+    }
+    .about-section p {
+      font-size: 17px;
+      color: #555;
+      line-height: 1.7;
+      margin: 0 0 16px;
+    }
+    .about-section p:last-child { margin-bottom: 0; }
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: 24px 0 0;
+      counter-reset: steps;
+    }
+    .step-list li {
+      counter-increment: steps;
+      display: flex;
+      gap: 20px;
+      margin-bottom: 28px;
+      align-items: flex-start;
+    }
+    .step-list li::before {
+      content: counter(steps, decimal-leading-zero);
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #c8960c;
+      min-width: 44px;
+      line-height: 1.3;
+    }
+    .step-list li strong {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+    .step-list li span {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .area-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .area-chip {
+      background: white;
+      border: 1px solid #e0d9c8;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 15px;
+      color: #1a1a2e;
+      font-weight: 500;
+    }
+    .faq-item {
+      border-bottom: 1px solid #e0d9c8;
+      padding: 20px 0;
+    }
+    .faq-item:first-child { padding-top: 0; }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin: 0 0 10px;
+    }
+    .faq-a {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.7;
+      margin: 0;
+    }
+    .about-footer {
+      background: #1a1a2e;
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 14px;
+    }
+    .about-footer a { color: #c8960c; text-decoration: none; }
+    .about-footer a:hover { text-decoration: underline; }
+    .about-nav {
+      background: #1a1a2e;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .about-nav-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: white;
+      text-decoration: none;
+    }
+    .about-nav a.cta-link {
+      background: #c8960c;
+      color: #1a1a2e;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .about-nav a.cta-link:hover { background: #d4a412; }
+  </style>
+
+  <!-- LocalBusiness JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Scopilot",
+    "description": "Lead intelligence platform connecting homeowners with concrete, excavation, and drainage contractors in Owensboro and Western Kentucky.",
+    "url": "https://scopilot.polsia.app",
+    "areaServed": [
+      {"@type": "City", "name": "Owensboro", "addressRegion": "KY"},
+      {"@type": "City", "name": "Henderson", "addressRegion": "KY"},
+      {"@type": "City", "name": "Evansville", "addressRegion": "IN"},
+      {"@type": "State", "name": "Kentucky"},
+      {"@type": "State", "name": "Indiana"}
+    ],
+    "serviceType": ["Concrete Contractor Leads", "Excavation Contractor Leads", "Drainage Contractor Leads"]
+  }
+  </script>
+
+  <!-- Organization JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Scopilot",
+    "url": "https://scopilot.polsia.app",
+    "description": "Lead intelligence for concrete, excavation, and drainage contractors."
+  }
+  </script>
+
+  <!-- FAQPage JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is Scopilot?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Scopilot is a lead intelligence platform for concrete, excavation, and drainage contractors. Homeowners scope their own project — address, measurements, photos, project details — in about 5 minutes. Contractors receive qualified leads in their inbox with full project details, so they can quote accurately and skip the wasted site visits."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does Scopilot work for contractors?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Contractors get a dashboard where incoming leads appear with full project details: address with satellite map view, approximate square footage, project type (concrete/excavation/drainage), tear-out requirements, reinforcement needs, finish type, drainage requirements, uploaded site photos, and a ballpark estimate range. You decide which leads to pursue — no guesswork, no wasted drives."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does Scopilot work for homeowners?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Homeowners visit Scopilot, enter their address (or use their current location), draw the project area on a satellite map, answer a few guided questions about the project, upload up to 3 photos, and provide their contact info. The whole process takes about 5 minutes and is completely free. They receive a ballpark estimate and a local contractor reaches out within 24 hours."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What areas does Scopilot serve?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Scopilot currently serves Owensboro and Henderson in Kentucky, the Evansville area in Indiana, and the broader Western Kentucky and Southern Indiana tri-state region. We are expanding to additional areas — contact us if you'd like to be notified when your area is added."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much does Scopilot cost?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Scopilot is free for homeowners. Contractors pay for access to the lead dashboard. Contact us for current pricing and plans."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What project types does Scopilot handle?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Scopilot handles three main project categories: concrete (driveways, pads, slabs, garage floors, footers, basements), excavation (pond digging, site prep, grading, land clearing, utility trenching), and drainage (French drains, culverts, retention systems, swale grading, sump pump installations)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How accurate are the ballpark estimates?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The ballpark estimate is based on square footage and project parameters — base concrete typically runs $6 to $10 per square foot, with additions for tear-out ($2–$4/sq ft), reinforcement (rebar or fiber mesh), finish type (stamped, exposed aggregate, smooth trowel), and drainage ($500–$1,200). Final quotes from contractors will vary based on site access, soil conditions, and local material and labor pricing."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Will my contact information be shared publicly?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Your contact information is only shared with the contractor who receives your lead. It is not published on any public directory, website, or listing. The contractor uses your information solely to follow up with a quote for your project."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need to create an account to scope a project?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No account or app download is required. Homeowners complete the entire scoping process in a web browser in about 5 minutes. Just visit scopilot.polsia.app/scope.html to get started."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How quickly will a contractor contact me?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Contractors typically review new leads and reach out within 24 hours. The exact response time depends on the contractor and their current workload, but Scopilot ensures your project details arrive in their inbox immediately after submission so they can respond quickly."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <nav class="about-nav">
+    <a href="/" class="about-nav-logo">Scopilot</a>
+    <a href="/scope.html" class="cta-link">Scope a Project</a>
+  </nav>
+
+  <header class="about-hero">
+    <div class="label">How It Works</div>
+    <h1>Scopilot connects homeowners<br>with qualified contractors.</h1>
+    <p>Homeowners scope their project in 5 minutes. Contractors receive qualified leads with full details. No wasted drives. No phone tag. Just better leads.</p>
+    <div class="cta-row">
+      <a href="/scope.html" style="background:#c8960c;color:#1a1a2e;padding:12px 28px;border-radius:8px;font-weight:600;text-decoration:none;font-size:16px;">Scope a Project →</a>
+      <a href="/contractor" style="border:1px solid rgba(255,255,255,0.3);color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:16px;">Contractor Dashboard</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="about-section">
+      <div class="label">What Is Scopilot</div>
+      <h2 id="what-is">Scopilot is a lead intelligence platform for concrete, excavation, and drainage contractors.</h2>
+      <p>Instead of relying on phone calls, Facebook Messenger, and word-of-mouth — sources that produce vague, unqualified leads — Scopilot lets homeowners do the scoping work themselves. They enter their address, draw the project area on a satellite map, answer the questions contractors actually need answered, and upload site photos.</p>
+      <p>You receive a complete project brief in your inbox: address, satellite imagery, approximate measurements, project type, finish details, drainage requirements, photos, and a ballpark estimate range. You decide whether to pursue it — with real information, not guesswork.</p>
+    </section>
+
+    <section class="about-section">
+      <div class="label">For Homeowners</div>
+      <h2 id="for-homeowners">How it works for homeowners</h2>
+      <p>Scopilot is free for homeowners. No account needed. No app to download. Just a web browser and 5 minutes.</p>
+      <ol class="step-list">
+        <li>
+          <div>
+            <strong>Enter your address</strong>
+            <span>Type your address or tap "Use My Location" to let your browser find you. Satellite imagery of your property loads automatically.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Draw the project area</strong>
+            <span>Use the polygon drawing tool to trace the zone where work will happen — driveway, pour pad, excavation zone, drainage path. Square footage is calculated automatically.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Answer a few questions</strong>
+            <span>Guided questions based on your project type: Is there existing concrete to tear out? What reinforcement do you want? Broom finish or stamped? Drainage concerns? These are the questions contractors wish everyone answered upfront.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Upload up to 3 site photos</strong>
+            <span>Existing conditions, access points, problem areas — photos help contractors assess the site before they ever arrive. Takes 30 seconds on a phone.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Submit and get a ballpark estimate</strong>
+            <span>Enter your name and email, agree to be contacted, and submit. You'll see a ballpark range instantly. A local contractor reviews your scope and reaches out with a real quote — typically within 24 hours.</span>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="about-section">
+      <div class="label">For Contractors</div>
+      <h2 id="for-contractors">How it works for contractors</h2>
+      <p>Your Scopilot dashboard shows every incoming lead with full project details. No more chasing vague inquiries.</p>
+      <ol class="step-list">
+        <li>
+          <div>
+            <strong>A new lead arrives in your dashboard</strong>
+            <span>You'll see the homeowner's address, satellite map view, and approximate square footage at a glance. Filter by status (new, contacted, quoted, won, lost) to manage your pipeline.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Open the lead to see the full scope</strong>
+            <span>Every lead includes: project type, tear-out requirements, reinforcement type, finish style, drainage needs, uploaded site photos, project notes, and a ballpark estimate range.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Contact the homeowner directly</strong>
+            <span>Click to email or call the homeowner — no middleman. Your contact info goes directly to them. No platform commission on the work you book.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Update lead status as you work</strong>
+            <span>Mark leads as contacted, quoted, won, or lost to track your pipeline and know where to focus your follow-up effort.</span>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="about-section">
+      <div class="label">Areas We Serve</div>
+      <h2 id="service-area">Serving the tri-state region</h2>
+      <p>Scopilot currently serves contractors and homeowners in Western Kentucky and Southern Indiana, with a focus on the Owensboro–Henderson–Evansville corridor.</p>
+      <div class="area-grid">
+        <div class="area-chip">Owensboro, KY</div>
+        <div class="area-chip">Henderson, KY</div>
+        <div class="area-chip">Evansville, IN</div>
+        <div class="area-chip">Newburgh, IN</div>
+        <div class="area-chip">Boonville, IN</div>
+        <div class="area-chip">Madisonville, KY</div>
+        <div class="area-chip">Beaver Dam, KY</div>
+        <div class="area-chip">Mount Vernon, IN</div>
+        <div class="area-chip">Morganfield, KY</div>
+        <div class="area-chip">Rockport, IN</div>
+        <div class="area-chip">Western Kentucky</div>
+        <div class="area-chip">Southern Indiana</div>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <div class="label">Frequently Asked Questions</div>
+      <h2 id="faq">Questions contractors and homeowners ask</h2>
+
+      <div class="faq-item">
+        <p class="faq-q">What is Scopilot?</p>
+        <p class="faq-a">Scopilot is a lead intelligence platform for concrete, excavation, and drainage contractors. Homeowners scope their own project — address, measurements, photos, project details — in about 5 minutes. Contractors receive qualified leads in their inbox with full project details, so they can quote accurately and skip the wasted site visits.</p>
+      </div>
+
+      <div class="faq-item">
+        <p class="faq-q">How does Scopilot work for contractors?</p>
+        <p class="faq-a">Contractors get a dashboard where incoming leads appear with full project details: address with satellite map view, approximate square footage, project type (concrete/excavation/drainage), tear-out requirements, reinforcement needs, finish type, drainage requirements, uploaded site photos, and a ballpark estimate range. You decide which leads to pursue — no guesswork, no wasted drives.</p>
+      </div>
+
+      <div class="faq-item">
+        <p class="faq-q">How does Scopilot work for homeowners?</p>
+        <p class="faq-a">Homeowners visit Scopilot, enter their address (or use their current location), draw the project area on a satellite map, answer a few guided questions about the project, upload up to 3 photos, and provide their contact info. The whole process takes about 5 minutes and is completely free. They receive a ballpark estimate and a local contractor reaches out within 24 hours.</p>
+      </div>
+
+      <div class="faq-item">
+        <p class="faq-q">How much does Scopilot cost for contractors?</p>
+        <p class="faq-a">Scopilot is free for homeowners. Contractors pay for access to the lead dashboard. Contact us for current pricing and plans.</p>
+      </div>
+
+      <div class="faq-item">
+        <p class="faq-q">What project types does Scopilot handle?</p>
+        <p class="faq-a">Scopilot handles three main project categories: concrete (driveways, pads, slabs, garage floors, footers, basements), excavation (pond digging, site prep, grading, land clearing, utility trenching), and drainage (French drains, culverts, retention systems, swale grading, sump pump installations).</p>
+      </div>
+
+      <div class="faq-item">
+        <p class="faq-q">Is Scopilot free for homeowners?</p>
+        <p class="faq-a">Yes. Scopilot is completely free for homeowners. There's no cost to scope your project or receive a ballpark estimate. Contractors pay for the lead service.</p>
+      </div>
+
+      <div class="faq-item">
+        <p class="faq-q">How accurate is the ballpark estimate?</p>
+        <p class="faq-a">The ballpark estimate is based on square footage and project parameters — base concrete typically runs $6 to $10 per square foot, with additions for tear-out ($2–$4/sq ft), reinforcement (rebar or fiber mesh), finish type (stamped, exposed aggregate, smooth trowel), and drainage ($500–$1,200). Final quotes from contractors will vary based on site access, soil conditions, and local material and labor pricing.</p>
+      </div>
+
+      <div class="faq-item">
+        <p class="faq-q">Do I need an account to scope a project?</p>
+        <p class="faq-a">No account or app download is required. Homeowners complete the entire scoping process in a web browser in about 5 minutes. Just visit <a href="/scope.html">scopilot.polsia.app/scope.html</a> to get started.</p>
+      </div>
+
+      <div class="faq-item">
+        <p class="faq-q">Who will see my contact information?</p>
+        <p class="faq-a">Your contact information is only shared with the contractor who receives your lead. It is not published on any public directory or website. The contractor uses it solely to follow up with a quote for your project.</p>
+      </div>
+
+      <div class="faq-item">
+        <p class="faq-q">How quickly will a contractor contact me?</p>
+        <p class="faq-a">Contractors typically review new leads and reach out within 24 hours. The exact response time depends on the contractor and their workload, but Scopilot delivers your project details to their inbox immediately after submission.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="about-footer">
+    <a href="/">← Back to Scopilot</a> ·
+    <a href="/terms.html">Terms</a> ·
+    <a href="/privacy.html">Privacy</a> ·
+    © 2026 <a href="https://connectinfinitely.org" target="_blank">Two Wolves Ventures LLC d/b/a Infinite Horizons Solutions</a>
+  </footer>
+</body>
+</html>
