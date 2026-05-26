@@ -552,33 +552,55 @@
   color: var(--fg-muted);
   margin-bottom: 12px;
 }
-.dash-filter-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 32px; }
+/* Filter pills — used to be a vertical list in the sidebar. Now they sit as a
+   horizontal row at the top of .dash-main. The class is the same so the JS
+   handler keeps working without changes. */
+.dash-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
 .dash-filter-btn {
-  padding: 9px 14px;
-  text-align: left;
-  background: none;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: 8px 16px;
+  text-align: center;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
   font-family: 'DM Sans', sans-serif;
   color: var(--fg-muted);
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.15s;
 }
-.dash-filter-btn:hover { background: var(--border); color: var(--fg); }
-.dash-filter-btn.active { background: var(--fg); color: var(--bg); font-weight: 600; }
+.dash-filter-btn:hover { border-color: var(--accent); color: var(--fg); }
+.dash-filter-btn.active { background: var(--fg); border-color: var(--fg); color: var(--bg); }
 
-.dash-sidebar-stats { display: flex; flex-direction: column; gap: 12px; }
-.dash-stat { }
+/* Stats strip — at-a-glance metric cards above the lead list. Auto-fits 1–4
+   per row depending on viewport. */
+.dash-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.dash-stats-strip .dash-stat {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
 .dash-stat-num {
   display: block;
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--fg);
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
   line-height: 1;
+  margin-bottom: 4px;
 }
 .dash-stat-label { font-size: 12px; color: var(--fg-muted); }
 
@@ -973,8 +995,9 @@
   .scope-photo-grid { grid-template-columns: repeat(3, 1fr); }
   .scope-map { height: 300px; }
 
-  /* Dashboard: leads first, sidebar below. Inside the sidebar, filter buttons
-     move ahead of the info cards so they're reachable right under the leads. */
+  /* Dashboard mobile layout: lead grid first, sidebar (info cards only) below.
+     Filters and stats already live at the top of .dash-main since the recent
+     reshuffle, so they naturally show up above the leads on every viewport. */
   .dash-wrapper { grid-template-columns: 1fr; }
   .dash-main { order: 1; padding: 20px 16px; }
   .dash-sidebar {
@@ -982,12 +1005,10 @@
     border-right: none;
     border-top: 1px solid var(--border);
     padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
   }
-  .dash-sidebar > .dash-sidebar-label,
-  .dash-sidebar > .dash-filter-group { order: -1; }
-  .dash-sidebar { display: flex; flex-direction: column; }
-  .dash-filter-group { flex-direction: row; flex-wrap: wrap; gap: 6px; }
-  .dash-filter-btn { min-height: 44px; padding: 10px 16px; }
+  .dash-filter-btn { min-height: 40px; padding: 10px 16px; }
 
   .dash-detail-panel { width: 100%; padding: 20px 16px; }
   .dash-detail-close { width: 44px; height: 44px; top: 12px; right: 12px; }

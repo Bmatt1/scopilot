@@ -269,21 +269,23 @@
       pointer-events: none;
       z-index: 0;
     }
+    /* Stacked vertical layout: badge on top, text in the middle, CTA button at
+       the bottom. Replaces the older 3-column [badge | text | arrow] row which
+       got squeezed in a 220–260px sidebar once the text grew longer. */
     .contractor-founding-inner {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      padding: 14px;
       background: linear-gradient(135deg, #1e1e38 0%, #141428 100%);
       border-radius: 7px;
-      min-width: 0;
-      overflow: hidden;
     }
     .contractor-founding-badge {
       background: linear-gradient(135deg, #c8960c, #e8c040);
       border-radius: 14px;
       padding: 4px 10px;
-      flex-shrink: 0;
+      align-self: flex-start;     /* badge sits as a pill at top-left */
     }
     .contractor-founding-badge span {
       font-size: 10px;
@@ -293,29 +295,38 @@
       white-space: nowrap;
     }
     .contractor-founding-text {
-      flex: 1;
-      min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
     }
     .contractor-founding-price {
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 700;
       color: #e8c040;
       font-family: 'Bricolage Grotesque', sans-serif;
-      white-space: nowrap;        /* keep "$1,500 lifetime" on one line */
     }
     .contractor-founding-spots {
-      font-size: 11px;
-      color: rgba(200,150,12,0.8);
+      font-size: 12px;
+      color: rgba(200,150,12,0.85);
       font-weight: 500;
-      line-height: 1.3;
+      line-height: 1.4;
     }
-    .contractor-founding-arrow {
-      color: #c8960c;
-      flex-shrink: 0;
+    .contractor-founding-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #c8960c, #e8c040);
+      color: #1a1a2e;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      letter-spacing: 0.02em;
+      transition: transform 0.15s;
     }
+    .contractor-founding-card:hover .contractor-founding-btn { transform: translateY(-1px); }
 
     /* ── Territory section ─────────────────────────────── */
     .territory-card {
@@ -511,7 +522,9 @@
   <div class="dash-wrapper">
     <!-- Sidebar -->
     <aside class="dash-sidebar">
-      <!-- Founding member CTA (shown when authenticated) -->
+      <!-- Founding member CTA. Hidden by default; bootDashboard() reveals it only
+           if the contractor is NOT already a founding member AND NOT legacy_free.
+           When hidden the element collapses (display:none) — no empty slot. -->
       <a href="/founding" class="contractor-founding-card" id="contractorFoundingCard" style="display:none;">
         <div class="contractor-founding-inner">
           <div class="contractor-founding-badge">
@@ -519,10 +532,11 @@
           </div>
           <div class="contractor-founding-text">
             <span class="contractor-founding-price">$1,500 lifetime</span>
-            <span class="contractor-founding-spots" id="contractor-spots-text">Loading...</span>
+            <span class="contractor-founding-spots" id="contractor-spots-text">Loading…</span>
           </div>
-          <div class="contractor-founding-arrow">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="contractor-founding-btn">
+            Get Founding Access
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
       </a>
@@ -560,8 +574,19 @@
         </div>
       </div>
 
-      <div class="dash-sidebar-label">Filter Leads</div>
-      <div class="dash-filter-group">
+      <!-- Filters and metrics used to live here. They were moved to the top of
+           .dash-main so contractors see them above the lead grid instead of in
+           a side column the eye scans past. See renderStats() target #dashStats. -->
+    </aside>
+
+    <!-- Main content -->
+    <main class="dash-main">
+      <!-- At-a-glance metrics. renderStats() populates this row. -->
+      <div class="dash-stats-strip" id="dashStats"></div>
+
+      <!-- Status filter pills. The .dash-filter-btn JS handler is class-based
+           so the buttons work the same as when they lived in the sidebar. -->
+      <div class="dash-filter-bar">
         <button class="dash-filter-btn active" data-status="">All Leads</button>
         <button class="dash-filter-btn" data-status="new">New</button>
         <button class="dash-filter-btn" data-status="contacted">Contacted</button>
@@ -569,11 +594,7 @@
         <button class="dash-filter-btn" data-status="won">Won</button>
         <button class="dash-filter-btn" data-status="lost">Lost</button>
       </div>
-      <div class="dash-sidebar-stats" id="sidebarStats"></div>
-    </aside>
 
-    <!-- Main content -->
-    <main class="dash-main">
       <div class="dash-header">
         <h1 class="dash-title">Incoming Leads</h1>
         <span class="dash-count" id="leadCount">—</span>
@@ -641,7 +662,12 @@
       document.getElementById('scopingCardBusiness').textContent = data.contractor.business_name;
       document.getElementById('scopingCard').style.display = 'block';
 
-      if (!data.contractor.founding_member) {
+      // Only pitch the founding offer to contractors who don't already have an
+      // equivalent benefit. Founding members already paid; legacy_free is a
+      // gifted account with the same privileges. Either flag → card stays hidden
+      // and the slot collapses (display:none = no layout space).
+      const isAlreadyMember = data.contractor.founding_member || data.contractor.legacy_free;
+      if (!isAlreadyMember) {
         document.getElementById('contractorFoundingCard').style.display = 'block';
         fetch('/api/founding/spots_remaining')
           .then(function(r) { return r.json(); })
@@ -789,7 +815,7 @@
       leads.forEach(l => { if (counts[l.status] !== undefined) counts[l.status]++; });
       const total = leads.length;
       const totalEst = leads.reduce((sum, l) => sum + ((l.estimate_low || 0) + (l.estimate_high || 0)) / 2, 0);
-      document.getElementById('sidebarStats').innerHTML = `
+      document.getElementById('dashStats').innerHTML = `
         <div class="dash-stat"><span class="dash-stat-num">${total}</span><span class="dash-stat-label">Total leads</span></div>
         <div class="dash-stat"><span class="dash-stat-num">${counts.new}</span><span class="dash-stat-label">New</span></div>
         <div class="dash-stat"><span class="dash-stat-num">${counts.quoted}</span><span class="dash-stat-label">Quoted</span></div>

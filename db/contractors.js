@@ -63,8 +63,13 @@ async function getContractorByEmail(email) {
 }
 
 async function getContractorById(id) {
+  // founding_member + legacy_free are needed so the dashboard knows whether to
+  // show the "Become a Founding Member" upsell card. Without them in the SELECT,
+  // the client-side check `if (!contractor.founding_member)` was always true,
+  // and the card showed up for everyone — including actual founding members.
   const result = await pool.query(
-    `SELECT id, business_name, owner_name, email, phone, trade_type, service_area, unique_slug, created_at
+    `SELECT id, business_name, owner_name, email, phone, trade_type, service_area,
+            unique_slug, founding_member, legacy_free, created_at
      FROM contractors WHERE id = $1`,
     [id]
   );
