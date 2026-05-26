@@ -6,6 +6,12 @@ Contractor lead-generation for home improvement projects. Homeowners scope their
 
 ---
 
+## For developers & AI agents picking this up
+
+Before changing anything, read **[CLAUDE.md](CLAUDE.md)** — it's the project handbook, kept current. The section called **"Recent changes"** at the bottom is a chronological log of what was last worked on and why. The most recent entries explain the current auth model and the mobile-responsiveness pass; reading them stops you from re-introducing workarounds that were deliberately removed (e.g. the localStorage session-ID fallback — there was a reason it was deleted, written up under "Auth model" in CLAUDE.md). The `docs/` folder has more detail: `docs/api.md` for endpoints, `docs/schema.md` for tables, `docs/flows.md` for user flows.
+
+---
+
 ## Quick Start
 
 ### Prerequisites

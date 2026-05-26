@@ -85,6 +85,7 @@
       padding: 8px 18px;
       border-radius: 6px;
       transition: background 0.15s;
+      white-space: nowrap;        /* never let the CTA wrap inside the pill */
     }
     .t-nav-cta:hover { background: #e0a80e; }
 
@@ -450,8 +451,11 @@
       min-height: 20px;
     }
 
-    /* ── Mobile (≤600px) ── */
-    @media (max-width: 600px) {
+    /* ── Mobile + tablet portrait (≤768px) ──
+       At anything narrower than a small laptop the topbar nav text starts
+       cramping the layout. Hide the secondary text links below this width and
+       keep only the logo + gold CTA so the header always lays out cleanly. */
+    @media (max-width: 768px) {
       .t-topbar { padding: 12px 16px; }
       .t-nav-link { display: none; }                /* keep only logo + gold CTA */
       .t-nav-cta { padding: 8px 14px; font-size: 13px; }

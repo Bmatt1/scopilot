@@ -525,7 +525,10 @@
 /* ── Contractor Dashboard ──────────────────────────────────────────────── */
 .dash-wrapper {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  /* Sidebar bumped from 220px → 260px because the cards inside (founding CTA,
+     territory rows with two badges, scoping link, performance) had outgrown
+     the narrower column — badges were getting clipped on desktop. */
+  grid-template-columns: 260px 1fr;
   min-height: calc(100vh - 60px);
 }
 
