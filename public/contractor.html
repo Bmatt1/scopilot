@@ -1109,7 +1109,10 @@
     }
 
     function renderTerritory(data) {
-      const { claims, count, max, free_included } = data;
+      // count/max/free_included from the API are intentionally unused now —
+      // cap math doesn't surface in the dashboard. The cap is enforced (and
+      // surfaced) only when a claim attempt is rejected. See checkAndClaim().
+      const { claims } = data;
       const activeClaims = claims.filter(c => c.status !== 'released');
 
       // ── Summary line at the top of the card ──
@@ -1164,27 +1167,11 @@
         expander.style.display = 'none';
       }
 
-      // ── Hint / cap-related copy ──
-      // count > max means an uncapped account (founding / legacy_free) is
-      // sitting above the default cap — suppress the cap message entirely so
-      // we don't render confusing "X of Y" math.
-      const hintEl = document.getElementById('territoryHint');
-      if (count > max) {
-        hintEl.textContent = '';
-        hintEl.style.display = 'none';
-      } else if (count >= max) {
-        hintEl.style.display = '';
-        hintEl.textContent = `Maximum of ${max} zip codes reached.`;
-        hintEl.className = 'territory-hint territory-hint--err';
-      } else if (count >= free_included) {
-        hintEl.style.display = '';
-        hintEl.textContent = `Additional zips are $${PAID_ZIP_MONTHLY_PRICE}/mo each.`;
-        hintEl.className = 'territory-hint territory-hint--info';
-      } else {
-        hintEl.style.display = '';
-        hintEl.textContent = 'Your first zip code is included free.';
-        hintEl.className = 'territory-hint territory-hint--info';
-      }
+      // The hint line is left untouched on render — no standing cap text,
+      // no "first zip is free" pitch. Cap and upgrade messaging only surface
+      // in response to an action (a failed claim attempt in checkAndClaim()).
+      // Clearing the hint here would wipe success messages from claims that
+      // just succeeded and triggered this re-render.
     }
 
     // Toggle between "first 5" and "all" for the zip list.
@@ -1328,6 +1315,18 @@
           hintEl.textContent = 'Redirecting to checkout for $79/mo…';
           hintEl.className = 'territory-hint territory-hint--info';
           setTimeout(() => { window.location.href = claimData.stripe_url; }, 800);
+          return;
+        }
+
+        // Cap reached — surface an upgrade prompt with a link to /pricing.
+        // The server returns code: 'CAP_REACHED' and an upgrade_url; we render
+        // a clickable link inline so the contractor doesn't have to hunt for it.
+        if (claimResp.status === 400 && claimData.code === 'CAP_REACHED') {
+          const upgradeUrl = claimData.upgrade_url || '/pricing';
+          hintEl.innerHTML = `Your plan's zip code limit is reached. <a href="${upgradeUrl}" style="color:var(--accent);font-weight:700;text-decoration:underline;">Upgrade your plan →</a>`;
+          hintEl.className = 'territory-hint territory-hint--err';
+          btn.disabled = false;
+          btn.textContent = 'Claim';
           return;
         }
 

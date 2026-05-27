@@ -232,13 +232,22 @@ router.post('/claim', requireAuth, async (req, res) => {
   const contractorId = req.session.contractorId;
 
   try {
+    // Cap-exemption check. legacy_free contractors are uncapped (operator-gifted
+    // account). founding_member contractors are treated as equivalent — they
+    // paid $1,500 lifetime and the codebase already declares them as having
+    // equivalent privileges to legacy_free (see db/contractors.js).
+    const { getContractorById } = require('../db/contractors');
+    const contractor = await getContractorById(contractorId);
+    const isCapExempt = !!(contractor && (contractor.legacy_free || contractor.founding_member));
+
     // Count existing active claims
     const currentCount = await countActiveClaims(contractorId);
 
-    if (currentCount >= MAX_ZIPS_PER_CONTRACTOR) {
+    if (!isCapExempt && currentCount >= MAX_ZIPS_PER_CONTRACTOR) {
       return res.status(400).json({
-        error: `You've reached the maximum of ${MAX_ZIPS_PER_CONTRACTOR} zip codes`,
+        error: `Your plan's zip code limit has been reached. Upgrade to add more.`,
         code: 'CAP_REACHED',
+        upgrade_url: '/pricing',
       });
     }
 
@@ -294,6 +303,7 @@ router.post('/claim', requireAuth, async (req, res) => {
         isIncludedInPlan: false,
         monthlyPriceCents: ADDITIONAL_ZIP_PRICE_CENTS,
         stripeSubscriptionId: sessionId,
+        skipCap: isCapExempt,
       });
       return res.json({ success: true, claim });
     }
@@ -304,6 +314,7 @@ router.post('/claim', requireAuth, async (req, res) => {
       zipCode: zip,
       isIncludedInPlan: true,
       monthlyPriceCents: 0,
+      skipCap: isCapExempt,
     });
     res.json({ success: true, claim });
   } catch (err) {
@@ -311,7 +322,13 @@ router.post('/claim', requireAuth, async (req, res) => {
       return res.status(409).json({ error: 'That zip code is already claimed by another contractor', code: 'ZIP_TAKEN' });
     }
     if (err.message === 'CAP_REACHED') {
-      return res.status(400).json({ error: `Maximum of ${MAX_ZIPS_PER_CONTRACTOR} zip codes reached`, code: 'CAP_REACHED' });
+      // Belt-and-suspenders fallthrough — the outer cap check above should
+      // have already returned this, but the DB layer can also throw it.
+      return res.status(400).json({
+        error: `Your plan's zip code limit has been reached. Upgrade to add more.`,
+        code: 'CAP_REACHED',
+        upgrade_url: '/pricing',
+      });
     }
     console.error('claim error:', err);
     res.status(500).json({ error: 'Failed to claim zip code' });

@@ -39,20 +39,27 @@ async function getActiveClaimForZip(zipCode) {
 /**
  * Create a new territory claim for a contractor.
  * Throws if zip already active or contractor is at cap.
+ *
+ * `skipCap` — pass true to bypass the in-transaction cap check entirely. Used
+ * for cap-exempt contractors (legacy_free, founding_member). The route layer
+ * is responsible for deciding exemption and passing this through; the DB
+ * function does not look up the contractor itself.
  */
-async function createClaim({ contractorId, zipCode, isIncludedInPlan, monthlyPriceCents, stripeSubscriptionId }) {
+async function createClaim({ contractorId, zipCode, isIncludedInPlan, monthlyPriceCents, stripeSubscriptionId, skipCap }) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // Check cap — count non-released claims
-    const capCheck = await client.query(
-      `SELECT COUNT(*) AS cnt FROM territory_claims
-       WHERE contractor_id = $1 AND status != 'released'`,
-      [contractorId]
-    );
-    if (parseInt(capCheck.rows[0].cnt, 10) >= MAX_ZIPS_PER_CONTRACTOR) {
-      throw new Error('CAP_REACHED');
+    // Check cap — count non-released claims (unless caller said to skip).
+    if (!skipCap) {
+      const capCheck = await client.query(
+        `SELECT COUNT(*) AS cnt FROM territory_claims
+         WHERE contractor_id = $1 AND status != 'released'`,
+        [contractorId]
+      );
+      if (parseInt(capCheck.rows[0].cnt, 10) >= MAX_ZIPS_PER_CONTRACTOR) {
+        throw new Error('CAP_REACHED');
+      }
     }
 
     // Attempt insert — unique index will throw if zip already active
