@@ -96,6 +96,7 @@ Browser (HTML + JS)
 |----------|----------|-------------|
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `SESSION_SECRET` | Yes | Long random string used to sign login cookies. Server won't start without it. |
+| `ADMIN_PASSWORD` | Yes | Gates the `/admin` panel. No hardcoded fallback — server refuses to start without it. Set with a long random value (`openssl rand -hex 24`). |
 | `BILLING_WEBHOOK_SECRET` | Yes (prod) | Long random string shared with Polsia. Required for the subscription webhook receiver to accept events. Server refuses all webhook events if this is unset. See `docs/polsia-billing-integration.md`. |
 | `PORT` | No | Server port (default: 3000) |
 | `NODE_ENV` | No | Set to `production` in prod — enables secure cookies and trust-proxy |

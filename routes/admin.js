@@ -18,7 +18,11 @@ const { getAllClaimsForMap } = require('../db/territory');
 const { getFoundingCount, FOUNDING_LIMIT } = require('../db/founding');
 const { getAuthLogs } = require('../db/auth-logs');
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'scopilot-admin-2026';
+// ADMIN_PASSWORD is required (enforced at boot in server.js). No hardcoded
+// fallback — the previous default ('scopilot-admin-2026') leaked through the
+// repo, so anyone who read the source could log into /admin if the env var
+// hadn't been rotated.
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN || '';
 
 // ── Mapbox geocoding helper (shared with territory routes) ────────────────────
@@ -1047,7 +1051,7 @@ function buildHelpPage(keyParam) {
 
     <h2>Admin Panel</h2>
     <h3>Auth</h3>
-    <p>Two methods — both check the <code>ADMIN_PASSWORD</code> env var (default: <code>scopilot-admin-2026</code>):</p>
+    <p>Two methods — both check the <code>ADMIN_PASSWORD</code> env var (set on Render; not hard-coded in source):</p>
     <ul style="margin:8px 0 8px 20px;color:#9ca3af;font-size:14px">
       <li><strong>Query param:</strong> <code>/admin?key=&lt;ADMIN_PASSWORD&gt;</code></li>
       <li><strong>Basic Auth:</strong> <code>Authorization: Basic &lt;base64(:password)&gt;</code></li>
@@ -1067,12 +1071,7 @@ function buildHelpPage(keyParam) {
     </table>
 
     <h2>Test Credentials</h2>
-    <div class="warn">⚠️ Test-only. Do not use in production marketing or customer-facing contexts.</div>
-    <table>
-      <tr><th>Account</th><th>Email</th><th>Password</th><th>Notes</th></tr>
-      <tr><td>Test Contractor 1 (Founding)</td><td><code>test-contractor-1@scopilot.test</code></td><td><code>TestPass123!</code></td><td>Founding member, trade: concrete</td></tr>
-      <tr><td>Test Contractor 2 (Standard)</td><td><code>test-contractor-2@scopilot.test</code></td><td><code>TestPass456!</code></td><td>Standard, trade: excavation</td></tr>
-    </table>
+    <div class="warn">⚠️ Test accounts are seeded by <code>npm run seed:test-contractors</code> (see <code>scripts/seed-test-contractors.js</code> for the credentials). Run the seed locally — credentials are no longer hardcoded in HTML the admin panel serves so they can't be scraped from the public repo.</div>
     <p>To re-seed: <code>npm run seed:test-contractors</code></p>
 
     <h2>Contractor Dashboard</h2>
@@ -1176,8 +1175,8 @@ WHERE contractor_id = &lt;contractor_id&gt;
     <table>
       <tr><th>Variable</th><th>Purpose</th><th>Default</th></tr>
       <tr><td><code>DATABASE_URL</code></td><td>Neon PostgreSQL connection</td><td>— (required)</td></tr>
-      <tr><td><code>ADMIN_PASSWORD</code></td><td>Admin panel gate</td><td><code>scopilot-admin-2026</code></td></tr>
-      <tr><td><code>SESSION_SECRET</code></td><td>Session cookie signing</td><td><code>scopilot-dev-secret-…</code></td></tr>
+      <tr><td><code>ADMIN_PASSWORD</code></td><td>Admin panel gate</td><td>— (required, no fallback)</td></tr>
+      <tr><td><code>SESSION_SECRET</code></td><td>Session cookie signing</td><td>— (required, no fallback)</td></tr>
       <tr><td><code>MAPBOX_TOKEN</code></td><td>Map tiles + address autocomplete</td><td>—</td></tr>
       <tr><td><code>POLSIA_API_URL</code></td><td>Polsia API base (payment verify)</td><td>—</td></tr>
       <tr><td><code>POLSIA_API_KEY</code></td><td>Polsia API auth key</td><td>—</td></tr>

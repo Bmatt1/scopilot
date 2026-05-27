@@ -130,8 +130,17 @@ function buildLeadEmailHtml(lead, photos) {
        </div>`
     : '';
 
+  // Build the "Reply to Homeowner" mailto link. The email and the subject value
+  // both go inside the href URL, so they need URL-encoding (not HTML-escaping —
+  // a `&` in an address breaks the subject when HTML-escaped). The href
+  // attribute itself we then HTML-escape so quotes can't break out of it.
   const mailtoLink = lead.homeowner_email
-    ? `<a href="mailto:${lead.homeowner_email}?subject=Re: Your ${formatLabel(lead.project_type)} Project at ${escapeHtml(lead.address)}" style="display:inline-block; margin-left:12px; background:transparent; color:#1a1a2e; padding:14px 24px; font-weight:700; font-size:14px; text-decoration:none; border:2px solid #1a1a2e; border-radius:3px;">Reply to Homeowner</a>`
+    ? (() => {
+        const subj = encodeURIComponent(`Re: Your ${formatLabel(lead.project_type)} Project at ${lead.address}`);
+        const to = encodeURIComponent(lead.homeowner_email);
+        const href = escapeHtml(`mailto:${to}?subject=${subj}`);
+        return `<a href="${href}" style="display:inline-block; margin-left:12px; background:transparent; color:#1a1a2e; padding:14px 24px; font-weight:700; font-size:14px; text-decoration:none; border:2px solid #1a1a2e; border-radius:3px;">Reply to Homeowner</a>`;
+      })()
     : '';
 
   return `<!DOCTYPE html>
@@ -195,7 +204,15 @@ function buildLeadEmailHtml(lead, photos) {
               <tr>
                 <td>
                   <div style="font-size:16px; font-weight:700; color:#f5f5f0;">${escapeHtml(lead.address)}</div>
-                  ${lead.latitude && lead.longitude ? `<div style="font-size:12px; color:#9a9aaa; margin-top:3px;">${parseFloat(lead.latitude).toFixed(6)}° N, ${parseFloat(lead.longitude).toFixed(6)}° W</div>` : ''}
+                  ${lead.latitude && lead.longitude ? (() => {
+                    // Use signed hemisphere labels rather than hardcoded "N, W" —
+                    // a negative latitude is the southern hemisphere, etc.
+                    const lat = parseFloat(lead.latitude);
+                    const lng = parseFloat(lead.longitude);
+                    const latLabel = `${Math.abs(lat).toFixed(6)}° ${lat >= 0 ? 'N' : 'S'}`;
+                    const lngLabel = `${Math.abs(lng).toFixed(6)}° ${lng >= 0 ? 'E' : 'W'}`;
+                    return `<div style="font-size:12px; color:#9a9aaa; margin-top:3px;">${latLabel}, ${lngLabel}</div>`;
+                  })() : ''}
                 </td>
                 <td align="right" style="white-space:nowrap;">
                   <div style="font-size:20px; font-weight:800; color:#c8960c;">${formatMoney(lead.estimate_low)} – ${formatMoney(lead.estimate_high)}</div>
@@ -222,13 +239,13 @@ function buildLeadEmailHtml(lead, photos) {
               <tr>
                 <td style="padding:10px 0 10px 14px; color:#5c5c6e; border-bottom:1px solid #e8e8e4;">Email</td>
                 <td style="padding:10px 14px 10px 0; border-bottom:1px solid #e8e8e4;">
-                  <a href="mailto:${lead.homeowner_email}" style="color:#c8960c; font-weight:600; text-decoration:none;">${lead.homeowner_email}</a>
+                  <a href="${escapeHtml('mailto:' + encodeURIComponent(lead.homeowner_email))}" style="color:#c8960c; font-weight:600; text-decoration:none;">${escapeHtml(lead.homeowner_email)}</a>
                 </td>
               </tr>
               ${lead.homeowner_phone ? `<tr>
                 <td style="padding:10px 0 10px 14px; color:#5c5c6e; border-bottom:1px solid #e8e8e4;">Phone</td>
                 <td style="padding:10px 14px 10px 0; font-weight:600; color:#1a1a2e; border-bottom:1px solid #e8e8e4;">
-                  <a href="tel:${lead.homeowner_phone}" style="color:#1a1a2e; text-decoration:none;">${lead.homeowner_phone}</a>
+                  <a href="${escapeHtml('tel:' + String(lead.homeowner_phone).replace(/[^0-9+]/g, ''))}" style="color:#1a1a2e; text-decoration:none;">${escapeHtml(lead.homeowner_phone)}</a>
                 </td>
               </tr>` : ''}
               <tr>
@@ -371,8 +388,25 @@ function buildLeadEmailText(lead, photos) {
   return lines.filter(l => l !== null).join('\n');
 }
 
+// Strip any CR/LF from a string before it becomes an email subject or other
+// header value. Prevents header-injection attacks where a value like
+// "X\r\nBcc: attacker@example.com" would tack a Bcc onto the outbound email.
+// Polsia probably handles this too, but defense in depth is cheap.
+function sanitizeHeaderValue(s) {
+  return String(s || '').replace(/[\r\n]+/g, ' ').trim();
+}
+
+// Reject any photo URL that is a base64 `data:` URI before building the email.
+// These show up when /api/scope/upload falls back to returning the raw data
+// URL (POLSIA_R2_BASE_URL unset). Gmail and most major clients block
+// data: image sources, so attaching them just makes the email look broken.
+function filterEmailablePhotos(photos) {
+  return (photos || []).filter(u => typeof u === 'string' && !u.startsWith('data:'));
+}
+
 async function sendLeadNotification(lead, photos) {
-  // Support both POLSIA_EMAIL_PROXY_URL (new standard) and POLSIA_EMAIL_URL (legacy)
+  // Support both POLSIA_EMAIL_PROXY_URL (the current name) and POLSIA_EMAIL_URL
+  // (the original name kept as a deprecated fallback).
   const emailUrl = process.env.POLSIA_EMAIL_PROXY_URL || process.env.POLSIA_EMAIL_URL;
   const emailKey = process.env.POLSIA_EMAIL_KEY || process.env.POLSIA_API_KEY;
   const toEmail = lead.contractor_email || process.env.CONTRACTOR_EMAIL || process.env.NOTIFY_EMAIL;
@@ -382,12 +416,13 @@ async function sendLeadNotification(lead, photos) {
     return;
   }
 
-  const subject = `New Lead: ${lead.address} — ${formatLabel(lead.project_type)} project`;
-  const html = buildLeadEmailHtml(lead, photos);
-  const text = buildLeadEmailText(lead, photos);
+  const safePhotos = filterEmailablePhotos(photos);
+  const subject = sanitizeHeaderValue(`New Lead: ${lead.address} — ${formatLabel(lead.project_type)} project`);
+  const html = buildLeadEmailHtml(lead, safePhotos);
+  const text = buildLeadEmailText(lead, safePhotos);
 
   if (!emailUrl) {
-    console.log('POLSIA_EMAIL_URL not set — email notification skipped for lead', lead.id);
+    console.log('Email proxy URL not configured (POLSIA_EMAIL_PROXY_URL) — lead notification skipped for lead', lead.id);
     console.log('Would have sent to:', toEmail, '|', subject);
     return;
   }
@@ -744,4 +779,201 @@ async function sendPasswordResetEmail({ email, businessName, resetUrl }) {
   }
 }
 
-module.exports = { sendLeadNotification, buildLeadEmailHtml, buildLeadEmailText, sendFoundingWelcomeEmail, sendPassNotificationEmails, sendMagicLoginEmail, sendPasswordResetEmail };
+/**
+ * Send a "we got your project" confirmation email to the HOMEOWNER right after
+ * they submit their lead. Warm, reassuring tone. Echoes back the project
+ * details they entered so they can verify nothing went sideways.
+ *
+ * Sets the expectation that a contractor will reach out within ~24 hours, and
+ * gives a fallback support email if they don't hear back.
+ *
+ * Fire-and-forget from routes/scope.js; failure logs but does not block the
+ * homeowner-facing 200 response.
+ */
+async function sendLeadConfirmation(lead, photos) {
+  const emailUrl = process.env.POLSIA_EMAIL_PROXY_URL || process.env.POLSIA_EMAIL_URL;
+  const emailKey = process.env.POLSIA_EMAIL_KEY || process.env.POLSIA_API_KEY;
+
+  const toEmail = lead.homeowner_email;
+  if (!toEmail) {
+    // Should be caught by upstream validation; defense in depth.
+    console.log('[email] homeowner confirmation skipped — no homeowner_email on lead', lead.id);
+    return;
+  }
+
+  const safePhotos = filterEmailablePhotos(photos);
+  const firstName = (lead.homeowner_name || '').split(/\s+/)[0] || 'there';
+  const subject = sanitizeHeaderValue(`We got your project — ${formatLabel(lead.project_type)} at ${lead.address}`);
+  const html = buildHomeownerConfirmationHtml(lead, safePhotos, firstName);
+  const text = buildHomeownerConfirmationText(lead, safePhotos, firstName);
+
+  if (!emailUrl) {
+    console.log('[email] proxy URL not configured — homeowner confirmation skipped for lead', lead.id);
+    return;
+  }
+
+  const resp = await fetch(emailUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(emailKey ? { Authorization: `Bearer ${emailKey}` } : {})
+    },
+    body: JSON.stringify({ to: toEmail, subject, body: text, html })
+  });
+  if (!resp.ok) {
+    const body = await resp.text();
+    throw new Error(`Email proxy error ${resp.status}: ${body}`);
+  }
+}
+
+// Plain-text body — important fallback for email clients that block HTML/images.
+function buildHomeownerConfirmationText(lead, photos, firstName) {
+  const typeLabel = (QUESTION_CONFIG[lead.project_type] || {}).label || formatLabel(lead.project_type);
+  const lines = [
+    `Hi ${firstName},`,
+    '',
+    'Thanks for scoping your project on Scopilot. We received everything and a',
+    'qualified local contractor will reach out within 24 hours to discuss next steps.',
+    '',
+    'WHAT YOU SUBMITTED',
+    '──────────────────',
+    `Project:    ${typeLabel}`,
+    `Address:    ${lead.address}`,
+    lead.sq_footage ? `Sq footage: ~${Number(lead.sq_footage).toLocaleString('en-US')} sq ft` : null,
+    lead.estimate_low ? `Ballpark:   ${formatMoney(lead.estimate_low)} – ${formatMoney(lead.estimate_high)}` : null,
+    photos && photos.length ? `Photos:     ${photos.length} attached` : null,
+    '',
+    'NEED TO REACH US?',
+    '──────────────────',
+    "If you don't hear back within 24 hours, or you need to change anything",
+    'about your project, reply to this email or write to support@polsia.com.',
+    '',
+    '— The Scopilot team',
+  ];
+  return lines.filter(Boolean).join('\n');
+}
+
+function buildHomeownerConfirmationHtml(lead, photos, firstName) {
+  const typeCfg = QUESTION_CONFIG[lead.project_type];
+  const typeLabel = typeCfg ? typeCfg.label : formatLabel(lead.project_type);
+  const ti = (lead.trade_inputs && typeof lead.trade_inputs === 'object') ? lead.trade_inputs : {};
+  const mapUrl = buildMapboxStaticUrl(lead);
+
+  // Q&A rows for the summary block — keep concise (max 5 rows).
+  const qaRows = [];
+  if (typeCfg && typeCfg.questions && Object.keys(ti).length > 0) {
+    for (const q of typeCfg.questions) {
+      if (qaRows.length >= 5) break;
+      const raw = ti[q.id];
+      if (!raw || raw === 'no' || raw === false) continue;
+      const opt = q.options && q.options.find(o => o.value === raw);
+      qaRows.push({ label: q.label, value: opt ? opt.label : formatLabel(raw) });
+    }
+  }
+
+  const photoGrid = photos && photos.length
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px; border-collapse:collapse;">
+         ${chunkArray(photos.slice(0, 4), 2).map(row => `
+         <tr>
+           ${row.map(url => `
+             <td width="50%" style="padding:4px; vertical-align:top;">
+               <img src="${escapeHtml(url)}" alt="Project photo" width="100%" style="display:block; width:100%; max-width:260px; height:140px; object-fit:cover; border-radius:4px;" />
+             </td>`).join('')}
+           ${row.length === 1 ? '<td width="50%"></td>' : ''}
+         </tr>`).join('')}
+       </table>`
+    : '';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We got your project — Scopilot</title>
+<style>
+  @media only screen and (max-width: 620px) {
+    .email-container { width: 100% !important; min-width: 100% !important; }
+    .summary-grid td { display: block !important; width: 100% !important; }
+  }
+</style>
+</head>
+<body style="margin:0; padding:0; background-color:#e8e8e4; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#e8e8e4; padding: 20px 0 40px;">
+  <tr><td align="center">
+    <table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background:#ffffff; border-radius:4px; overflow:hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.12);">
+
+      <!-- Header -->
+      <tr><td style="background:#1a1a2e; padding:20px 32px;">
+        <span style="font-family:Georgia,'Times New Roman',serif; font-size:24px; font-weight:700; color:#f5f5f0;">Scopilot</span>
+      </td></tr>
+
+      <!-- Reassurance hero -->
+      <tr><td style="padding:36px 32px 24px; background:#f5f5f0;">
+        <h1 style="margin:0 0 8px; font-size:24px; font-weight:800; color:#1a1a2e; letter-spacing:-0.5px;">We got your project, ${escapeHtml(firstName)}.</h1>
+        <p style="margin:0; font-size:15px; color:#5c5c6e; line-height:1.6;">A qualified local contractor will reach out within <strong style="color:#1a1a2e;">24 hours</strong> to discuss your ${escapeHtml(typeLabel.toLowerCase())} project. No follow-ups from us in the meantime — just a quick confirmation of what you sent.</p>
+      </td></tr>
+
+      ${mapUrl ? `
+      <tr><td style="padding:0 32px 0; background:#f5f5f0;">
+        <img src="${escapeHtml(mapUrl)}" alt="Satellite view of your project" width="100%" style="display:block; width:100%; max-height:200px; object-fit:cover; border-radius:4px; border:1px solid #d4d4cc;" />
+      </td></tr>` : ''}
+
+      <!-- Summary block -->
+      <tr><td style="padding:24px 32px 0; background:#f5f5f0;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#5c5c6e; padding-bottom:10px; border-bottom:2px solid #1a1a2e;">Your project</div>
+        <table role="presentation" class="summary-grid" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; font-size:14px;">
+          <tr>
+            <td style="padding:10px 0 10px 14px; color:#5c5c6e; width:40%; border-bottom:1px solid #e8e8e4;">Project type</td>
+            <td style="padding:10px 14px 10px 0; font-weight:600; color:#1a1a2e; border-bottom:1px solid #e8e8e4;">${escapeHtml(typeLabel)}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0 10px 14px; color:#5c5c6e; border-bottom:1px solid #e8e8e4;">Address</td>
+            <td style="padding:10px 14px 10px 0; font-weight:600; color:#1a1a2e; border-bottom:1px solid #e8e8e4;">${escapeHtml(lead.address)}</td>
+          </tr>
+          ${lead.sq_footage ? `<tr>
+            <td style="padding:10px 0 10px 14px; color:#5c5c6e; border-bottom:1px solid #e8e8e4;">Sq footage</td>
+            <td style="padding:10px 14px 10px 0; font-weight:600; color:#1a1a2e; border-bottom:1px solid #e8e8e4;">~${Number(lead.sq_footage).toLocaleString('en-US')} sq ft</td>
+          </tr>` : ''}
+          ${lead.estimate_low ? `<tr>
+            <td style="padding:10px 0 10px 14px; color:#5c5c6e;">Ballpark range</td>
+            <td style="padding:10px 14px 10px 0; font-weight:700; color:#c8960c;">${formatMoney(lead.estimate_low)} – ${formatMoney(lead.estimate_high)}</td>
+          </tr>` : ''}
+        </table>
+
+        ${qaRows.length ? `
+        <div style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#5c5c6e; padding:20px 0 10px; border-bottom:2px solid #1a1a2e;">Details you shared</div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; font-size:14px;">
+          ${qaRows.map((r, i) => `
+          <tr style="background:${i % 2 === 0 ? '#ffffff' : '#f5f5f0'};">
+            <td style="padding:8px 14px; color:#5c5c6e; width:40%; border-bottom:1px solid #e8e8e4;">${escapeHtml(r.label)}</td>
+            <td style="padding:8px 14px; font-weight:600; color:#1a1a2e; border-bottom:1px solid #e8e8e4;">${escapeHtml(r.value)}</td>
+          </tr>`).join('')}
+        </table>` : ''}
+
+        ${photoGrid}
+      </td></tr>
+
+      <!-- "What happens next" -->
+      <tr><td style="padding:24px 32px 28px; background:#f5f5f0;">
+        <div style="background:#ffffff; border-left:3px solid #c8960c; padding:16px 18px; border-radius:0 3px 3px 0;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#c8960c; margin-bottom:6px;">What happens next</div>
+          <p style="margin:0; font-size:14px; color:#1a1a2e; line-height:1.6;">A vetted contractor in your area will reach out within 24 hours. They'll have all the details you sent — no need to re-explain anything. They may follow up with a few clarifying questions and a more precise quote.</p>
+        </div>
+      </td></tr>
+
+      <!-- Footer -->
+      <tr><td style="background:#1a1a2e; padding:20px 32px; text-align:center;">
+        <p style="margin:0; font-size:12px; color:#9a9aaa; line-height:1.5;">
+          Need to change anything or haven't heard back?<br>
+          Reply to this email or write to <a href="mailto:support@polsia.com" style="color:#c8960c; text-decoration:none;">support@polsia.com</a>.
+        </p>
+      </td></tr>
+
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`;
+}
+
+module.exports = { sendLeadNotification, sendLeadConfirmation, buildLeadEmailHtml, buildLeadEmailText, sendFoundingWelcomeEmail, sendPassNotificationEmails, sendMagicLoginEmail, sendPasswordResetEmail };

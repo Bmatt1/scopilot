@@ -23,7 +23,7 @@
 https://scopilot.polsia.app/admin?key=<ADMIN_PASSWORD>
 ```
 
-Authentication uses the `ADMIN_PASSWORD` environment variable (default: `scopilot-admin-2026` for dev).
+Authentication uses the `ADMIN_PASSWORD` environment variable. The server refuses to start if it isn't set — no hardcoded fallback in source. Set it on Render under Settings → Environment with a long random value (e.g. `openssl rand -hex 24`).
 
 Two supported auth methods:
 - **Query param:** `?key=<ADMIN_PASSWORD>` — simplest for browser access
@@ -157,16 +157,9 @@ Counter logic: `50 - COUNT(founding_config WHERE key='founding_count')` — incr
 
 ## Test Credentials
 
-> ⚠️ **Test-only.** Do not use these accounts in production marketing, demos, or customer-facing contexts.
+> ⚠️ **Test-only.** Run `npm run seed:test-contractors` to create two seed contractor accounts. The script in [`scripts/seed-test-contractors.js`](../scripts/seed-test-contractors.js) holds the email/password values — they are not documented here so the public repo can't leak them. If you ship to a real environment, change those values in the script before running, or delete the accounts after testing.
 
-| Account | Email | Password | Notes |
-|---------|-------|----------|-------|
-| **Test Contractor 1** (Founding) | `test-contractor-1@scopilot.test` | `TestPass123!` | Founding member (is_founding_member=true), trade: concrete |
-| **Test Contractor 2** (Standard) | `test-contractor-2@scopilot.test` | `TestPass456!` | Standard account, trade: excavation |
-
-To seed these accounts fresh: `npm run seed:test-contractors`
-
-Admin access (default dev password): `https://scopilot.polsia.app/admin?key=scopilot-admin-2026`
+Admin access: open `https://scopilot.polsia.app/admin?key=<ADMIN_PASSWORD>` substituting the value you set as the `ADMIN_PASSWORD` env var on Render.
 
 ---
 
@@ -361,8 +354,9 @@ LIMIT 20;
 | Variable | Purpose | Default |
 |----------|---------|---------|
 | `DATABASE_URL` | Neon PostgreSQL connection string | — (required) |
-| `ADMIN_PASSWORD` | Admin panel gate | `scopilot-admin-2026` |
-| `SESSION_SECRET` | Session cookie signing | `scopilot-dev-secret-change-in-prod` |
+| `ADMIN_PASSWORD` | Admin panel gate | — (required, no fallback — server refuses to start without it) |
+| `SESSION_SECRET` | Session cookie signing | — (required, no fallback) |
+| `BILLING_WEBHOOK_SECRET` | Bearer token for the Polsia subscription webhook | — (required in prod) |
 | `MAPBOX_TOKEN` | Map tiles + address autocomplete | — |
 | `POLSIA_API_URL` | Polsia API base (payment verify, etc.) | — |
 | `POLSIA_API_KEY` | Polsia API auth key | — |

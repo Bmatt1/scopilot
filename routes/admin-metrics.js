@@ -18,7 +18,9 @@ const { getContractorCounts } = require('../db/contractors');
 const { getFoundingCount, FOUNDING_LIMIT } = require('../db/founding');
 const { getUtmBreakdown } = require('../db/analytics');
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'scopilot-admin-2026';
+// Required env var (enforced at boot in server.js). See routes/admin.js for the
+// reasoning — no hardcoded fallback so the repo can't leak it.
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 function requireAdmin(req, res, next) {
   if (req.query.key === ADMIN_PASSWORD) return next();

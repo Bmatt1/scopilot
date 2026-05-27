@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { createLead, addLeadPhoto } = require('../db/leads');
-const { sendLeadNotification } = require('../services/email');
+const { sendLeadNotification, sendLeadConfirmation } = require('../services/email');
 const { getContractorBySlug } = require('../db/contractors');
 const { logLeadEvent } = require('../db/analytics');
 const { trackEvent } = require('../lib/track-pageview');
@@ -237,9 +237,16 @@ router.post('/submit', async (req, res) => {
       metadata: { project_type: type, zip_code: zipCode, estimate_low, estimate_high }
     });
 
-    // Fire-and-forget email notification
+    // Fire-and-forget email notification to the contractor.
     sendLeadNotification(lead, photos).catch(err =>
-      console.error('Lead email failed:', err.message)
+      console.error('[scope/submit] contractor notification failed:', err.message)
+    );
+
+    // Fire-and-forget confirmation/summary to the homeowner. Failure does NOT
+    // block the 200 response — the homeowner already sees the in-app
+    // confirmation screen, and a missing email is recoverable.
+    sendLeadConfirmation(lead, photos).catch(err =>
+      console.error('[scope/submit] homeowner confirmation failed:', err.message)
     );
 
     res.json({ success: true, lead_id: lead.id, estimate_low, estimate_high });
@@ -258,7 +265,12 @@ router.post('/upload', async (req, res) => {
 
     const r2Base = process.env.POLSIA_R2_BASE_URL;
     if (!r2Base) {
-      // No R2 configured — return the data URL directly (small photos only, dev fallback)
+      // No R2 configured — DEV-ONLY fallback. Returning the raw data: URL means
+      // the lead can be created, but the photo won't render in email clients
+      // (Gmail blocks data: image sources). services/email.js filters these out
+      // before sending so the email isn't visibly broken; the contractor just
+      // sees no photos. Log loudly so a misconfigured prod doesn't pass silently.
+      console.warn('[scope/upload] POLSIA_R2_BASE_URL not set — returning data: URL. Photos will NOT appear in email notifications.');
       return res.json({ url: data_url });
     }
 

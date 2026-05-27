@@ -52,6 +52,22 @@ Node.js + Express, EJS templates, PostgreSQL (Neon), hosted on Render.
 - `/contractor` and `/contractor/opportunities` are gated server-side — anonymous visits redirect to `/login` before the page even loads.
 
 ## Recent changes
+- 2026-05-25: **Homeowner confirmation email + contractor-email bug fixes + security cleanup.** Three concerns shipped together because they overlapped.
+  - **New email: `sendLeadConfirmation(lead, photos)`** in `services/email.js`, fired from `routes/scope.js` right after the contractor notification. Warm tone, echoes back the project summary, sets a "we'll be in touch within 24 hours" expectation, fallback to `support@polsia.com`. Fire-and-forget; failure logs but doesn't block the 200 response.
+  - **Contractor notification bug fixes** in `services/email.js`:
+    - mailto subject now URL-encodes (was HTML-escaping, so `&` in addresses broke subjects).
+    - homeowner email + phone in `mailto:` / `tel:` `href` attributes are now properly escaped — was raw interpolation, low-likelihood XSS risk.
+    - Coordinate hemisphere labels (`° N, ° W`) now use signs, so negative lat/lng renders correctly.
+    - Subject line passes through `sanitizeHeaderValue()` (strips CR/LF) to block header-injection.
+    - Photos that are `data:` URLs (returned by the dev-fallback path in `/api/scope/upload` when `POLSIA_R2_BASE_URL` is unset) are now filtered out before email render — Gmail blocks data: image sources, so attaching them just made the email look broken. The upload endpoint also now logs a loud warning when it returns a data: URL so misconfigured prod doesn't pass silently.
+    - The "POLSIA_EMAIL_URL not set" log message updated to reference the current env var name (`POLSIA_EMAIL_PROXY_URL`).
+  - **Admin-password security cleanup.** The default `scopilot-admin-2026` was hardcoded in five places (two routes, the admin help HTML, and the docs). With the repo public that meant anyone could try `/admin?key=scopilot-admin-2026`. Now:
+    - `ADMIN_PASSWORD` is required at boot (`server.js` exits if unset, mirroring `SESSION_SECRET`).
+    - `routes/admin.js` and `routes/admin-metrics.js` no longer fall back to the literal default.
+    - Admin help page and `docs/ACCESS.md` no longer disclose the default value or any test-contractor credentials — they point the operator at `npm run seed:test-contractors` for those.
+    - **Important deploy note:** set `ADMIN_PASSWORD` on Render before this commit deploys. Without it, the server will refuse to start.
+  - **`test_login.mjs` sanitized** — reads `TEST_EMAIL`, `TEST_PASSWORD`, `TEST_BROWSER_WS`, `TEST_BASE_URL` from env. No live account credentials or remote-browser session token committed any more. Falls back to launching a local Chromium if no WS is provided.
+  - **`docs/business-plan.md` removed from the public repo** and added to `.gitignore` so it can't be re-added accidentally. (Note: git history still contains it; if that matters, rewrite history separately.)
 - 2026-05-25: **Incoming-lead card redesign (elite tier).** The dashboard's lead cards were text-dense with poor hierarchy — the address wrapped to 4 lines, the estimate (the money) was visually tied with "56m ago," and the spec chips were gray-on-gray. Rebuilt the card with image-first layout:
   - **Hero image at top** (140px). First project photo if present, else a Mapbox satellite tile (using existing MAPBOX_TOKEN — same `buildHeroImageUrl` pattern as the opportunity board). Status pill (colored dot + label) overlays the top-right corner; source attribution chip ("From your link" / "From territory" / "From board") stacks beneath it. Status and source no longer steal width from the address.
   - **Money-first hierarchy in the body.** Estimate is 24px Bricolage Grotesque, line 1. Project line ("**concrete** · driveway · ~976 sq ft") with the trade in gold is line 2. Address with pin icon, ellipsis on overflow, is line 3 — replaces the multi-line wrap. Specs are a quiet `·`-separated caption line instead of four gray chips. Footer row: homeowner name with person icon on the left, "View →" CTA on the right (gap animates on hover).

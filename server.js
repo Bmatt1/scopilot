@@ -19,6 +19,10 @@ if (!process.env.SESSION_SECRET) {
   console.error('ERROR: SESSION_SECRET environment variable is required');
   process.exit(1);
 }
+if (!process.env.ADMIN_PASSWORD) {
+  console.error('ERROR: ADMIN_PASSWORD environment variable is required. The admin panel is gated by this value; without it the panel would either be open or unreachable.');
+  process.exit(1);
+}
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

@@ -2,6 +2,10 @@ node_modules/
 .env
 .DS_Store
 
+# Business / strategy documents stay out of the public repo so commercial
+# detail (pricing rationale, growth plans, owner identity) isn't searchable.
+docs/business-plan.md
+
 # Polsia safety (auto-injected)
 .env
 .env.*
