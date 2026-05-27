@@ -621,43 +621,211 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
 }
+/* ── Lead card (incoming leads grid) ──────────────────────────────────────
+   Layout:
+     ┌ hero ──────────────────────────┐ ← satellite tile or first project photo
+     │                       [● NEW]  │ ← status pill (top-right overlay)
+     │                       [↗ From]│ ← optional source attribution chip
+     └────────────────────────────────┘
+     ┌ body ──────────────────────────┐
+     │  $5,900 – $9,800       56m ago │ ← money is the visual hero
+     │  Concrete · ~976 sq ft         │ ← project descriptor (gold accent on trade)
+     │  📍 8607 Kentucky Hwy 1078     │ ← address one-line with ellipsis
+     │  4" thick · No tear-out · …    │ ← specs as a quiet caption (not chips)
+     │  ────────────────────────────  │
+     │  👤 Test Testing      View →   │ ← homeowner + CTA affordance
+     └────────────────────────────────┘
+   The whole card is clickable; hover lifts +2px and warms the border. */
 .dash-lead-card {
   background: var(--white);
   border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 20px;
+  border-radius: 10px;
+  overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
 }
-.dash-lead-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(200,150,12,0.15); transform: translateY(-1px); }
-.dash-lead-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
-.dash-lead-address { font-size: 15px; font-weight: 700; color: var(--fg); line-height: 1.3; }
-.dash-lead-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
-.dash-lead-name { font-size: 13px; color: var(--fg-muted); }
-.dash-lead-type {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-  background: var(--accent-light);
-  padding: 2px 8px;
-  border-radius: 3px;
+.dash-lead-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(200,150,12,0.18);
+  transform: translateY(-2px);
 }
-.dash-lead-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-.dash-lead-chip {
-  font-size: 11px;
-  font-weight: 600;
+
+/* Hero image — first photo if present, otherwise Mapbox satellite tile,
+   otherwise a placeholder. */
+.dash-lead-hero {
+  position: relative;
+  height: 140px;
   background: var(--bg-alt);
-  padding: 3px 10px;
-  border-radius: 3px;
+  overflow: hidden;
+}
+.dash-lead-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.dash-lead-hero-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 36px;
+  color: rgba(0,0,0,0.18);
+}
+
+/* Status + source overlay sits in the top-right of the hero so it never
+   competes with the address for horizontal space the way the old badges did. */
+.dash-lead-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-end;
+}
+.dash-lead-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(26,26,46,0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.dash-lead-status-pill .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dash-lead-source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.92);
+  color: var(--fg);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+/* Body — typography ladder: estimate (hero) → project line → address →
+   specs (quiet) → footer. */
+.dash-lead-body { padding: 16px 18px 14px; }
+
+.dash-lead-money-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.dash-lead-estimate {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.dash-lead-time {
+  font-size: 11px;
+  color: var(--fg-muted);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.dash-lead-project-line {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.dash-lead-project-line strong {
+  color: var(--accent);
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.dash-lead-address {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1.3;
+  margin-bottom: 10px;
+  min-width: 0;
+}
+.dash-lead-address-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dash-lead-address svg {
+  flex-shrink: 0;
   color: var(--fg-muted);
 }
-.dash-lead-footer { display: flex; justify-content: space-between; align-items: center; }
-.dash-lead-estimate { font-size: 15px; font-weight: 700; color: var(--fg); font-family: 'Bricolage Grotesque', sans-serif; }
-.dash-lead-date { font-size: 12px; color: var(--fg-muted); }
-.dash-lead-photos { display: flex; gap: 6px; margin-top: 12px; }
-.dash-lead-thumb { width: 52px; height: 52px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); }
+
+.dash-lead-specs {
+  font-size: 12px;
+  color: var(--fg-muted);
+  line-height: 1.5;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--bg-alt);
+}
+
+.dash-lead-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.dash-lead-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--fg-muted);
+  font-weight: 500;
+  min-width: 0;
+  flex: 1;
+}
+.dash-lead-name-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dash-lead-name svg { flex-shrink: 0; }
+
+.dash-lead-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  transition: gap 0.15s;
+  white-space: nowrap;
+}
+.dash-lead-card:hover .dash-lead-cta { gap: 8px; }
 
 /* Status badges */
 .dash-status-badge {

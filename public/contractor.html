@@ -825,13 +825,115 @@
       }
     }
 
-    // Build up to 3 summary chips from trade_inputs for the card view.
-    // Falls back to legacy fields for leads submitted before trade_inputs existed.
+    // Pick the best image to use as the lead-card hero. Project photos are
+    // strongest signal; satellite fallback is still informative; placeholder
+    // covers leads with neither.
+    function buildLeadHero(lead) {
+      if (lead.photos && lead.photos.length) {
+        return { src: lead.photos[0], alt: 'Project photo' };
+      }
+      if (MAPBOX_TOKEN && lead.latitude && lead.longitude) {
+        const lat = parseFloat(lead.latitude);
+        const lng = parseFloat(lead.longitude);
+        const pin = `pin-s+c8960c(${lng},${lat})`;
+        return {
+          src: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${pin}/${lng},${lat},17/560x280@2x?access_token=${MAPBOX_TOKEN}`,
+          alt: 'Satellite view of project location'
+        };
+      }
+      return null;
+    }
+
+    // "Concrete · driveway · ~976 sq ft" — trade in gold strong, rest muted.
+    // The trade-type chip used to live on its own row; folded inline here.
+    function buildLeadProjectLine(lead) {
+      const cfg = QUESTION_CONFIG[lead.project_type];
+      const tradeLabel = (cfg && cfg.label) ? cfg.label : (lead.project_type || 'Project');
+      const parts = [`<strong>${escapeHtml(tradeLabel.toLowerCase())}</strong>`];
+
+      const ti = (typeof lead.trade_inputs === 'object' && lead.trade_inputs) ? lead.trade_inputs : {};
+      // If there's a "what kind of project" answer in trade_inputs (e.g.
+      // 'driveway', 'patio'), surface it. Heuristic — first non-yes/no answer.
+      for (const v of Object.values(ti)) {
+        if (typeof v === 'string' && v.length < 30 && !/^(yes|no|true|false|none)$/i.test(v) && !/^\d+(\.\d+)?(in|ft|sq.ft|sqft)?$/i.test(v)) {
+          parts.push(escapeHtml(v));
+          break;
+        }
+      }
+
+      if (lead.sq_footage) parts.push(`~${Number(lead.sq_footage).toLocaleString()} sq ft`);
+      return parts.join(' · ');
+    }
+
+    // Specs as a single quiet caption line — replaces the row of chips.
+    // Picks up to 4 meaningful answers from trade_inputs, falling back to
+    // the legacy concrete columns for older leads.
+    function buildLeadSpecsLine(lead) {
+      const ti = (typeof lead.trade_inputs === 'object' && lead.trade_inputs) ? lead.trade_inputs : {};
+      const cfg = QUESTION_CONFIG[lead.project_type];
+      const parts = [];
+
+      if (cfg && cfg.questions) {
+        cfg.questions.forEach(q => {
+          if (parts.length >= 4) return;
+          const v = ti[q.id];
+          if (!v || v === 'no' || v === false) return;
+          // Try to resolve an option id to its human label
+          let label = v;
+          if (q.options) {
+            const match = q.options.find(o => o.id === v || o.value === v);
+            if (match) label = match.label;
+          }
+          parts.push(escapeHtml(String(label)));
+        });
+      }
+      // Legacy concrete columns — only if trade_inputs gave us nothing.
+      if (parts.length === 0) {
+        if (lead.tear_out) parts.push('Tear-out');
+        if (lead.reinforcement && lead.reinforcement !== 'none') parts.push(escapeHtml(String(lead.reinforcement)));
+        if (lead.has_drainage) parts.push('Drainage');
+      }
+      return parts.join(' · ');
+    }
+
+    // Where did this lead come from, from this contractor's POV? Mirrors
+    // the routing logic in routes/scope.js:
+    //  - Claimed from the opportunity board (lead_status='claimed_from_board')
+    //  - Matched the contractor's territory ZIP claim (routed_to_contractor_id)
+    //  - Came in via the contractor's scoping link, no territory match
+    //    (contractor_id set, routed_to_contractor_id null)
+    function buildLeadSourceChip(lead) {
+      const me = state.contractor && state.contractor.id;
+      if (!me) return null;
+      if (lead.lead_status === 'claimed_from_board' && lead.claimed_from_board_by === me) {
+        return { icon: '⊕', label: 'From board' };
+      }
+      if (lead.routed_to_contractor_id === me) {
+        return { icon: '📍', label: 'From territory' };
+      }
+      if (lead.contractor_id === me && !lead.routed_to_contractor_id) {
+        return { icon: '↗', label: 'From your link' };
+      }
+      return null;
+    }
+
+    // Status-dot colors (kept here so the JS template can inline them — no need
+    // for ten separate CSS classes for a handful of colors).
+    const LEAD_STATUS_DOT = {
+      new: '#4ade80',
+      contacted: '#63b3ed',
+      quoted: '#c8960c',
+      won: '#a0aec0',
+      lost: '#888',
+    };
+
+    // Deprecated — superseded by buildLeadSpecsLine. Left in place because
+    // older code paths outside renderLeads might still call it; the new card
+    // doesn't. Safe to remove after one full deploy cycle.
     function buildLeadChips(lead) {
       const ti = (typeof lead.trade_inputs === 'object' && lead.trade_inputs) ? lead.trade_inputs : {};
       const cfg = QUESTION_CONFIG[lead.project_type];
       const chips = [];
-
       if (cfg && cfg.questions && Object.keys(ti).length > 0) {
         cfg.questions.forEach(q => {
           if (chips.length >= 3) return;
@@ -863,27 +965,60 @@
         return;
       }
 
-      el.innerHTML = leads.map(lead => `
+      // Pre-compute pieces of each card so the template stays readable.
+      el.innerHTML = leads.map(lead => {
+        const hero = buildLeadHero(lead);
+        const source = buildLeadSourceChip(lead);
+        const projectLine = buildLeadProjectLine(lead);
+        const specsLine = buildLeadSpecsLine(lead);
+        // Two address segments is the "street + city" we want most of the time.
+        // The detail panel shows the full string.
+        const addrParts = (lead.address || '').split(',').slice(0, 2).map(s => s.trim()).filter(Boolean);
+        const addressShort = addrParts.join(', ');
+        const estimateText = lead.estimate_low
+          ? `${formatMoney(lead.estimate_low)} – ${formatMoney(lead.estimate_high)}`
+          : '—';
+        const status = lead.status || 'new';
+        const dotColor = LEAD_STATUS_DOT[status] || LEAD_STATUS_DOT.new;
+
+        return `
         <div class="dash-lead-card" onclick="openDetail(${lead.id})">
-          <div class="dash-lead-header">
-            <div class="dash-lead-address">${escapeHtml(lead.address.split(',').slice(0,2).join(','))}</div>
-            <span class="dash-status-badge status-${lead.status}">${lead.status}</span>
+          <div class="dash-lead-hero">
+            ${hero
+              ? `<img src="${escapeHtml(hero.src)}" alt="${escapeHtml(hero.alt)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                 <div class="dash-lead-hero-placeholder" style="display:none">🗺️</div>`
+              : `<div class="dash-lead-hero-placeholder">🗺️</div>`}
+            <div class="dash-lead-overlay">
+              <span class="dash-lead-status-pill">
+                <span class="dot" style="background:${dotColor};"></span>
+                ${escapeHtml(status)}
+              </span>
+              ${source
+                ? `<span class="dash-lead-source-chip">${source.icon} ${escapeHtml(source.label)}</span>`
+                : ''}
+            </div>
           </div>
-          <div class="dash-lead-meta">
-            <span class="dash-lead-name">${escapeHtml(lead.homeowner_name || 'Anonymous')}</span>
-            <span class="dash-lead-type">${(QUESTION_CONFIG[lead.project_type] || {}).label || lead.project_type}</span>
+          <div class="dash-lead-body">
+            <div class="dash-lead-money-row">
+              <div class="dash-lead-estimate">${estimateText}</div>
+              <div class="dash-lead-time">${timeAgo(lead.created_at)}</div>
+            </div>
+            <div class="dash-lead-project-line">${projectLine}</div>
+            <div class="dash-lead-address">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span class="dash-lead-address-text">${escapeHtml(addressShort || 'Address pending')}</span>
+            </div>
+            ${specsLine ? `<div class="dash-lead-specs">${specsLine}</div>` : ''}
+            <div class="dash-lead-footer">
+              <div class="dash-lead-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="dash-lead-name-text">${escapeHtml(lead.homeowner_name || 'Anonymous')}</span>
+              </div>
+              <span class="dash-lead-cta">View →</span>
+            </div>
           </div>
-          <div class="dash-lead-row">
-            ${lead.sq_footage ? `<span class="dash-lead-chip">~${Number(lead.sq_footage).toLocaleString()} sq ft</span>` : ''}
-            ${buildLeadChips(lead)}
-          </div>
-          <div class="dash-lead-footer">
-            <div class="dash-lead-estimate">${lead.estimate_low ? formatMoney(lead.estimate_low) + ' – ' + formatMoney(lead.estimate_high) : '—'}</div>
-            <div class="dash-lead-date">${timeAgo(lead.created_at)}</div>
-          </div>
-          ${lead.photos && lead.photos.length ? `<div class="dash-lead-photos">${lead.photos.map(u => `<img src="${u}" alt="project photo" class="dash-lead-thumb">`).join('')}</div>` : ''}
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
     }
 
     function renderStats(leads) {
