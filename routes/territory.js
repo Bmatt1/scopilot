@@ -14,6 +14,7 @@ const { requireAuth } = require('../lib/require-auth');
 const {
   getClaimsByContractor,
   getActiveClaimForZip,
+  getEffectiveCap,
   createClaim,
   releaseClaim,
   countActiveClaims,
@@ -232,89 +233,36 @@ router.post('/claim', requireAuth, async (req, res) => {
   const contractorId = req.session.contractorId;
 
   try {
-    // Cap-exemption check. legacy_free contractors are uncapped (operator-gifted
-    // account). founding_member contractors are treated as equivalent — they
-    // paid $1,500 lifetime and the codebase already declares them as having
-    // equivalent privileges to legacy_free (see db/contractors.js).
+    // Look up the contractor's effective cap based on their subscription plan.
+    // getEffectiveCap returns null for uncapped accounts (legacy_free,
+    // founding_member, plan='lifetime', plan='legacy') and a number for the
+    // tier limit otherwise (free 0, base 3, plus_1 4, plus_2 5, plus_3 6).
     const { getContractorById } = require('../db/contractors');
     const contractor = await getContractorById(contractorId);
-    const isCapExempt = !!(contractor && (contractor.legacy_free || contractor.founding_member));
+    const cap = getEffectiveCap(contractor);   // null = uncapped
 
     // Count existing active claims
     const currentCount = await countActiveClaims(contractorId);
 
-    if (!isCapExempt && currentCount >= MAX_ZIPS_PER_CONTRACTOR) {
+    if (cap !== null && currentCount >= cap) {
       return res.status(400).json({
         error: `Your plan's zip code limit has been reached. Upgrade to add more.`,
         code: 'CAP_REACHED',
         upgrade_url: '/pricing',
+        current_cap: cap,
       });
     }
 
-    // Determine if this zip is free or paid
-    const isFree = currentCount < FREE_ZIP_COUNT;
-
-    if (!isFree) {
-      // For paid claims: check if a valid Stripe session was provided
-      const sessionId = req.body.session_id;
-      if (!sessionId) {
-        // No session — tell client to go pay first
-        return res.status(402).json({
-          code: 'PAYMENT_REQUIRED',
-          message: `Additional zip codes are $79/mo. Complete checkout to claim.`,
-          stripe_url: ADDITIONAL_ZIP_STRIPE_URL,
-          additional_zip_price_cents: ADDITIONAL_ZIP_PRICE_CENTS,
-        });
-      }
-
-      // Verify the Stripe payment session with Polsia API
-      const polsiaApiUrl = process.env.POLSIA_API_URL;
-      const polsiaApiKey = process.env.POLSIA_API_KEY;
-      if (!polsiaApiUrl || !polsiaApiKey) {
-        console.error('POLSIA_API_URL or POLSIA_API_KEY not set — cannot verify payment');
-        return res.status(500).json({ error: 'Payment verification unavailable' });
-      }
-
-      let paymentVerified = false;
-      try {
-        const verifyResp = await fetch(
-          `${polsiaApiUrl}/api/company-payments/verify?session_id=${encodeURIComponent(sessionId)}`,
-          { headers: { Authorization: `Bearer ${polsiaApiKey}` } }
-        );
-        const { verified } = await verifyResp.json();
-        paymentVerified = verified;
-      } catch (verifyErr) {
-        console.error('Payment verify error:', verifyErr.message);
-        return res.status(500).json({ error: 'Payment verification failed' });
-      }
-
-      if (!paymentVerified) {
-        return res.status(402).json({
-          error: 'Payment not verified. Please complete checkout first.',
-          code: 'PAYMENT_NOT_VERIFIED',
-          stripe_url: ADDITIONAL_ZIP_STRIPE_URL,
-        });
-      }
-
-      // Payment verified — create the paid claim
-      const claim = await createClaim({
-        contractorId,
-        zipCode: zip,
-        isIncludedInPlan: false,
-        monthlyPriceCents: ADDITIONAL_ZIP_PRICE_CENTS,
-        stripeSubscriptionId: sessionId,
-        skipCap: isCapExempt,
-      });
-      return res.json({ success: true, claim });
-    }
-
-    // Free claim (1st zip)
+    // Every claim under the cap is "included in plan" — the contractor's
+    // subscription already covers it. The old "1 free + extras at $79/mo"
+    // model has been replaced by the tier model (Base 3, +1 4, +2 5, +3 6).
+    // To claim more zips, contractors upgrade their tier, not pay per zip.
     const claim = await createClaim({
       contractorId,
       zipCode: zip,
       isIncludedInPlan: true,
       monthlyPriceCents: 0,
-      skipCap: isCapExempt,
+      cap,
     });
     res.json({ success: true, claim });
   } catch (err) {

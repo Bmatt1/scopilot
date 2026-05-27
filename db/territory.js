@@ -4,8 +4,36 @@
  */
 const pool = require('./index');
 
-// Max zips a contractor may hold (plan limit: 3 total, 1 free)
-const MAX_ZIPS_PER_CONTRACTOR = 3;
+// How many zips each subscription plan allows. null = uncapped.
+// Mirrors the public pricing page (Base 3, +1 4, +2 5, +3 6).
+// 'lifetime' (paid founding) and 'legacy' (operator-gifted) are uncapped.
+// 'free' is the default plan for any new signup — board access only, zero owned zips.
+const PLAN_CAPS = {
+  free:    0,
+  base:    3,
+  plus_1:  4,
+  plus_2:  5,
+  plus_3:  6,
+  lifetime: null,
+  legacy:   null,
+};
+
+// Returns the cap a contractor row is allowed, or null for uncapped.
+// Boolean flags (legacy_free, founding_member) override the plan column — they
+// are the canonical "uncapped" markers regardless of what plan happens to say.
+// If neither flag is set and plan is unknown / NULL, we default to 'free' (0).
+function getEffectiveCap(contractor) {
+  if (!contractor) return PLAN_CAPS.free;
+  if (contractor.legacy_free || contractor.founding_member) return null;
+  const plan = contractor.plan;
+  if (plan && Object.prototype.hasOwnProperty.call(PLAN_CAPS, plan)) return PLAN_CAPS[plan];
+  return PLAN_CAPS.free;
+}
+
+// Legacy constant — kept as an alias for the Base-tier cap so older callers
+// (admin endpoints, scripts) still get a sensible number. New code should use
+// getEffectiveCap(contractor) instead.
+const MAX_ZIPS_PER_CONTRACTOR = PLAN_CAPS.base;
 const FREE_ZIP_COUNT = 1;
 const ADDITIONAL_ZIP_PRICE_CENTS = 7900; // $79/mo
 
@@ -40,24 +68,26 @@ async function getActiveClaimForZip(zipCode) {
  * Create a new territory claim for a contractor.
  * Throws if zip already active or contractor is at cap.
  *
- * `skipCap` — pass true to bypass the in-transaction cap check entirely. Used
- * for cap-exempt contractors (legacy_free, founding_member). The route layer
- * is responsible for deciding exemption and passing this through; the DB
- * function does not look up the contractor itself.
+ * `cap` — the maximum number of active claims this contractor is allowed.
+ *         Pass `null` for uncapped (legacy_free / founding_member / lifetime).
+ *         Pass a number for a hard limit (Base 3, +1 4, +2 5, +3 6, Free 0).
+ *         If omitted, defaults to PLAN_CAPS.base for back-compat with older
+ *         callers (admin scripts) — but new code should always pass it.
  */
-async function createClaim({ contractorId, zipCode, isIncludedInPlan, monthlyPriceCents, stripeSubscriptionId, skipCap }) {
+async function createClaim({ contractorId, zipCode, isIncludedInPlan, monthlyPriceCents, stripeSubscriptionId, cap }) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // Check cap — count non-released claims (unless caller said to skip).
-    if (!skipCap) {
+    // Check cap unless contractor is uncapped (cap === null).
+    if (cap !== null) {
+      const effectiveCap = cap === undefined ? MAX_ZIPS_PER_CONTRACTOR : cap;
       const capCheck = await client.query(
         `SELECT COUNT(*) AS cnt FROM territory_claims
          WHERE contractor_id = $1 AND status != 'released'`,
         [contractorId]
       );
-      if (parseInt(capCheck.rows[0].cnt, 10) >= MAX_ZIPS_PER_CONTRACTOR) {
+      if (parseInt(capCheck.rows[0].cnt, 10) >= effectiveCap) {
         throw new Error('CAP_REACHED');
       }
     }
@@ -235,4 +265,6 @@ module.exports = {
   MAX_ZIPS_PER_CONTRACTOR,
   FREE_ZIP_COUNT,
   ADDITIONAL_ZIP_PRICE_CENTS,
+  PLAN_CAPS,
+  getEffectiveCap,
 };

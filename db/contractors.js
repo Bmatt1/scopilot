@@ -18,10 +18,13 @@ function generateSlug(businessName, tradeType) {
 }
 
 async function createContractor({ business_name, owner_name, email, password_hash, phone, trade_type, service_area, unique_slug }) {
+  // New signups land on the 'free' plan — board access only, zero owned zips.
+  // To claim any zip the contractor has to upgrade. The cap check in
+  // routes/territory.js will surface that prompt the moment they try.
   const result = await pool.query(
-    `INSERT INTO contractors (business_name, owner_name, email, password_hash, phone, trade_type, service_area, unique_slug)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-     RETURNING id, business_name, owner_name, email, phone, trade_type, service_area, unique_slug, created_at`,
+    `INSERT INTO contractors (business_name, owner_name, email, password_hash, phone, trade_type, service_area, unique_slug, plan)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'free')
+     RETURNING id, business_name, owner_name, email, phone, trade_type, service_area, unique_slug, plan, created_at`,
     [business_name, owner_name, email, password_hash, phone || '', trade_type, service_area || '', unique_slug]
   );
   return result.rows[0];
@@ -64,12 +67,12 @@ async function getContractorByEmail(email) {
 
 async function getContractorById(id) {
   // founding_member + legacy_free are needed so the dashboard knows whether to
-  // show the "Become a Founding Member" upsell card. Without them in the SELECT,
-  // the client-side check `if (!contractor.founding_member)` was always true,
-  // and the card showed up for everyone — including actual founding members.
+  // show the "Become a Founding Member" upsell card.
+  // plan is needed for the cap check in routes/territory.js to look up which
+  // subscription tier the contractor is on (see PLAN_CAPS in db/territory.js).
   const result = await pool.query(
     `SELECT id, business_name, owner_name, email, phone, trade_type, service_area,
-            unique_slug, founding_member, legacy_free, created_at
+            unique_slug, founding_member, legacy_free, plan, created_at
      FROM contractors WHERE id = $1`,
     [id]
   );
