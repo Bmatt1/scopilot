@@ -118,6 +118,11 @@ app.use('/api/admin', require('./routes/admin-metrics'));
 const { router: foundingApiRouter, handleWelcomePage, handleSetPassword } = require('./routes/founding');
 app.use('/api/founding', foundingApiRouter);
 
+// Subscription billing — checkout, verify-on-return, webhook receiver.
+// See docs/polsia-billing-integration.md for the Polsia-side contract.
+const billingRouter = require('./routes/billing');
+app.use('/api/billing', billingRouter);
+
 // Pricing page — public tier table + founding spotlight
 app.get('/pricing', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'pricing.html'));
@@ -187,6 +192,10 @@ app.get('/signup', (_req, res) => {
 
 app.get('/founding/welcome', handleWelcomePage);
 app.get('/founding/set-password', handleSetPassword);
+
+// Stripe redirects subscribers back here after checkout. The handler verifies
+// the session via Polsia, updates contractor.plan, and forwards to /contractor.
+app.get('/billing/welcome', billingRouter.handleBillingWelcome);
 
 // This is the URL the contractor clicks from their "magic login" email.
 // Flow: read the token from the URL → look it up in the database → start a

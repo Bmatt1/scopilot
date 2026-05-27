@@ -52,6 +52,14 @@ Node.js + Express, EJS templates, PostgreSQL (Neon), hosted on Render.
 - `/contractor` and `/contractor/opportunities` are gated server-side — anonymous visits redirect to `/login` before the page even loads.
 
 ## Recent changes
+- 2026-05-25: **Subscription billing — checkout, verify-on-return, and Polsia webhook receiver.** The four monthly tiers from the pricing page can now actually be purchased.
+  - **New file:** `routes/billing.js` with `GET /api/billing/checkout` (creates a Polsia subscription session and redirects to Stripe), `handleBillingWelcome` mounted in `server.js` as `GET /billing/welcome` (verifies via Polsia and sets `contractors.plan` from the Stripe session metadata), and `POST /api/billing/webhook` (receives normalized subscription events from Polsia, auth via `BILLING_WEBHOOK_SECRET` bearer token).
+  - **`PLAN_PRICES`** in `routes/billing.js` is the single source of truth on the server for tier names and amounts. Mirror it in `public/pricing.html` data attributes if you change pricing.
+  - **`db/contractors.js`** adds `setContractorPlan(contractorId, { plan, stripeCustomerId, stripeSubscriptionId, planPeriodEnd })` and `getContractorByStripeSubscriptionId(subId)`. `setContractorPlan` uses COALESCE on every column so callers can update only the fields they have (e.g. a `past_due` event leaves the plan unchanged but stamps the new period_end).
+  - **Migration:** `migrations/1779590400000_contractors_subscription_columns.js` adds `stripe_subscription_id` and `plan_period_end` columns (plus an index on `stripe_subscription_id` for webhook-driven lookups). Idempotent.
+  - **Pricing page wiring:** the four `<a href="/signup">` tier buttons became `<button onclick="startCheckout('base'|...)">`. `startCheckout()` calls `/api/auth/me` to detect login state. Logged-in → straight to `/api/billing/checkout`. Anonymous → `/signup?after=/api/billing/checkout?...` so the signup flow chains directly into Stripe. `signup.html` reads `?after=` on success and honors it (with a same-origin safety check to prevent open-redirect abuse).
+  - **Env var:** `BILLING_WEBHOOK_SECRET` is required for the webhook receiver to accept events. Server returns 503 if it's unset (refuses all events rather than fail-open).
+  - **Polsia contract documented** in `docs/polsia-billing-integration.md`. That's the file to give to Polsia's team — it specifies exactly what they need to accept (`mode: 'subscription'`, `interval`, `metadata`), return on verify (`subscription_id`, `subscription_status`, `current_period_end`), and forward on webhooks (normalized event shape, bearer auth). Also lists open follow-ups (cancellation should auto-release zips after a grace period; customer-portal link in the dashboard).
 - 2026-05-25: **Plan-based zip caps wired in.** The cap is now a function of the contractor's subscription tier (mirrors the public pricing page).
   - **New mapping** lives in `db/territory.js` as `PLAN_CAPS`:
     ```

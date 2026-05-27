@@ -197,6 +197,48 @@ async function markNurtureSent(contractorId) {
   );
 }
 
+/**
+ * Update a contractor's subscription plan + Stripe linkage. Called from the
+ * post-checkout /billing/welcome handler (initial subscription) and the
+ * /api/billing/webhook handler (subsequent subscription changes).
+ *
+ * - plan: one of 'free' | 'base' | 'plus_1' | 'plus_2' | 'plus_3' | 'lifetime' | 'legacy'
+ * - stripeCustomerId / stripeSubscriptionId: stamped on first subscription start.
+ *   Pass null to skip updating those fields (e.g. when only the plan changed).
+ * - planPeriodEnd: timestamp when the current period ends, so the admin panel
+ *   can show "renews on X". Pass null to skip.
+ */
+async function setContractorPlan(contractorId, { plan, stripeCustomerId, stripeSubscriptionId, planPeriodEnd }) {
+  // COALESCE on every column means "if the new value is null/undefined, keep
+  // the existing one." That lets callers update only the fields they have —
+  // e.g. a past_due webhook that wants to update period_end but NOT plan.
+  // To intentionally clear plan, callers should pass 'free' (not null).
+  await pool.query(
+    `UPDATE contractors
+     SET plan = COALESCE($2, plan),
+         stripe_customer_id = COALESCE($3, stripe_customer_id),
+         stripe_subscription_id = COALESCE($4, stripe_subscription_id),
+         plan_period_end = COALESCE($5, plan_period_end),
+         updated_at = NOW()
+     WHERE id = $1`,
+    [contractorId, plan || null, stripeCustomerId || null, stripeSubscriptionId || null, planPeriodEnd || null]
+  );
+}
+
+/**
+ * Look up a contractor by their Stripe subscription ID. Used by the webhook
+ * handler to find which contractor a subscription event belongs to when the
+ * payload doesn't include our internal contractor id.
+ */
+async function getContractorByStripeSubscriptionId(stripeSubscriptionId) {
+  const result = await pool.query(
+    `SELECT id, business_name, email, plan, stripe_customer_id, stripe_subscription_id
+     FROM contractors WHERE stripe_subscription_id = $1`,
+    [stripeSubscriptionId]
+  );
+  return result.rows[0] || null;
+}
+
 module.exports = {
   createContractor,
   createLegacyContractor,
@@ -211,4 +253,6 @@ module.exports = {
   updatePassword,
   getContractorsForNurtureEmail,
   markNurtureSent,
+  setContractorPlan,
+  getContractorByStripeSubscriptionId,
 };

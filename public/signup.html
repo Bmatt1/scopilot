@@ -336,7 +336,14 @@
           return;
         }
 
-        window.location.href = '/contractor';
+        // If the user came from /pricing with a tier picked (?after=<encoded url>),
+        // continue to that URL — usually /api/billing/checkout — so signup chains
+        // directly into Stripe. Otherwise drop them on the dashboard.
+        const afterParam = new URLSearchParams(window.location.search).get('after');
+        // Safety: only allow same-origin paths to prevent open-redirect abuse.
+        const safeAfter = afterParam && afterParam.startsWith('/') && !afterParam.startsWith('//')
+          ? afterParam : null;
+        window.location.href = safeAfter || '/contractor';
       } catch (err) {
         errorEl.textContent = 'Network error. Please try again.';
         errorEl.style.display = 'block';

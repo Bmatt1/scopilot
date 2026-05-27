@@ -96,6 +96,7 @@ Browser (HTML + JS)
 |----------|----------|-------------|
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `SESSION_SECRET` | Yes | Long random string used to sign login cookies. Server won't start without it. |
+| `BILLING_WEBHOOK_SECRET` | Yes (prod) | Long random string shared with Polsia. Required for the subscription webhook receiver to accept events. Server refuses all webhook events if this is unset. See `docs/polsia-billing-integration.md`. |
 | `PORT` | No | Server port (default: 3000) |
 | `NODE_ENV` | No | Set to `production` in prod — enables secure cookies and trust-proxy |
 | `MAPBOX_TOKEN` | Yes | Mapbox public token — map rendering and address autocomplete |

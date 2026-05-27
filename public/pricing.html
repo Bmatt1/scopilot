@@ -927,7 +927,7 @@
           </ul>
         </div>
         <div class="p-tier-cta">
-          <a href="/signup" class="p-tier-btn">Get started →</a>
+          <button type="button" class="p-tier-btn" onclick="startCheckout('base')">Get started →</button>
         </div>
       </div>
 
@@ -963,7 +963,7 @@
           </ul>
         </div>
         <div class="p-tier-cta">
-          <a href="/signup" class="p-tier-btn">Get started →</a>
+          <button type="button" class="p-tier-btn" onclick="startCheckout('plus_1')">Get started →</button>
         </div>
       </div>
 
@@ -999,7 +999,7 @@
           </ul>
         </div>
         <div class="p-tier-cta">
-          <a href="/signup" class="p-tier-btn">Get started →</a>
+          <button type="button" class="p-tier-btn" onclick="startCheckout('plus_2')">Get started →</button>
         </div>
       </div>
 
@@ -1035,7 +1035,7 @@
           </ul>
         </div>
         <div class="p-tier-cta">
-          <a href="/signup" class="p-tier-btn">Get started →</a>
+          <button type="button" class="p-tier-btn" onclick="startCheckout('plus_3')">Get started →</button>
         </div>
       </div>
 
@@ -1290,6 +1290,32 @@
 
     fetchFoundingSpots();
     setInterval(fetchFoundingSpots, 60_000);
+
+    // ── Tier checkout ─────────────────────────────────────────────────────
+    // Clicking a tier's "Get started" button calls this. If the user is logged
+    // in we send them straight to /api/billing/checkout which hands off to
+    // Stripe. If they're not, we route through /signup first and preserve the
+    // tier choice in the URL so the signup flow can resume checkout after.
+    async function startCheckout(tier) {
+      const interval = currentMode === 'annual' ? 'year' : 'month';
+      const params = new URLSearchParams({ tier, interval });
+
+      // Quick login check. /api/auth/me returns 401 when not logged in.
+      let loggedIn = false;
+      try {
+        const resp = await fetch('/api/auth/me');
+        loggedIn = resp.ok;
+      } catch (_) { loggedIn = false; }
+
+      if (loggedIn) {
+        // Server creates the Polsia session and 303-redirects to Stripe.
+        window.location.href = `/api/billing/checkout?${params.toString()}`;
+      } else {
+        // Bounce through signup. signup.html reads ?after= on success.
+        const after = encodeURIComponent(`/api/billing/checkout?${params.toString()}`);
+        window.location.href = `/signup?after=${after}`;
+      }
+    }
   </script>
 
   <script src="/js/track.js"></script>
