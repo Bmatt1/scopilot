@@ -230,9 +230,11 @@
       /* Thumb-friendly tap targets in the now-full-width sidebar */
       .scoping-copy-btn { padding: 10px 16px; font-size: 13px; min-height: 40px; }
       .scoping-url-input { font-size: 14px; }
-      .territory-release-btn { padding: 8px 12px; font-size: 12px; min-height: 36px; }
       .territory-zip-input { font-size: 16px; padding: 10px 12px; }
       .territory-claim-btn { padding: 10px 16px; min-height: 40px; }
+      .zip-menu-btn { padding: 6px 12px; min-height: 36px; }
+      .zip-confirm-yes,
+      .zip-confirm-no { min-height: 36px; padding: 7px 12px; }
     }
     /* Founding CTA in sidebar */
     .contractor-founding-card {
@@ -337,71 +339,146 @@
       overflow: hidden;
       box-sizing: border-box;
     }
+    .territory-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
     .territory-card-label {
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 10px;
     }
+    .territory-add-btn {
+      background: rgba(200,150,12,0.15);
+      color: #c8960c;
+      border: 1px solid rgba(200,150,12,0.3);
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+    }
+    .territory-add-btn:hover { background: rgba(200,150,12,0.25); }
+    .territory-add-btn.is-open {
+      background: rgba(200,150,12,0.3);
+      color: #f5e6c0;
+    }
+
+    /* Compact one-line zip row.
+       Layout: [status dot] [zip code] ............... [price] [⋯ kebab]
+       ~36px tall — fits ~10 rows in the same space the old format showed 4. */
     .territory-zip-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
+      gap: 4px;
+      margin-bottom: 4px;
     }
-    .territory-zip-item {
+    .zip-row {
       display: flex;
       align-items: center;
-      gap: 6px 8px;
-      flex-wrap: wrap;            /* if the ZIP + badges + release btn ever stop
-                                     fitting in one line, drop them to the next */
-      background: rgba(255,255,255,0.07);
+      gap: 10px;
+      padding: 7px 10px;
       border-radius: 5px;
-      padding: 8px 10px;
+      background: rgba(255,255,255,0.05);
+      min-height: 36px;
+      transition: background 0.15s;
     }
-    .territory-zip-code {
+    .zip-row:hover { background: rgba(255,255,255,0.08); }
+    .zip-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .zip-code {
+      font-family: 'Courier New', monospace;
       font-size: 14px;
       font-weight: 700;
       color: #f5f5f0;
-      flex: 1 1 auto;
-      min-width: 50px;
-      font-family: 'Courier New', monospace;
+      flex: 1;
+      min-width: 0;
     }
-    .territory-zip-badge {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border-radius: 10px;
+    .zip-price {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.55);
+      white-space: nowrap;
     }
-    .territory-zip-badge--free {
-      background: rgba(104, 211, 145, 0.2);
-      color: #68d391;
+    .zip-price--free { color: #68d391; }
+    .zip-menu-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 8px;
+      border-radius: 4px;
+      transition: all 0.15s;
+      letter-spacing: 1px;
     }
-    .territory-zip-badge--paid {
-      background: rgba(200, 150, 12, 0.2);
-      color: #c8960c;
+    .zip-menu-btn:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
+
+    /* Inline confirm state — the row replaces itself with a confirm prompt. */
+    .zip-row--confirming {
+      background: rgba(245,101,101,0.12);
+      border: 1px solid rgba(245,101,101,0.3);
+      padding: 6px 10px;
     }
-    .territory-zip-badge--active {
-      background: rgba(66,153,225,0.2);
-      color: #63b3ed;
+    .zip-confirm-text {
+      flex: 1;
+      font-size: 12px;
+      color: #f5f5f0;
+      font-weight: 500;
     }
-    .territory-release-btn {
-      background: rgba(245,101,101,0.15);
-      color: #fc8181;
+    .zip-confirm-text strong { color: #fc8181; font-family: 'Courier New', monospace; }
+    .zip-confirm-yes {
+      background: #c05050;
+      color: #fff;
       border: none;
       border-radius: 4px;
-      padding: 4px 9px;
+      padding: 5px 11px;
       font-size: 11px;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.15s;
       font-family: 'DM Sans', sans-serif;
     }
-    .territory-release-btn:hover { background: rgba(245,101,101,0.28); }
+    .zip-confirm-yes:hover { background: #a04040; }
+    .zip-confirm-no {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.8);
+      border: none;
+      border-radius: 4px;
+      padding: 5px 11px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .zip-confirm-no:hover { background: rgba(255,255,255,0.15); }
+
+    /* "+ N more · View all" / "Show first 5" toggle */
+    .territory-expander {
+      width: 100%;
+      margin-top: 6px;
+      background: transparent;
+      border: none;
+      color: rgba(200,150,12,0.8);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 4px;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+    }
+    .territory-expander:hover { background: rgba(200,150,12,0.08); color: #c8960c; }
     .territory-claim-form {
       display: flex;
       gap: 6px;
@@ -453,16 +530,6 @@
       font-size: 11px;
       color: rgba(255,255,255,0.35);
       margin-bottom: 10px;
-    }
-    /* SLA status badge on each zip row */
-    .territory-sla-badge {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border-radius: 10px;
-      flex-shrink: 0;
     }
     /* Performance card */
     .perf-card {
@@ -552,18 +619,27 @@
         <div class="scoping-share-hint">Share this link with homeowners — they'll see your business name when they scope their project.</div>
       </div>
 
-      <!-- Territory section (shown when authenticated) -->
+      <!-- Territory section (shown when authenticated). One-line rows; show
+           first 5 by default with an expander; release lives behind a kebab
+           menu with inline confirmation so a misclick can't drop a zip. -->
       <div class="territory-card" id="territoryCard" style="display:none;">
-        <div class="territory-card-label">My Territory</div>
-        <div class="territory-cap-info" id="territoryCapInfo"></div>
-        <div class="territory-zip-list" id="territoryZipList">
-          <div class="territory-empty">Loading…</div>
+        <div class="territory-header">
+          <div class="territory-card-label">My Territory</div>
+          <button class="territory-add-btn" id="territoryAddBtn" onclick="toggleClaimForm()" aria-label="Add zip code">+ Add</button>
         </div>
+        <div class="territory-cap-info" id="territoryCapInfo"></div>
+
+        <!-- Claim form, hidden by default — toggled by the Add button. -->
         <div class="territory-claim-form" id="territoryClaimForm" style="display:none;">
           <input type="text" class="territory-zip-input" id="territoryZipInput" maxlength="5" placeholder="ZIP code" inputmode="numeric" pattern="\d{5}" autocomplete="postal-code">
           <button class="territory-claim-btn" id="territoryClaimBtn" onclick="checkAndClaim()">Claim</button>
         </div>
         <div class="territory-hint territory-hint--info" id="territoryHint"></div>
+
+        <div class="territory-zip-list" id="territoryZipList">
+          <div class="territory-empty">Loading…</div>
+        </div>
+        <button class="territory-expander" id="territoryExpander" onclick="toggleTerritoryExpand()" style="display:none;"></button>
       </div>
 
       <!-- Performance card (shown when contractor has territory) -->
@@ -1003,7 +1079,22 @@
     }
 
     // ── Territory management ────────────────────────────────────────────────
-    let territoryData = null; // cached API response
+    let territoryData = null;      // cached API response so render fns can re-use it
+    let territoryExpanded = false; // whether the "+ N more" expander is open
+
+    // How many rows to show before collapsing the rest behind an expander.
+    const TERRITORY_VISIBLE_BY_DEFAULT = 5;
+
+    // Monthly price for paid zips. Hardcoded to match server logic
+    // (routes/territory.js) — keep in sync if the price changes there.
+    const PAID_ZIP_MONTHLY_PRICE = 79;
+
+    // Status dot colors for active vs at-risk vs suspended claims.
+    const TERRITORY_STATUS_DOT = {
+      active:    '#68d391',
+      at_risk:   '#f6ad55',
+      suspended: '#fc8181',
+    };
 
     async function loadTerritory() {
       try {
@@ -1017,58 +1108,120 @@
       } catch (e) { console.error('territory load error:', e); }
     }
 
-    // SLA status → badge color
-    const SLA_STATUS_STYLE = {
-      active:    { bg: '#1a472a', color: '#68d391', label: 'Active'    },
-      at_risk:   { bg: '#4a2a00', color: '#f6ad55', label: 'At Risk'   },
-      suspended: { bg: '#4a0a0a', color: '#fc8181', label: 'Suspended' },
-    };
-
     function renderTerritory(data) {
       const { claims, count, max, free_included } = data;
       const activeClaims = claims.filter(c => c.status !== 'released');
 
-      // Cap info
-      document.getElementById('territoryCapInfo').textContent =
-        `${count} of ${max} zip codes claimed — ${free_included} included free`;
+      // ── Summary line at the top of the card ──
+      // Old text was "21 of 3 zip codes claimed — 1 included free" which made no
+      // sense when the contractor was an uncapped account (founding / legacy_free)
+      // sitting on more zips than the default cap. New summary stays factual:
+      // total zips · monthly spend · how many are free.
+      const paidCount = activeClaims.filter(c => !c.is_included_in_plan).length;
+      const monthlySpend = paidCount * PAID_ZIP_MONTHLY_PRICE;
+      const freeCount = activeClaims.filter(c => c.is_included_in_plan).length;
 
-      // Zip list with SLA status badges
+      const summaryParts = [
+        `${activeClaims.length} zip${activeClaims.length === 1 ? '' : 's'} active`,
+        monthlySpend > 0 ? `$${monthlySpend.toLocaleString()}/mo` : 'no monthly cost',
+      ];
+      if (freeCount > 0) summaryParts.push(`${freeCount} free`);
+      document.getElementById('territoryCapInfo').textContent = summaryParts.join(' · ');
+
+      // ── Zip list (compact one-line rows, first N shown by default) ──
       const listEl = document.getElementById('territoryZipList');
       if (activeClaims.length === 0) {
         listEl.innerHTML = '<div class="territory-empty">No zip codes claimed yet. Claim your first one free.</div>';
       } else {
-        listEl.innerHTML = activeClaims.map(c => {
-          const planBadgeClass = c.is_included_in_plan ? 'territory-zip-badge--free' : 'territory-zip-badge--paid';
-          const planBadgeText = c.is_included_in_plan ? 'Included' : '$79/mo';
-          // SLA status badge with color
-          const slaStyle = SLA_STATUS_STYLE[c.status] || SLA_STATUS_STYLE.active;
-          const slaBadge = `<span class="territory-sla-badge" style="background:${slaStyle.bg};color:${slaStyle.color};">${slaStyle.label}</span>`;
+        const toRender = territoryExpanded
+          ? activeClaims
+          : activeClaims.slice(0, TERRITORY_VISIBLE_BY_DEFAULT);
+
+        listEl.innerHTML = toRender.map(c => {
+          const dotColor = TERRITORY_STATUS_DOT[c.status] || TERRITORY_STATUS_DOT.active;
+          const priceText = c.is_included_in_plan ? 'Free' : `$${PAID_ZIP_MONTHLY_PRICE}/mo`;
+          const priceClass = c.is_included_in_plan ? 'zip-price--free' : '';
+          const safeZip = escapeHtml(c.zip_code);
           return `
-            <div class="territory-zip-item">
-              <span class="territory-zip-code">${escapeHtml(c.zip_code)}</span>
-              <span class="territory-zip-badge ${planBadgeClass}">${planBadgeText}</span>
-              ${slaBadge}
-              <button class="territory-release-btn" onclick="releaseClaim(${c.id}, '${escapeHtml(c.zip_code)}')">Release</button>
+            <div class="zip-row" id="zipRow-${c.id}" data-zip="${safeZip}">
+              <span class="zip-status-dot" style="background:${dotColor};" title="${c.status}"></span>
+              <span class="zip-code">${safeZip}</span>
+              <span class="zip-price ${priceClass}">${priceText}</span>
+              <button class="zip-menu-btn" onclick="confirmReleaseInline(${c.id}, '${safeZip}')" aria-label="Actions for ZIP ${safeZip}">⋯</button>
             </div>`;
         }).join('');
       }
 
-      // Show claim form only if under cap
-      const formEl = document.getElementById('territoryClaimForm');
-      formEl.style.display = count < max ? 'flex' : 'none';
+      // ── Expander button: "+ N more · View all" / "Show first 5" ──
+      const expander = document.getElementById('territoryExpander');
+      if (activeClaims.length > TERRITORY_VISIBLE_BY_DEFAULT) {
+        expander.style.display = 'block';
+        const hidden = activeClaims.length - TERRITORY_VISIBLE_BY_DEFAULT;
+        expander.textContent = territoryExpanded
+          ? `↑ Show first ${TERRITORY_VISIBLE_BY_DEFAULT}`
+          : `+ ${hidden} more · View all`;
+      } else {
+        expander.style.display = 'none';
+      }
 
-      // Update hint
+      // ── Hint / cap-related copy ──
+      // count > max means an uncapped account (founding / legacy_free) is
+      // sitting above the default cap — suppress the cap message entirely so
+      // we don't render confusing "X of Y" math.
       const hintEl = document.getElementById('territoryHint');
-      if (count >= max) {
+      if (count > max) {
+        hintEl.textContent = '';
+        hintEl.style.display = 'none';
+      } else if (count >= max) {
+        hintEl.style.display = '';
         hintEl.textContent = `Maximum of ${max} zip codes reached.`;
         hintEl.className = 'territory-hint territory-hint--err';
       } else if (count >= free_included) {
-        hintEl.textContent = `Additional zips are $79/mo each.`;
+        hintEl.style.display = '';
+        hintEl.textContent = `Additional zips are $${PAID_ZIP_MONTHLY_PRICE}/mo each.`;
         hintEl.className = 'territory-hint territory-hint--info';
       } else {
+        hintEl.style.display = '';
         hintEl.textContent = 'Your first zip code is included free.';
         hintEl.className = 'territory-hint territory-hint--info';
       }
+    }
+
+    // Toggle between "first 5" and "all" for the zip list.
+    function toggleTerritoryExpand() {
+      territoryExpanded = !territoryExpanded;
+      if (territoryData) renderTerritory(territoryData);
+    }
+
+    // Show/hide the "claim a new ZIP" form. The Add button in the header is the
+    // only entry point — keeps the card quiet by default.
+    function toggleClaimForm() {
+      const form = document.getElementById('territoryClaimForm');
+      const btn = document.getElementById('territoryAddBtn');
+      const opening = form.style.display === 'none' || !form.style.display;
+      form.style.display = opening ? 'flex' : 'none';
+      btn.classList.toggle('is-open', opening);
+      btn.textContent = opening ? '× Cancel' : '+ Add';
+      if (opening) document.getElementById('territoryZipInput').focus();
+    }
+
+    // Kebab → inline confirm. The row replaces its contents with a confirm/cancel
+    // prompt rather than opening a dropdown menu. Two clicks total to release;
+    // a misclick on the kebab can be undone with Cancel without consequence.
+    function confirmReleaseInline(claimId, zipCode) {
+      const row = document.getElementById(`zipRow-${claimId}`);
+      if (!row) return;
+      row.classList.add('zip-row--confirming');
+      row.innerHTML = `
+        <span class="zip-confirm-text">Release <strong>${escapeHtml(zipCode)}</strong>?</span>
+        <button class="zip-confirm-yes" onclick="releaseClaim(${claimId}, '${escapeHtml(zipCode)}')">Release</button>
+        <button class="zip-confirm-no" onclick="cancelReleaseInline(${claimId})">Cancel</button>
+      `;
+    }
+
+    function cancelReleaseInline(claimId) {
+      // Re-render the whole territory list — simplest way to restore the row.
+      if (territoryData) renderTerritory(territoryData);
     }
 
     async function loadSlaStats() {
@@ -1182,7 +1335,11 @@
           hintEl.textContent = `✓ ZIP ${zip} claimed!`;
           hintEl.className = 'territory-hint territory-hint--ok';
           input.value = '';
-          await loadTerritory(); // Refresh
+          await loadTerritory(); // refresh the list — the new zip appears
+          // Auto-collapse the "+ Add" form so the user immediately sees their
+          // new zip in the list. The success message stays in the hint below.
+          const form = document.getElementById('territoryClaimForm');
+          if (form && form.style.display !== 'none') toggleClaimForm();
         } else {
           hintEl.textContent = claimData.error || 'Failed to claim zip.';
           hintEl.className = 'territory-hint territory-hint--err';
@@ -1196,8 +1353,9 @@
       btn.textContent = 'Claim';
     }
 
+    // releaseClaim does NOT prompt — confirmReleaseInline() already handled
+    // confirmation in-row. The old browser confirm() dialog here would double-ask.
     async function releaseClaim(claimId, zipCode) {
-      if (!confirm(`Release ZIP ${zipCode}? This returns it to the open pool immediately.`)) return;
       try {
         const resp = await fetch(`/api/territory/claim/${claimId}`, { method: 'DELETE', credentials: 'include' });
         const data = await resp.json();
