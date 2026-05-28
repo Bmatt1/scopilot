@@ -427,6 +427,20 @@ async function sendLeadNotification(lead, photos) {
     return;
   }
 
+  // Belt-and-suspenders: never POST a malformed body to the email proxy.
+  // If any of these required fields is missing we abort with a structured log
+  // line instead of letting a cryptic error reach Polsia's logs.
+  if (!subject || !html || !text || !toEmail) {
+    console.error('[email] contractor notification aborted — missing required field', {
+      lead_id: lead.id,
+      has_subject: !!subject,
+      has_html: !!html,
+      has_text: !!text,
+      has_to_email: !!toEmail,
+    });
+    return;
+  }
+
   const resp = await fetch(emailUrl, {
     method: 'POST',
     headers: {
@@ -809,6 +823,21 @@ async function sendLeadConfirmation(lead, photos) {
 
   if (!emailUrl) {
     console.log('[email] proxy URL not configured — homeowner confirmation skipped for lead', lead.id);
+    return;
+  }
+
+  // Belt-and-suspenders: never POST a malformed body to the email proxy.
+  // Polsia flagged a "subject is not defined" error from an earlier deploy
+  // state — this guard catches the same category of failure (any required
+  // field missing) with a clear log line instead of a cryptic stack trace.
+  if (!subject || !html || !text || !toEmail) {
+    console.error('[email] homeowner confirmation aborted — missing required field', {
+      lead_id: lead.id,
+      has_subject: !!subject,
+      has_html: !!html,
+      has_text: !!text,
+      has_to_email: !!toEmail,
+    });
     return;
   }
 
