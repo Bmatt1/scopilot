@@ -569,6 +569,9 @@
       <a href="/contractor" class="dash-logo">Scopilot</a>
       <div class="dash-topbar-nav-links">
         <a href="/contractor/opportunities" class="dash-topbar-link">Opportunity Board</a>
+        <!-- Admin link is hidden by default and revealed by bootDashboard() when
+             the signed-in contractor has is_admin=true. -->
+        <a href="/admin" class="dash-topbar-link" id="adminNavLink" style="display:none;">Admin</a>
       </div>
     </div>
     <div class="dash-topbar-right">
@@ -582,6 +585,7 @@
   <!-- Mobile navigation drawer -->
   <div class="dash-mobile-drawer hidden" id="dashMobileDrawer">
     <a href="/contractor/opportunities" class="dash-mobile-drawer-link">Opportunity Board</a>
+    <a href="/admin" class="dash-mobile-drawer-link" id="adminMobileLink" style="display:none;">Admin Panel</a>
     <span class="dash-mobile-drawer-link" id="mobileNavWelcome" style="color:var(--accent);font-weight:600;cursor:default;"></span>
     <button class="dash-mobile-drawer-btn" onclick="logout()">Sign out</button>
   </div>
@@ -732,6 +736,14 @@
 
       document.getElementById('navWelcome').textContent = data.contractor.business_name;
       document.getElementById('mobileNavWelcome').textContent = data.contractor.business_name;
+
+      // Reveal the "Admin" nav links if this contractor has admin rights.
+      // is_admin is set on the contractors row and stamped onto the session at
+      // login; see routes/admin.js requireAdmin() for the gate.
+      if (data.contractor.is_admin) {
+        document.getElementById('adminNavLink').style.display = '';
+        document.getElementById('adminMobileLink').style.display = '';
+      }
 
       const scopingUrl = `${window.location.origin}/scope.html?c=${data.contractor.unique_slug}`;
       document.getElementById('scopingUrl').value = scopingUrl;

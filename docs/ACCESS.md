@@ -23,7 +23,11 @@
 https://scopilot.polsia.app/admin?key=<ADMIN_PASSWORD>
 ```
 
-Authentication uses the `ADMIN_PASSWORD` environment variable. The server refuses to start if it isn't set — no hardcoded fallback in source. Set it on Render under Settings → Environment with a long random value (e.g. `openssl rand -hex 24`).
+Two ways to authenticate:
+
+1. **Log in as an admin contractor (preferred).** A contractor with `is_admin = true` on their `contractors` row can reach `/admin` directly from their normal logged-in session — no password key in the URL needed. After logging in to the contractor dashboard, navigate to `/admin` (or click the "Admin" link in the top nav, shown only to admin contractors). The DB migration `1779600000000_contractor_is_admin.js` flips `concretemattingly@gmail.com` to admin by default; add more admins later with `UPDATE contractors SET is_admin = true WHERE LOWER(email) = '…';`.
+
+2. **URL-key fallback.** If the `ADMIN_PASSWORD` env var is set, you can also reach `/admin?key=<that-value>` (or use HTTP Basic Auth with that password). Useful for scripts / curl. When the env var is unset, this path is disabled and only the contractor-session path works.
 
 Two supported auth methods:
 - **Query param:** `?key=<ADMIN_PASSWORD>` — simplest for browser access
@@ -354,7 +358,7 @@ LIMIT 20;
 | Variable | Purpose | Default |
 |----------|---------|---------|
 | `DATABASE_URL` | Neon PostgreSQL connection string | — (required) |
-| `ADMIN_PASSWORD` | Admin panel gate | — (required, no fallback — server refuses to start without it) |
+| `ADMIN_PASSWORD` | Optional URL-key fallback for `/admin?key=…`. The preferred path is logging in as a contractor with `is_admin = true`. | — (optional) |
 | `SESSION_SECRET` | Session cookie signing | — (required, no fallback) |
 | `BILLING_WEBHOOK_SECRET` | Bearer token for the Polsia subscription webhook | — (required in prod) |
 | `MAPBOX_TOKEN` | Map tiles + address autocomplete | — |

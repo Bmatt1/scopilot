@@ -19,9 +19,14 @@ if (!process.env.SESSION_SECRET) {
   console.error('ERROR: SESSION_SECRET environment variable is required');
   process.exit(1);
 }
+// ADMIN_PASSWORD is OPTIONAL. The admin panel can be reached two ways:
+//   1) A logged-in contractor whose contractors.is_admin = true (preferred).
+//   2) The URL-key path (?key=<ADMIN_PASSWORD>) — only available when the env
+//      var IS set. If ADMIN_PASSWORD is unset, path (2) is closed and only
+//      contractor-session admins can reach /admin.
+// See routes/admin.js requireAdmin() for the full gate logic.
 if (!process.env.ADMIN_PASSWORD) {
-  console.error('ERROR: ADMIN_PASSWORD environment variable is required. The admin panel is gated by this value; without it the panel would either be open or unreachable.');
-  process.exit(1);
+  console.warn('Note: ADMIN_PASSWORD is unset. URL-key admin access (?key=…) is disabled; only logged-in admin contractors can reach /admin.');
 }
 
 app.use(express.json({ limit: '10mb' }));

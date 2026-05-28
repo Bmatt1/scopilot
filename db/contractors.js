@@ -57,8 +57,10 @@ async function createLegacyContractor({ business_name, owner_name, email, trade_
 }
 
 async function getContractorByEmail(email) {
+  // is_admin is needed at login time so establishSession() can stash it on the
+  // session and the /admin guards don't have to re-query the DB on every hit.
   const result = await pool.query(
-    `SELECT id, business_name, owner_name, email, password_hash, phone, trade_type, service_area, unique_slug, created_at
+    `SELECT id, business_name, owner_name, email, password_hash, phone, trade_type, service_area, unique_slug, is_admin, created_at
      FROM contractors WHERE email = $1`,
     [email]
   );
@@ -70,9 +72,10 @@ async function getContractorById(id) {
   // show the "Become a Founding Member" upsell card.
   // plan is needed for the cap check in routes/territory.js to look up which
   // subscription tier the contractor is on (see PLAN_CAPS in db/territory.js).
+  // is_admin is what gates /admin via the contractor session (see routes/admin.js).
   const result = await pool.query(
     `SELECT id, business_name, owner_name, email, phone, trade_type, service_area,
-            unique_slug, founding_member, legacy_free, plan, created_at
+            unique_slug, founding_member, legacy_free, plan, is_admin, created_at
      FROM contractors WHERE id = $1`,
     [id]
   );

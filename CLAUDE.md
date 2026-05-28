@@ -52,6 +52,13 @@ Node.js + Express, EJS templates, PostgreSQL (Neon), hosted on Render.
 - `/contractor` and `/contractor/opportunities` are gated server-side — anonymous visits redirect to `/login` before the page even loads.
 
 ## Recent changes
+- 2026-05-25: **Session-based admin access.** The operator reported they don't have Render access, so the strict `ADMIN_PASSWORD` env-var requirement we shipped earlier had locked them out of `/admin`. Solution: gate the admin panel on a contractor session flag instead of (or in addition to) the URL key.
+  - **New column:** `contractors.is_admin BOOLEAN NOT NULL DEFAULT false` via migration `1779600000000_contractor_is_admin.js`. The migration also flips `concretemattingly@gmail.com` to `is_admin = true` so the operator can reach `/admin` immediately after this deploys.
+  - **`getContractorByEmail` and `getContractorById`** now return `is_admin`. `establishSession()` in `routes/auth.js` stamps `req.session.isAdmin` at login so `requireAdmin` doesn't need to re-query the DB on every protected request.
+  - **`requireAdmin`** in `routes/admin.js` and `routes/admin-metrics.js` now accepts three auth paths: (1) `req.session.isAdmin === true` — the preferred path; (2) URL key `?key=<ADMIN_PASSWORD>` (only when the env var is set); (3) HTTP Basic Auth with the same key.
+  - **`ADMIN_PASSWORD` env var is now OPTIONAL.** The fail-fast in `server.js` that required it at boot is gone — replaced with a console warning if unset. Without it, only path (1) above works, which is the intended steady state.
+  - **Contractor dashboard nav** shows an "Admin" link in the topbar (and a matching entry in the mobile drawer) when `state.contractor.is_admin === true`. Hidden otherwise.
+  - **Docs updated.** `docs/ACCESS.md` and the README env-var table now describe the two-path model. Adding more admins is documented as `UPDATE contractors SET is_admin = true WHERE LOWER(email) = '…';`.
 - 2026-05-25: **Homeowner confirmation email + contractor-email bug fixes + security cleanup.** Three concerns shipped together because they overlapped.
   - **New email: `sendLeadConfirmation(lead, photos)`** in `services/email.js`, fired from `routes/scope.js` right after the contractor notification. Warm tone, echoes back the project summary, sets a "we'll be in touch within 24 hours" expectation, fallback to `support@polsia.com`. Fire-and-forget; failure logs but doesn't block the 200 response.
   - **Contractor notification bug fixes** in `services/email.js`:

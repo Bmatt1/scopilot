@@ -23,9 +23,13 @@ const { getUtmBreakdown } = require('../db/analytics');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 function requireAdmin(req, res, next) {
-  if (req.query.key === ADMIN_PASSWORD) return next();
+  // Session-based: logged-in contractor with is_admin=true. Preferred.
+  if (req.session && req.session.isAdmin) return next();
+
+  // URL-key / Basic Auth fallback — only when ADMIN_PASSWORD is configured.
+  if (ADMIN_PASSWORD && req.query.key === ADMIN_PASSWORD) return next();
   const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Basic ')) {
+  if (ADMIN_PASSWORD && authHeader && authHeader.startsWith('Basic ')) {
     const decoded = Buffer.from(authHeader.slice(6), 'base64').toString();
     const [, password] = decoded.split(':');
     if (password === ADMIN_PASSWORD) return next();

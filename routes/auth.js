@@ -25,6 +25,11 @@ function establishSession(req, contractor, cb) {
     if (regenErr) return cb(regenErr);
     req.session.contractorId = contractor.id;
     req.session.contractorSlug = contractor.unique_slug;
+    // Cache the admin flag on the session so the /admin guards don't need
+    // to hit the DB on every protected request. If is_admin changes in the
+    // DB after login, the contractor needs to log out and back in for it
+    // to take effect — acceptable trade-off for the request-rate savings.
+    req.session.isAdmin = !!contractor.is_admin;
     req.session.save(cb);
   });
 }

@@ -63,15 +63,27 @@ async function geocodeZipCentroids(claims) {
 // ── Auth Middleware ─────────────────────────────────────────────────────────
 
 function requireAdmin(req, res, next) {
-  if (req.query.key === ADMIN_PASSWORD) return next();
+  // Path 1: contractor logged in AND flagged as admin. This is the preferred
+  // path — the operator opens /admin in a browser where they're already
+  // signed in to their contractor account, no password key needed.
+  if (req.session && req.session.isAdmin) return next();
+
+  // Path 2: URL key matches ADMIN_PASSWORD env var. Kept for backwards
+  // compat (scripts, curl, situations where there's no session). When the
+  // env var is unset, this path is unreachable — only session-based admin
+  // works.
+  if (ADMIN_PASSWORD && req.query.key === ADMIN_PASSWORD) return next();
+
+  // Path 3: HTTP Basic Auth — same env var, useful for curl.
   const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Basic ')) {
+  if (ADMIN_PASSWORD && authHeader && authHeader.startsWith('Basic ')) {
     const decoded = Buffer.from(authHeader.slice(6), 'base64').toString();
     const [, password] = decoded.split(':');
     if (password === ADMIN_PASSWORD) return next();
   }
+
   res.set('WWW-Authenticate', 'Basic realm="Scopilot Admin"');
-  res.status(401).send('Authentication required');
+  res.status(401).send('Authentication required — log in as an admin contractor or supply a valid ?key=…');
 }
 
 // ── Shared helpers ───────────────────────────────────────────────────────────
